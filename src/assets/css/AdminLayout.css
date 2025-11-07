@@ -1,0 +1,511 @@
+.admin-layout {
+  display: flex;
+  height: 100vh;
+}
+
+.admin-sidebar {
+  width: 240px;
+  background: #1a202c;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1rem;
+}
+
+.admin-sidebar a {
+  color: white;
+  text-decoration: none;
+  display: block;
+  margin: 10px 0;
+}
+
+.admin-sidebar a.active {
+  background: #2d3748;
+  border-radius: 6px;
+  padding: 8px;
+}
+
+.admin-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #f9fafb;
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem;
+  background: white;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.admin-content {
+  flex: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+.admin-footer {
+  text-align: center;
+  padding: 1rem;
+  background: white;
+  border-top: 1px solid #e2e8f0;
+}
+.admin-sidebar {
+  width: 250px;
+  height: 100vh;
+  background: linear-gradient(180deg, #1f2937 0%, #111827 100%);
+  color: #f3f4f6;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  left: 0;
+  top: 0;
+  transition: all 0.3s ease;
+}
+
+.sidebar-header {
+  padding: 1.8rem 1rem 1rem;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 1px;
+}
+
+.sidebar-logo span {
+  color: #3b82f6;
+}
+
+.sidebar-menu {
+  flex: 1;
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.menu-link {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.8rem 1rem;
+  color: #d1d5db;
+  text-decoration: none;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.menu-link:hover {
+  background-color: rgba(59, 130, 246, 0.15);
+  color: #ffffff;
+}
+
+.menu-link.active {
+  background: linear-gradient(90deg, #2563eb 0%, #3b82f6 100%);
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(37, 99, 235, 0.4);
+}
+
+.menu-icon {
+  font-size: 1.2rem;
+}
+
+.sidebar-footer {
+  padding: 1.2rem 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logout-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  background: none;
+  border: none;
+  color: #f87171;
+  font-weight: 500;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.admin-sidebar {
+  width: 240px;
+  background: #1e1e2d;
+  color: #fff;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease;
+  position: fixed;
+  left: 0;
+  top: 0;
+}
+
+.admin-sidebar.collapsed {
+  width: 80px;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+}
+
+.sidebar-logo {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.toggle-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.3rem;
+  cursor: pointer;
+}
+
+.sidebar-menu {
+  flex: 1;
+  padding: 0.5rem 0;
+}
+
+.menu-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #ccc;
+  text-decoration: none;
+  padding: 0.8rem 1rem;
+  transition: background 0.3s, color 0.3s;
+}
+
+.menu-link:hover {
+  background: #27293d;
+  color: #fff;
+}
+
+.menu-link.active {
+  background: #007bff;
+  color: #fff;
+}
+
+.menu-icon {
+  font-size: 1.2rem;
+}
+
+.sidebar-footer {
+  padding: 1rem;
+}
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+}
+
+.admin-sidebar.collapsed .menu-link span,
+.admin-sidebar.collapsed .logout-btn span,
+.admin-sidebar.collapsed .sidebar-logo span {
+  display: none;
+}
+/* ======== MAIN LAYOUT ======== */
+.admin-layout {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+/* ======== SIDEBAR ======== */
+.admin-sidebar {
+  width: 240px;
+  background: #1e1e2d;
+  color: #fff;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  left: 0;
+  top: 0;
+  transition: width 0.3s ease;
+  z-index: 100;
+}
+
+.admin-sidebar.collapsed {
+  width: 80px;
+}
+
+/* ======== HEADER + CONTENT ======== */
+.admin-main {
+  flex-grow: 1;
+  margin-left: 240px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #f8f9fa;
+  transition: margin-left 0.3s ease, width 0.3s ease;
+}
+
+.admin-layout.collapsed .admin-main {
+  margin-left: 80px;
+}
+
+/* ======== CONTENT AREA ======== */
+.admin-content {
+  flex: 1;
+  padding: 1.5rem;
+}
+
+/* ======== SIDEBAR HEADER ======== */
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+}
+
+.sidebar-logo {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.toggle-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.3rem;
+  cursor: pointer;
+}
+
+/* ======== MENU STYLING ======== */
+.sidebar-menu {
+  flex: 1;
+  padding: 0.5rem 0;
+}
+
+.menu-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #ccc;
+  text-decoration: none;
+  padding: 0.8rem 1rem;
+  transition: background 0.3s, color 0.3s;
+}
+
+.menu-link:hover {
+  background: #27293d;
+  color: #fff;
+}
+
+.menu-link.active {
+  background: #007bff;
+  color: #fff;
+}
+
+.menu-icon {
+  font-size: 1.2rem;
+}
+
+/* ======== FOOTER BUTTON ======== */
+.sidebar-footer {
+  padding: 1rem;
+}
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* ======== HIDE TEXT WHEN COLLAPSED ======== */
+.admin-sidebar.collapsed .menu-link span,
+.admin-sidebar.collapsed .logout-btn span,
+.admin-sidebar.collapsed .sidebar-logo span {
+  display: none;
+}
+
+.nav-tabs .nav-link {
+  font-weight: 500;
+  font-size: 15px;
+  color: #495057;
+  border: 1px solid transparent;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.nav-tabs .nav-link.active {
+  background-color: #0d6efd; /* Active tab background */
+  color: white; /* Active tab text color */
+  border-color: #0d6efd #0d6efd #fff;
+  border-radius: 4px 4px 0 0;
+}
+
+.nav-tabs .nav-link:hover {
+  background-color: #e9ecef; /* Hover background */
+}
+
+.nav-tabs .nav-item {
+  border-bottom: none;
+}
+
+.btn-primary{
+  color:#f87951;
+}
+.primary-color{
+  color:#f87951;
+}
+.primary-button{
+  background-color: #f87951;
+  color: white;
+  border-radius: 50px;
+  padding: 10px;
+  border: none;
+}
+.primary-background-color{
+  background-color: #f87951;
+  color: white;
+  border: none;
+}
+.primary-checkout-button{
+  background-color: #f87951;
+  color: white;
+  border-radius: 50%;
+  padding: 1px;
+  border: none;
+  height: 40px;
+  width: 40px;
+}
+
+/* Custom Switch Styling */
+.custom-switch .form-check-input:checked {
+  background-color: #f87951 !important; /* switch background */
+  border-color: #f87951 !important; /* border color */
+}
+
+.custom-switch .form-check-input:focus {
+  box-shadow: 0 0 0 0.25rem rgba(248, 121, 81, 0.25) !important; /* glow on focus */
+}
+
+.custom-switch .form-check-label {
+  color: #333; /* optional: label color */
+  font-weight: 500;
+}
+/* --- Custom Amenity Checkbox Styling --- */
+.custom-amenity-checkbox .form-check-input {
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.custom-amenity-checkbox .form-check-input:checked {
+  background-color: #f87951 !important;
+  border-color: #f87951 !important;
+}
+
+.custom-amenity-checkbox .form-check-input:focus {
+  box-shadow: 0 0 0 0.2rem rgba(248, 121, 81, 0.25);
+}
+
+.custom-amenity-checkbox .form-check-label {
+  color: #333;
+  font-weight: 500;
+  margin-left: 4px;
+  transition: color 0.3s ease;
+}
+
+.custom-amenity-checkbox .form-check-input:checked + .form-check-label {
+  color: #f87951; /* Label text turns theme color when checked */
+}
+
+/* ✅ Base action button */
+.action-btn {
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: none;
+  margin-right: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.2s ease;
+  white-space: nowrap;
+}
+
+/* ✅ CHECK-IN BUTTON */
+.btn-checkin {
+  background: #28a745;
+  color: #fff;
+}
+.btn-checkin:hover {
+  background: #218838;
+}
+
+/* ✅ CHECK-OUT BUTTON */
+.btn-checkout {
+  background: #007bff;
+  color: #fff;
+}
+.btn-checkout:hover {
+  background: #0069d9;
+}
+
+/* ✅ Disabled State */
+.btn-disabled {
+  background: #c3c3c3;
+  color: #555;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+/* ✅ Cancelled */
+.btn-cancelled {
+  background: #dc3545;
+  color: white;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+/* Cancel Button (Active) */
+.btn-cancel {
+  background: #dc3545;
+  color: #fff;
+}
+.btn-cancel:hover {
+  background: #c82333;
+}
+
+/* Cancelled Status (Disabled) */
+.btn-cancelled {
+  background: #ff6b6b;
+  color: #fff;
+  opacity: 0.7;
+  cursor: not-allowed;
+}
