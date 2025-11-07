@@ -276,10 +276,10 @@ const Admin_Room_List = () => {
         centered
       >
         <Modal.Header closeButton className="bg-light">
-          <Modal.Title className="btn-primary" style={{ color: "#f87951" }}>Add New Room</Modal.Title>
+          <Modal.Title className="small-form-title" style={{ color: "#f87951" }}>Add New Room</Modal.Title>
         </Modal.Header>
 
-        <Modal.Body className="p-4">
+        <Modal.Body className="small-form">
           <Form onSubmit={handleCreateRoom}>
             {/* 🔹 Basic Info Section */}
             <h5 className="text-secondary border-bottom pb-2 mb-3">
@@ -353,11 +353,11 @@ const Admin_Room_List = () => {
 
               <Col md={6}>
                 <Form.Group className="mb-3">
-                  <Form.Label>Availability</Form.Label>
+                  <Form.Label className="small-switch-label">Availability</Form.Label>
                   <Form.Check
                     type="switch"
                     id="availability-switch"
-                    className="custom-switch"
+                    className="custom-switch small-switch"
                     label={formData.isAvailable ? "Available" : "Not Available"}
                     checked={formData.isAvailable}
                     onChange={(e) =>
@@ -372,11 +372,11 @@ const Admin_Room_List = () => {
             </Row>
 
             {/* 🔹 Amenities Section */}
-            <h5 className="text-secondary border-bottom pb-2 mb-3 mt-3">
+            <h5 className="text-secondary border-bottom pb-2 mb-2 mt-2 small-section-title">
               Amenities
             </h5>
 
-            <Row>
+            <Row className="small-amenities">
               {["WiFi", "TV", "AC", "Mini Bar", "Balcony", "Room Service"].map(
                 (amenity) => (
                   <Col md={4} key={amenity}>
@@ -384,7 +384,7 @@ const Admin_Room_List = () => {
                       type="checkbox"
                       label={amenity}
                       value={amenity}
-                      className="custom-amenity-checkbox"
+                      className="custom-amenity-checkbox small-amenity-checkbox"
                       checked={formData.amenities.includes(amenity)}
                       onChange={(e) => {
                         const { checked, value } = e.target;
@@ -470,7 +470,7 @@ const Admin_Room_List = () => {
                 </Col>
                 <Col md={1} className="btn-primary">
                   <button
-                    className="primary-checkout-button"
+                    className="primary-checkout-button "
                     size="sm"
                     onClick={() =>
                       setFormData({
@@ -488,7 +488,7 @@ const Admin_Room_List = () => {
             ))}
             <div className="text-end mb-3">
               <button
-                className="primary-button"
+                className="primary-button btn-sm small-add-button"
                 size="sm"
                 onClick={() =>
                   setFormData({
@@ -521,15 +521,14 @@ const Admin_Room_List = () => {
         </Modal.Body>
 
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowAddModal(false)}>
+          <button className="secondary-button btn-sm small-add-button" onClick={() => setShowAddModal(false)}>
             Cancel
-          </Button>
+          </button>
           <button
-            variant="primary"
             type="submit"
             onClick={handleCreateRoom}
             disabled={loading}
-            className="primary-button"
+            className="primary-button btn-sm small-add-button"
           >
             {loading ? "Saving..." : "Save Room"}
           </button>
@@ -544,10 +543,10 @@ const Admin_Room_List = () => {
         centered
       >
         <Modal.Header closeButton className="bg-light">
-          <Modal.Title className="fw-bold" style={{ color: "#f87951" }}>Edit Room</Modal.Title>
+          <Modal.Title className="small-form-title" style={{ color: "#f87951" }}>Edit Room</Modal.Title>
         </Modal.Header>
 
-        <Modal.Body className="p-4">
+        <Modal.Body className="small-form">
           <Form onSubmit={handleUpdateRoom}>
             {/* 🔹 Basic Info */}
             <h5 className="text-secondary border-bottom pb-2 mb-3">
@@ -620,12 +619,12 @@ const Admin_Room_List = () => {
               </Col>
 
               <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Availability</Form.Label>
+                <Form.Group className="mb-2 small-switch-group">
+                  <Form.Label className="small-switch-label">Availability</Form.Label>
                   <Form.Check
                     type="switch"
                     id="availability-switch"
-                    className="custom-switch"
+                    className="custom-switch small-switch"
                     label={formData.isAvailable ? "Available" : "Not Available"}
                     checked={formData.isAvailable}
                     onChange={(e) =>
@@ -637,22 +636,24 @@ const Admin_Room_List = () => {
                   />
                 </Form.Group>
               </Col>
+
             </Row>
 
             {/* 🔹 Amenities */}
-            <h5 className="text-secondary border-bottom pb-2 mb-3 mt-3">
+            <h5 className="text-secondary border-bottom pb-2 mb-2 mt-2 small-section-title">
               Amenities
             </h5>
-            <Row>
+
+            <Row className="small-amenities">
               {["WiFi", "TV", "AC", "Mini Bar", "Balcony", "Room Service"].map(
                 (amenity) => (
                   <Col md={4} key={amenity}>
                     <Form.Check
                       type="checkbox"
                       label={amenity}
-                      className="custom-amenity-checkbox"
+                      className="custom-amenity-checkbox small-amenity-checkbox"
                       value={amenity}
-                      checked={formData.amenities?.includes(amenity)} // ✅ safe check
+                      checked={formData.amenities?.includes(amenity)}
                       onChange={(e) => {
                         const { checked, value } = e.target;
                         setFormData((prev) => ({
@@ -667,6 +668,7 @@ const Admin_Room_List = () => {
                 )
               )}
             </Row>
+
 
             {/* 🔹 Seasonal Rates */}
             <h5 className="text-secondary border-bottom pb-2 mb-3 mt-4">
@@ -756,7 +758,7 @@ const Admin_Room_List = () => {
 
             <div className="text-end mb-3">
               <button
-                className="primary-button"
+                className="primary-button btn-sm small-add-button"
                 size="sm"
                 onClick={() =>
                   setFormData({
@@ -789,11 +791,11 @@ const Admin_Room_List = () => {
         </Modal.Body>
 
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowEditModal(false)}>
+          <button className="btn-secondary btn-sm small-add-button" variant="secondary" onClick={() => setShowEditModal(false)}>
             Cancel
-          </Button>
+          </button>
           <button
-            className="primary-button"
+            className="primary-button btn-sm small-add-button"
             type="submit"
             onClick={handleUpdateRoom}
             disabled={loading}
@@ -816,7 +818,7 @@ const Admin_Room_List = () => {
           </Modal.Title>
         </Modal.Header>
 
-        <Modal.Body>
+        <Modal.Body className="small-view-modal">
           {selectedRoom ? (
             <div className="p-3">
               {/* Basic Info */}
@@ -936,9 +938,9 @@ const Admin_Room_List = () => {
         </Modal.Body>
 
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowViewModal(false)}>
+          <button className="secondary-button btn-sm small-add-button" onClick={() => setShowViewModal(false)}>
             Close
-          </Button>
+          </button>
         </Modal.Footer>
       </Modal>
     </AdminLayout>

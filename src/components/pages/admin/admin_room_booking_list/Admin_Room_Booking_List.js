@@ -842,7 +842,6 @@ const Admin_Room_Booking_List = () => {
                                         onChange={(e) => {
                                             const roomId = e.target.value;
                                             const selectedRoom = roomList.find((r) => r._id === roomId);
-
                                             const updatedRooms = [...formData.rooms];
                                             updatedRooms[0].room = roomId;
                                             updatedRooms[0].rate = selectedRoom?.baseRate || "";
