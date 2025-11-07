@@ -13,8 +13,6 @@ const Admin_Role_List = () => {
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({ name: "", description: "" });
   const [loading, setLoading] = useState(false);
-
-  // ✅ Permissions Modal State
   const [showPermModal, setShowPermModal] = useState(false);
   const [selectedRole, setSelectedRole] = useState(null);
   const modules = ["Dashboard", "Inquiries", "Roles", "Admins", "Rooms", "Settings"];
@@ -34,10 +32,6 @@ const Admin_Role_List = () => {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    fetchRoles();
-  }, []);
 
   // ✅ Create new role
   const handleCreateRole = async (e) => {
@@ -96,15 +90,11 @@ const Admin_Role_List = () => {
 const handleSavePermissions = async () => {
   try {
     if (!selectedRole) return;
-
-    // Convert the permissions object to array of { module, actions }
     const payload = Object.keys(permissions).map((mod) => ({
       module: mod,
       actions: permissions[mod],
     }));
-
     const res = await Admin_Role_Update(selectedRole._id, { permissions: payload });
-
     alert(res.data.message || "Permissions updated successfully");
     setShowPermModal(false);
     fetchRoles(); // Refresh role list
@@ -114,17 +104,19 @@ const handleSavePermissions = async () => {
   }
 };
 
-
+useEffect(() => {
+  fetchRoles();
+}, []);
 
   return (
     <AdminLayout>
       <div className="container mt-4">
         <div className="d-flex justify-content-between align-items-center mb-3">
-          <h4>Role Management</h4>
-          <Button onClick={() => setShowModal(true)}>+ Create Role</Button>
+          <h5>Role Management</h5>
+          <button className="primary-button btn-sm small-add-button" onClick={() => setShowModal(true)}>+ Create Role</button>
         </div>
 
-        <Table striped bordered hover responsive>
+        <Table striped bordered hover responsive className="table-smaller">
           <thead>
             <tr>
               <th>#</th>

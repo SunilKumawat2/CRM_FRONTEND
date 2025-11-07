@@ -8,6 +8,8 @@ import {
   Admin_Get_Role_List,
 } from "../../../../api/admin/Admin";
 import { FaTrash } from "react-icons/fa";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Admin_List = () => {
   const [loading, setLoading] = useState(false);
@@ -29,7 +31,7 @@ const Admin_List = () => {
       setAdmins(res.data.data || []);
     } catch (err) {
       console.error("Error fetching admins:", err);
-      alert(err.response?.data?.message || "Error fetching admins");
+      toast.error(err.response?.data?.message || "Error fetching admins");
     } finally {
       setLoading(false);
     }
@@ -43,7 +45,7 @@ const Admin_List = () => {
       setRoles(res.data.data || []);
     } catch (err) {
       console.error("Error fetching roles:", err);
-      alert(err.response?.data?.message || "Error fetching roles");
+      toast.error(err.response?.data?.message || "Error fetching roles");
     } finally {
       setLoading(false);
     }
@@ -59,11 +61,11 @@ const Admin_List = () => {
     if (!window.confirm("Are you sure you want to delete this admin?")) return;
     try {
       await Admin_Delete(id);
-      alert("Admin deleted successfully");
+      toast.success("Admin deleted successfully");
       fetchAdmins();
     } catch (err) {
       console.error("Error deleting admin:", err);
-      alert(err.response?.data?.message || "Delete failed");
+      toast.error(err.response?.data?.message || "Delete failed");
     }
   };
 
@@ -72,13 +74,13 @@ const Admin_List = () => {
     e.preventDefault();
     try {
       await Admin_Register(formData);
-      alert("Admin created successfully");
+      toast.success("Admin created successfully");
       setShowModal(false);
       setFormData({ name: "", email: "", password: "", role: "" });
       fetchAdmins();
     } catch (err) {
       console.error("Error creating admin:", err);
-      alert(err.response?.data?.message || "Create failed");
+      toast.error(err.response?.data?.message || "Create failed");
     }
   };
 
@@ -86,16 +88,16 @@ const Admin_List = () => {
     <AdminLayout>
       <div className="container mt-4">
         <div className="d-flex justify-content-between align-items-center mb-3">
-          <h4>Admin List</h4>
-          <button  className="primary-button" onClick={() => setShowModal(true)}>+ Create Admin</button>
+          <h5>Admin List</h5>
+          <button  className="primary-button btn-sm small-add-button" onClick={() => setShowModal(true)}>+ Create Admin</button>
         </div>
-
+        <ToastContainer position="top-right" autoClose={2000} />
         {loading ? (
           <div className="text-center my-4">
             <Spinner animation="border" /> <p>Loading...</p>
           </div>
         ) : (
-          <Table striped bordered hover responsive>
+          <Table striped bordered hover responsive className="table-smaller">
             <thead>
               <tr>
                 <th>#</th>

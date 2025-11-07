@@ -8,6 +8,8 @@ import {
   Admin_Room_Delete,
   Admin_Room_Update,
 } from "../../../../api/admin/Admin";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Admin_Room_List = () => {
   const [rooms, setRooms] = useState([]);
@@ -48,7 +50,7 @@ const Admin_Room_List = () => {
       setRooms(res.data?.data || []);
     } catch (err) {
       console.error("Error fetching rooms:", err);
-      alert(err.response?.data?.message || "Failed to fetch rooms");
+      toast.error(err.response?.data?.message || "Failed to fetch rooms");
     } finally {
       setLoading(false);
     }
@@ -63,7 +65,7 @@ const Admin_Room_List = () => {
     e.preventDefault();
     try {
       const res = await Admin_Post_Room(formData);
-      alert(res.data?.message || "Room created successfully");
+      toast.success(res.data?.message || "Room created successfully");
       setShowAddModal(false);
       setFormData({
         roomNumber: "",
@@ -85,7 +87,7 @@ const Admin_Room_List = () => {
 
       fetchRooms();
     } catch (err) {
-      alert(err.response?.data?.message || "Failed to create room");
+      toast.error(err.response?.data?.message || "Failed to create room");
     }
   };
 
@@ -93,18 +95,18 @@ const Admin_Room_List = () => {
   const handleUpdateRoom = async (e) => {
     e.preventDefault();
     if (!selectedRoom?._id) {
-      alert("No room selected to update.");
+      toast.warning("No room selected to update.");
       return;
     }
 
     try {
       const res = await Admin_Room_Update(selectedRoom._id, formData);
-      alert(res.data?.message || "Room updated successfully");
+      toast.success(res.data?.message || "Room updated successfully");
       setShowEditModal(false);
       fetchRooms();
     } catch (err) {
       console.log("Update error:", err);
-      alert(err.response?.data?.message || "Failed to update room");
+      toast.error(err.response?.data?.message || "Failed to update room");
     }
   };
 
@@ -113,10 +115,10 @@ const Admin_Room_List = () => {
     if (!window.confirm("Are you sure you want to delete this room?")) return;
     try {
       const res = await Admin_Room_Delete(id);
-      alert(res.data?.message || "Room deleted successfully");
+      toast.success(res.data?.message || "Room deleted successfully");
       fetchRooms();
     } catch (err) {
-      alert(err.response?.data?.message || "Failed to delete room");
+      toast.error(err.response?.data?.message || "Failed to delete room");
     }
   };
 
@@ -148,16 +150,16 @@ const Admin_Room_List = () => {
     <AdminLayout>
       <div className="container mt-4">
         <div className="d-flex justify-content-between align-items-center mb-3">
-          <h4>Room Management</h4>
+          <h5>Room Management</h5>
           <button
-            className="primary-button"
+            className="primary-button btn-sm small-add-button"
             onClick={() => setShowAddModal(true)}
           >
             <FaPlus className="me-2" /> Add Room
           </button>
         </div>
-
-        <Table striped bordered hover responsive>
+        <ToastContainer position="top-right" autoClose={2000} />
+        <Table striped bordered hover responsive className="table-smaller">
           <thead>
             <tr>
               <th>#</th>
@@ -204,9 +206,8 @@ const Admin_Room_List = () => {
                   {/* ✅ Availability */}
                   <td>
                     <span
-                      className={`badge ${
-                        room.isAvailable ? "bg-success" : "bg-danger"
-                      }`}
+                      className={`badge ${room.isAvailable ? "bg-success" : "bg-danger"
+                        }`}
                     >
                       {room.isAvailable ? "Available" : "Not Available"}
                     </span>
@@ -275,7 +276,7 @@ const Admin_Room_List = () => {
         centered
       >
         <Modal.Header closeButton className="bg-light">
-          <Modal.Title className="btn-primary" style={{color:"#f87951"}}>Add New Room</Modal.Title>
+          <Modal.Title className="btn-primary" style={{ color: "#f87951" }}>Add New Room</Modal.Title>
         </Modal.Header>
 
         <Modal.Body className="p-4">
@@ -469,7 +470,7 @@ const Admin_Room_List = () => {
                 </Col>
                 <Col md={1} className="btn-primary">
                   <button
-                  className="primary-checkout-button"
+                    className="primary-checkout-button"
                     size="sm"
                     onClick={() =>
                       setFormData({
@@ -543,7 +544,7 @@ const Admin_Room_List = () => {
         centered
       >
         <Modal.Header closeButton className="bg-light">
-          <Modal.Title className="fw-bold" style={{color:"#f87951"}}>Edit Room</Modal.Title>
+          <Modal.Title className="fw-bold" style={{ color: "#f87951" }}>Edit Room</Modal.Title>
         </Modal.Header>
 
         <Modal.Body className="p-4">
@@ -623,7 +624,7 @@ const Admin_Room_List = () => {
                   <Form.Label>Availability</Form.Label>
                   <Form.Check
                     type="switch"
-                  id="availability-switch"
+                    id="availability-switch"
                     className="custom-switch"
                     label={formData.isAvailable ? "Available" : "Not Available"}
                     checked={formData.isAvailable}
@@ -649,7 +650,7 @@ const Admin_Room_List = () => {
                     <Form.Check
                       type="checkbox"
                       label={amenity}
-                        className="custom-amenity-checkbox"
+                      className="custom-amenity-checkbox"
                       value={amenity}
                       checked={formData.amenities?.includes(amenity)} // ✅ safe check
                       onChange={(e) => {
@@ -737,7 +738,7 @@ const Admin_Room_List = () => {
                 <Col md={1} className="text-center">
                   <button
                     size="sm"
-                     className="primary-checkout-button"
+                    className="primary-checkout-button"
                     onClick={() =>
                       setFormData({
                         ...formData,
@@ -810,7 +811,7 @@ const Admin_Room_List = () => {
         centered
       >
         <Modal.Header closeButton className="bg-light">
-          <Modal.Title className="fw-bold" style={{color:"#f87951"}}>
+          <Modal.Title className="fw-bold" style={{ color: "#f87951" }}>
             🏨 Room Details
           </Modal.Title>
         </Modal.Header>
@@ -839,9 +840,8 @@ const Admin_Room_List = () => {
                   <div className="col-md-6 mb-2">
                     <strong>Availability:</strong> <br />
                     <span
-                      className={`badge ${
-                        selectedRoom.isAvailable ? "bg-success" : "bg-danger"
-                      }`}
+                      className={`badge ${selectedRoom.isAvailable ? "bg-success" : "bg-danger"
+                        }`}
                     >
                       {selectedRoom.isAvailable ? "Available" : "Unavailable"}
                     </span>
@@ -900,7 +900,7 @@ const Admin_Room_List = () => {
                     {selectedRoom.amenities.map((a, i) => (
                       <span
                         key={i}
-                        className="badge text-white px-3 py-2" style={{backgroundColor:"#f87951"}}
+                        className="badge text-white px-3 py-2" style={{ backgroundColor: "#f87951" }}
                       >
                         {a}
                       </span>

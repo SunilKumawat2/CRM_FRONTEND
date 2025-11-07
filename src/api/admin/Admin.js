@@ -155,7 +155,7 @@ export const Admin_Get_List = async () => {
   }
 };
 
-// <----------------  Delete Admin ----------------->
+// <---------------- Delete Particular Admin ----------------->
 export const Admin_Delete = async (adminId) => {
   try {
     const token = getToken();
@@ -171,7 +171,7 @@ export const Admin_Delete = async (adminId) => {
   }
 };
 
-// <----------------  Create Role ----------------->
+// <---------------- Admin Create Role ----------------->
 export const Admin_Create_Role = async (data) => {
   try {
     const token = getToken();
@@ -197,7 +197,7 @@ export const Admin_Get_Role_List = async () => {
   }
 };
 
-// <----------------  Delete Role ----------------->
+// <---------------- Admin Delete Role ----------------->
 export const Admin_Role_Delete = async (roleId) => {
   try {
     const token = getToken();
@@ -277,7 +277,7 @@ export const Admin_Get_Open_Close_Account = async (year) => {
   }
 };
 
-// <----------------  Admin Get Status ----------------->
+// <----------------  Admin Get Lead ----------------->
 export const Admin_Get_Leads = async () => {
   try {
     const token = getToken();
@@ -290,6 +290,7 @@ export const Admin_Get_Leads = async () => {
   }
 };
 
+// <---------- admin Post Lead --------------->
 export const Admin_Post_Lead = async (userData) => {
   try {
     const token = getToken();
@@ -302,7 +303,7 @@ export const Admin_Post_Lead = async (userData) => {
   }
 };
 
-// <----------------  Admin Get Status ----------------->
+// <----------------  Admin Get Categories ----------------->
 export const Admin_Get_Categories = async () => {
   try {
     const token = getToken();
@@ -315,6 +316,7 @@ export const Admin_Get_Categories = async () => {
   }
 };
 
+// <------------ Admin Create Categories ----------->
 export const Admin_Post_Categories = async (userData) => {
   try {
     const token = getToken();
@@ -327,7 +329,7 @@ export const Admin_Post_Categories = async (userData) => {
   }
 };
 
-// <----------------  Admin Get Status ----------------->
+// <----------------  Admin Get Room  ----------------->
 export const Admin_Get_Rooms = async () => {
   try {
     const token = getToken();
@@ -340,7 +342,7 @@ export const Admin_Get_Rooms = async () => {
   }
 };
 
-// <----------------  Admin Get Status ----------------->
+// <----------------  Admin Get Room Details  ----------------->
 export const Admin_Get_Rooms_Details = async (_id) => {
   try {
     const token = getToken();
@@ -353,6 +355,7 @@ export const Admin_Get_Rooms_Details = async (_id) => {
   }
 };
 
+// <-------------- Admin Create Room ----------->
 export const Admin_Post_Room = async (userData) => {
   try {
     const token = getToken();
@@ -365,7 +368,7 @@ export const Admin_Post_Room = async (userData) => {
   }
 };
 
-// <----------------  Delete Role ----------------->
+// <---------------- Admin Delete Room ----------------->
 export const Admin_Room_Delete = async (roleId) => {
   try {
     const token = getToken();
@@ -381,7 +384,7 @@ export const Admin_Room_Delete = async (roleId) => {
   }
 };
 
-// <----------------  Update Role ----------------->
+// <---------------- Admin Update Room Details,----------------->
 export const Admin_Room_Update = async (roleId, formData) => {
   try {
     const token = getToken();
@@ -399,19 +402,23 @@ export const Admin_Room_Update = async (roleId, formData) => {
 };
 
 // <----------- get room booking list ------------>
-export const Admin_Get_Rooms_Booking_list = async (status,page,limit) => {
+export const Admin_Get_Rooms_Booking_list = async (status, page, limit) => {
   try {
     const token = getToken();
-    const response = await axios.get(`${API_BASE_URL}/get-bookings?status=${status}&page=${page}&limit=${limit}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const response = await axios.get(
+      `${API_BASE_URL}/get-bookings?status=${status}&page=${page}&limit=${limit}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
     return response;
   } catch (error) {
     throw error.response || error;
   }
 };
 
-// <----------- get room booking list ------------>
+
+// <----------- get room booking Details ------------>
 export const Admin_Get_Rooms_Booking_Details = async (bookingId) => {
   try {
     const token = getToken();
@@ -424,7 +431,7 @@ export const Admin_Get_Rooms_Booking_Details = async (bookingId) => {
   }
 };
 
-
+// <---------- Admin Create the Room Booking ------------>
 export const Admin_Post_Room_Booking = async (userData) => {
   try {
     const token = getToken();
@@ -437,7 +444,7 @@ export const Admin_Post_Room_Booking = async (userData) => {
   }
 };
 
-// <----------------  Delete Role ----------------->
+// <---------------- Admin Delete Room Booking  ----------------->
 export const Admin_Room_Booking_Delete = async (roleId) => {
   try {
     const token = getToken();
@@ -453,7 +460,7 @@ export const Admin_Room_Booking_Delete = async (roleId) => {
   }
 };
 
-// <----------------  Update Role ----------------->
+// <----------------  Update Admin Room Booking ----------------->
 export const Admin_Room_Booking_Update = async (bookingId, formData) => {
   try {
     const token = getToken();
@@ -470,7 +477,7 @@ export const Admin_Room_Booking_Update = async (bookingId, formData) => {
   }
 };
 
-
+// <------------ CheckIn the room Booking -------------->
 export const Admin_Room_Booking_CheckIn = async (bookingId) => {
   try {
     const token = getToken();
@@ -483,6 +490,7 @@ export const Admin_Room_Booking_CheckIn = async (bookingId) => {
   }
 };
 
+// <--------------- CheckOut the room booking ----------->
 export const Admin_Room_Booking_Checkout = async (bookingId) => {
   try {
     const token = getToken();
@@ -495,6 +503,7 @@ export const Admin_Room_Booking_Checkout = async (bookingId) => {
   }
 };
 
+// <------------ Room Booking Cancel ------------->
 export const Admin_Room_Cancel_Booking = async (bookingId) => {
   try {
     const token = getToken();
@@ -506,6 +515,8 @@ export const Admin_Room_Cancel_Booking = async (bookingId) => {
     throw error.response || error;
   }
 };
+
+// <---------- Get the Booking range and checkIn & checkOut ------------>
 export const Admin_Get_Bookings_By_Range = async (startDate, endDate) => {
   try {
     const token = getToken();

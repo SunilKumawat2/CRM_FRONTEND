@@ -26,8 +26,6 @@ const Admin_Room_Booking_List = () => {
     const [roomList, setRoomList] = useState([]);
     const [rangeStart, setRangeStart] = useState("");
     const [rangeEnd, setRangeEnd] = useState("");
-
-    
     // Form state for Add/Edit
     const [formData, setFormData] = useState({
         guestName: "",
@@ -44,19 +42,29 @@ const Admin_Room_Booking_List = () => {
         depositAmount: "",
         notes: ""
     });
+    const [page, setPage] = useState(1);
+    const [limit] = useState(10);
+    const [total, setTotal] = useState(0);
+    const totalPages = Math.ceil(total / limit);
 
+    // Handle input changes
+    const updateField = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
 
-    // Fetch Room Bookings
+    //<--------- Fetch Room Bookings ------------>
     const loadBookings = async () => {
         try {
-            const res = await Admin_Get_Rooms_Booking_list("", 1, 20);
+            const res = await Admin_Get_Rooms_Booking_list("", page, limit);
             setBookings(res.data.data);
+            setTotal(res.data.total);
         } catch (err) {
             console.error("Error fetching bookings:", err);
         }
     };
 
 
+    // <------------- fetch the Room List ------------>
     const loadRooms = async () => {
         try {
             const res = await Admin_Get_Rooms();
@@ -66,28 +74,7 @@ const Admin_Room_Booking_List = () => {
         }
     };
 
-    useEffect(() => {
-        loadBookings();
-        loadRooms();
-    }, []);
-
-    // Handle input changes
-    const updateField = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
-
-    // 🟢 Add Booking
-    const handleAddBooking = async () => {
-        try {
-            await Admin_Post_Room_Booking(formData);
-            setShowAddModal(false);
-            loadBookings();
-        } catch (err) {
-            console.error("Add Booking Error:", err);
-        }
-    };
-
-    // 🔵 Open View Modal
+    //<-------- Open View the room booking Modal ------------->
     const openViewModal = async (id) => {
         try {
             const res = await Admin_Get_Rooms_Booking_Details(id);
@@ -98,16 +85,16 @@ const Admin_Room_Booking_List = () => {
         }
     };
 
-    // 🟡 Open Edit Modal
+    //<---------- Open Edit Room Booking Modal --------------->
     const openEditModal = async (id) => {
         try {
             const res = await Admin_Get_Rooms_Booking_Details(id);
-            const b = res.data.data;
-            const firstRoom = b.rooms && b.rooms.length > 0 ? b.rooms[0] : null;
+            const booking_result = res.data.data;
+            const firstRoom = booking_result.rooms && booking_result.rooms.length > 0 ? booking_result.rooms[0] : null;
             setFormData({
-                guestName: b.guestName || "",
-                guestContact: b.guestContact || "",
-                guestEmail: b.guestEmail || "",
+                guestName: booking_result.guestName || "",
+                guestContact: booking_result.guestContact || "",
+                guestEmail: booking_result.guestEmail || "",
                 rooms: [
                     {
                         room: firstRoom?.room?._id || "",
@@ -115,23 +102,33 @@ const Admin_Room_Booking_List = () => {
                         guests: firstRoom?.guests || ""
                     }
                 ],
-                checkIn: b.checkIn ? b.checkIn.slice(0, 10) : "",
-                checkOut: b.checkOut ? b.checkOut.slice(0, 10) : "",
-                source: b.source || "manual",
-                paymentStatus: b.paymentStatus || "unpaid",
-                totalAmount: b.totalAmount || "",
-                depositAmount: b.depositAmount || "",
-                notes: b.notes || ""
+                checkIn: booking_result.checkIn ? booking_result.checkIn.slice(0, 10) : "",
+                checkOut: booking_result.checkOut ? booking_result.checkOut.slice(0, 10) : "",
+                source: booking_result.source || "manual",
+                paymentStatus: booking_result.paymentStatus || "unpaid",
+                totalAmount: booking_result.totalAmount || "",
+                depositAmount: booking_result.depositAmount || "",
+                notes: booking_result.notes || ""
             });
-            setSelectedBooking(b);
+            setSelectedBooking(booking_result);
             setShowEditModal(true);
         } catch (err) {
             console.error("Edit Load Error:", err);
         }
     };
-    ;
 
-    // 🟠 Save Edit Booking
+    // <-------- Add Booking ------------->
+    const handleAddBooking = async () => {
+        try {
+            await Admin_Post_Room_Booking(formData);
+            setShowAddModal(false);
+            loadBookings();
+        } catch (err) {
+            console.error("Add Booking Error:", err);
+        }
+    };
+
+    //<-------- Save Edit Room Booking ------------------>
     const handleEditBooking = async () => {
         try {
             await Admin_Room_Booking_Update(selectedBooking._id, formData);
@@ -142,7 +139,7 @@ const Admin_Room_Booking_List = () => {
         }
     };
 
-    // 🔴 Delete Booking
+    //<--------  Delete Room Booking -------------------->
     const handleDeleteBooking = async (id) => {
         if (!window.confirm("Are you sure you want to delete this booking?")) return;
         try {
@@ -153,72 +150,82 @@ const Admin_Room_Booking_List = () => {
         }
     };
 
+    // <------------ CheckIn Room Booking ---------------->
     const handleCheckIn = async (id) => {
         try {
             await Admin_Room_Booking_CheckIn(id);
             toast.success("Guest Checked-In Successfully!");
-
-            loadBookings(); // reload list after updating status
+            loadBookings();
         } catch (err) {
             toast.error(err?.data?.message || "Check-In Failed");
         }
     };
 
+    // <----------- CheckOut Room Booking ----------------->
     const handleCheckOut = async (id) => {
         try {
             await Admin_Room_Booking_Checkout(id);
             toast.success("Guest Checked-Out Successfully!");
-
             loadBookings();
         } catch (err) {
             toast.error(err?.data?.message || "Check-Out Failed");
         }
     };
 
+    // <--------------- Cancel the Room Booking -------------->
     const handleCancelBooking = async (id) => {
         try {
             await Admin_Room_Cancel_Booking(id);
             toast.success("✅ Booking Cancelled Successfully!");
-
-            loadBookings(); // refresh table
+            loadBookings();
         } catch (err) {
             toast.error(err?.data?.message || "❌ Failed to cancel booking");
         }
     };
 
+    // <------------ get the room booking and checkIn and CheckOut by the date range ---------->
     const handleFilterByRange = async () => {
         if (!rangeStart || !rangeEnd) {
-          toast.error("Please select both start and end date");
-          return;
+            toast.error("Please select both start and end date");
+            return;
         }
-      
         try {
-          const res = await Admin_Get_Bookings_By_Range(rangeStart, rangeEnd);
-          setBookings(res.data.data);
-          toast.success("✅ Bookings Filtered!");
+            const res = await Admin_Get_Bookings_By_Range(rangeStart, rangeEnd);
+            setBookings(res.data.data);
+            toast.success("✅ Bookings Filtered!");
         } catch (err) {
-          toast.error("❌ Failed to filter bookings");
+            toast.error("❌ Failed to filter bookings");
         }
-      };
-      
+    };
+
+    // <------------ Render the Booking List ------------->
+    useEffect(() => {
+        loadBookings();
+    }, [page]);
+
+    // <--------- Render Room List ------------------>
+    useEffect(() => {
+        loadRooms();
+    }, []);
 
     return (
         <AdminLayout>
             <div className="d-flex justify-content-between align-items-center mb-3">
-                <h3>Room Booking List</h3>
-                <button className="primary-button" onClick={() => setShowAddModal(true)}>
-                    <FiPlus /> Add Booking
+                <h5>Room Booking List</h5>
+                <button className="primary-button btn-sm small-add-button" onClick={() => setShowAddModal(true)}>
+                    <FiPlus size={13} /> Add Booking
                 </button>
+
             </div>
             <ToastContainer position="top-right" autoClose={2000} />
 
-            <div className="d-flex gap-3 mb-3">
+            <div className="d-flex gap-3 mb-3 filter-bar-small">
 
                 <div>
                     <label className="form-label fw-bold">Start Date</label>
                     <input
                         type="date"
-                        className="form-control"
+                        className="form-control form-control-sm"
                         value={rangeStart}
                         onChange={(e) => setRangeStart(e.target.value)}
                     />
@@ -228,20 +235,20 @@ const Admin_Room_Booking_List = () => {
                     <label className="form-label fw-bold">End Date</label>
                     <input
                         type="date"
-                        className="form-control"
+                        className="form-control form-control-sm"
                         value={rangeEnd}
                         onChange={(e) => setRangeEnd(e.target.value)}
                     />
                 </div>
 
                 <div className="align-self-end">
-                    <button className="btn btn-primary" onClick={handleFilterByRange}>
+                    <button className="primary-button " onClick={handleFilterByRange}>
                         Filter
                     </button>
                 </div>
 
                 <div className="align-self-end">
-                    <button className="btn btn-secondary" onClick={loadBookings}>
+                    <button className="secondary-button" onClick={loadBookings}>
                         Reset
                     </button>
                 </div>
@@ -250,7 +257,7 @@ const Admin_Room_Booking_List = () => {
 
 
             {/* ========================= TABLE =========================== */}
-            <Table striped bordered hover responsive>
+            <Table striped bordered hover responsive className="table-smaller">
                 <thead>
                     <tr>
                         <th>#</th>
@@ -261,8 +268,6 @@ const Admin_Room_Booking_List = () => {
                         <th>Room Type</th>
                         <th>Check-In</th>
                         <th>Check-Out</th>
-                        {/* <th>Check-In Status</th>
-                        <th>Check-Out Status</th> */}
                         <th>Status</th>
                         <th>Payment</th>
                         <th>Total</th>
@@ -274,44 +279,44 @@ const Admin_Room_Booking_List = () => {
 
 
                 <tbody>
-                    {bookings?.map((b, i) => {
-                        const room = b.rooms?.[0] || {};
+                    {bookings?.map((booking_result, i) => {
+                        const room = booking_result.rooms?.[0] || {};
                         const roomInfo = room.room || {};
 
                         return (
-                            <tr key={b._id}>
+                            <tr key={booking_result._id}>
                                 <td>{i + 1}</td>
-                                <td>{b.bookingNumber}</td>
-                                <td>{b.guestName}</td>
-                                <td>{b.guestContact}</td>
+                                <td>{booking_result.bookingNumber}</td>
+                                <td>{booking_result.guestName}</td>
+                                <td>{booking_result.guestContact}</td>
                                 <td>{roomInfo.roomNumber || "—"}</td>
                                 <td>{roomInfo.roomType || "—"}</td>
-                                <td>{b.checkIn?.slice(0, 10)}</td>
-                                <td>{b.checkOut?.slice(0, 10)}</td>
+                                <td>{booking_result.checkIn?.slice(0, 10)}</td>
+                                <td>{booking_result.checkOut?.slice(0, 10)}</td>
                                 {/* Booking Status */}
                                 <td>
                                     <span
-                                        className={`badge ${b.status === "confirmed"
+                                        className={`badge ${booking_result.status === "confirmed"
                                             ? "bg-primary"
-                                            : b.status === "checked_in"
+                                            : booking_result.status === "checked_in"
                                                 ? "bg-success"
-                                                : b.status === "checked_out"
+                                                : booking_result.status === "checked_out"
                                                     ? "bg-warning text-black"
-                                                    : b.status === "cancelled"
+                                                    : booking_result.status === "cancelled"
                                                         ? "bg-danger"
                                                         : "bg-secondary"
                                             }`}
                                     >
-                                        {b.status.replace("_", " ")}
+                                        {booking_result.status.replace("_", " ")}
                                     </span>
                                 </td>
 
                                 {/* Payment */}
-                                <td className="text-capitalize">{b.paymentStatus}</td>
+                                <td className="text-capitalize">{booking_result.paymentStatus}</td>
 
                                 {/* Price */}
-                                <td>₹{b.totalAmount}</td>
-                                <td>₹{b.depositAmount}</td>
+                                <td>₹{booking_result.totalAmount}</td>
+                                <td>₹{booking_result.depositAmount}</td>
 
                                 {/* Actions */}
                                 <td>
@@ -322,7 +327,7 @@ const Admin_Room_Booking_List = () => {
                                             className="text-success"
                                             size={17}
                                             role="button"
-                                            onClick={() => openViewModal(b._id)}
+                                            onClick={() => openViewModal(booking_result._id)}
                                         />
 
                                         {/* Edit */}
@@ -330,81 +335,97 @@ const Admin_Room_Booking_List = () => {
                                             className="text-warning"
                                             size={17}
                                             role="button"
-                                            onClick={() => openEditModal(b._id)}
+                                            onClick={() => openEditModal(booking_result._id)}
                                         />
 
                                         <FiTrash
                                             className="text-danger"
                                             size={17}
                                             role="button"
-                                            onClick={() => handleDeleteBooking(b._id)}
+                                            onClick={() => handleDeleteBooking(booking_result._id)}
                                         />
                                     </div>
                                 </td>
                                 <td style={{ whiteSpace: "nowrap" }}>
                                     {/* ✅ CHECK-IN */}
-                                    {b.status === "confirmed" && (
-                                        <button
-                                            className="action-btn btn-checkin"
-                                            onClick={() => handleCheckIn(b._id)}
-                                        >
+                                    {booking_result.status === "confirmed" && (
+                                        <button className="action-btn btn-checkin" onClick={() => handleCheckIn(booking_result._id)}>
                                             ✅ Check-In
                                         </button>
                                     )}
 
                                     {/* ✅ CHECK-OUT */}
-                                    {b.status === "checked_in" && (
-                                        <button
-                                            className="action-btn btn-checkout"
-                                            onClick={() => handleCheckOut(b._id)}
-                                        >
+                                    {booking_result.status === "checked_in" && (
+                                        <button className="action-btn btn-checkout" onClick={() => handleCheckOut(booking_result._id)}>
                                             📤 Check-Out
                                         </button>
                                     )}
 
                                     {/* ✅ CANCEL BOOKING */}
-                                    {(b.status === "confirmed" || b.status === "pending") && (
-                                        <button
-                                            className="action-btn btn-cancel"
-                                            onClick={() => handleCancelBooking(b._id)}
-                                        >
+                                    {(booking_result.status === "confirmed" || booking_result.status === "pending") && (
+                                        <button className="action-btn btn-cancel" onClick={() => handleCancelBooking(booking_result._id)}>
                                             ❌ Cancel
                                         </button>
                                     )}
 
                                     {/* ✅ Checked-Out Status */}
-                                    {b.status === "checked_out" && (
+                                    {booking_result.status === "checked_out" && (
                                         <button className="action-btn btn-disabled" disabled>
                                             ✔ Checked-Out
                                         </button>
                                     )}
 
                                     {/* ✅ Cancelled Status */}
-                                    {b.status === "cancelled" && (
+                                    {booking_result.status === "cancelled" && (
                                         <button className="action-btn btn-cancelled" disabled>
                                             ✖ Cancelled
                                         </button>
                                     )}
                                 </td>
-
-
-
                             </tr>
                         );
                     })}
                 </tbody>
-
             </Table>
 
-            {/* ============================================================
-          ADD BOOKING MODAL
-      ============================================================ */}
+            <div className="pagination-container mt-4">
+                <p className="mb-0 text-muted small">
+                    Showing <strong>{(page - 1) * limit + 1}</strong> to{" "}
+                    <strong>{Math.min(page * limit, total)}</strong> of{" "}
+                    <strong>{total}</strong> bookings
+                </p>
+                <div className="d-flex gap-2 align-items-center">
+                    {/* Prev */}
+                    <button
+                        className="btn btn-sm btn-danger"
+                        disabled={page === 1}
+                        onClick={() => setPage(page - 1)}
+                    >
+                        ⬅ Previous
+                    </button>
+                    {/* Page Number */}
+                    <span className="px-3 py-1 border rounded bg-light small">
+                        Page {page} / {totalPages}
+                    </span>
+                    {/* Next */}
+                    <button
+                        className="btn btn-sm btn-danger"
+                        disabled={page >= totalPages}
+                        onClick={() => setPage(page + 1)}
+                    >
+                        Next ➡
+                    </button>
+
+                </div>
+            </div>
+
+            {/* =================== ADD BOOKING MODAL ===================== */}
             <Modal show={showAddModal} size="lg" onHide={() => setShowAddModal(false)}>
                 <Modal.Header closeButton>
-                    <Modal.Title style={{ color: "#f87951" }}>Add Booking</Modal.Title>
+                    <Modal.Title className="small-form-title" style={{ color: "#f87951" }}>Add Booking</Modal.Title>
                 </Modal.Header>
 
-                <Modal.Body>
+                <Modal.Body className="small-form">
                     <Form>
 
                         {/* Row 1: Guest Name + Contact */}
@@ -607,26 +628,24 @@ const Admin_Room_Booking_List = () => {
                 </Modal.Body>
 
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShowAddModal(false)}>
+                    <button className="secondary-button btn-sm small-add-button" onClick={() => setShowAddModal(false)}>
                         Close
-                    </Button>
+                    </button>
 
-                    <button className="primary-button" onClick={handleAddBooking}>
+                    <button className="primary-button btn-sm small-add-button" onClick={handleAddBooking}>
                         Save Booking
                     </button>
                 </Modal.Footer>
             </Modal>
 
 
-            {/* ============================================================
-          VIEW MODAL
-      ============================================================ */}
+            {/* ======================== VIEW MODAL =========================== */}
             <Modal show={showViewModal} onHide={() => setShowViewModal(false)} centered size="lg">
                 <Modal.Header closeButton className="primary-background-color text-white">
                     <Modal.Title>Booking Details</Modal.Title>
                 </Modal.Header>
 
-                <Modal.Body>
+                <Modal.Body className="small-view-modal">
                     {selectedBooking && (
                         <div className="p-3">
 
@@ -759,24 +778,22 @@ const Admin_Room_Booking_List = () => {
                     )}
                 </Modal.Body>
 
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShowViewModal(false)}>
+                <Modal.Footer className="small-view-modal-footer">
+                    <button className="secondary-button btn-sm small-add-button" onClick={() => setShowViewModal(false)}>
                         Close
-                    </Button>
+                    </button>
                 </Modal.Footer>
             </Modal>
 
 
 
-            {/* ============================================================
-          EDIT MODAL
-      ============================================================ */}
+            {/* ========================= EDIT MODAL ======================== */}
             <Modal show={showEditModal} size="lg" onHide={() => setShowEditModal(false)} centered>
                 <Modal.Header closeButton>
-                    <Modal.Title style={{ color: "#f87951" }}>Edit Booking</Modal.Title>
+                    <Modal.Title className="small-form-title" style={{ color: "#f87951" }}>Edit Booking</Modal.Title>
                 </Modal.Header>
 
-                <Modal.Body>
+                <Modal.Body className="small-form">
                     <Form>
 
                         {/* Row 1: Guest Name + Contact */}
@@ -973,11 +990,11 @@ const Admin_Room_Booking_List = () => {
                 </Modal.Body>
 
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShowEditModal(false)}>
+                    <button className="secondary-button btn-sm small-add-button" onClick={() => setShowEditModal(false)}>
                         Cancel
-                    </Button>
+                    </button>
 
-                    <button className="primary-button" onClick={handleEditBooking}>
+                    <button className="primary-button btn-sm small-add-button" onClick={handleEditBooking}>
                         Update Booking
                     </button>
                 </Modal.Footer>
