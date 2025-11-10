@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import Admin_Dashboard from "../components/pages/admin/admin_dashboard/Admin_Dashboard";
@@ -12,6 +11,7 @@ import Admin_Profit_List from "../components/pages/admin/admin_profit_list/Admin
 import Admin_Lead_List from "../components/pages/admin/admin_lead_list/Admin_Lead_LIst";
 import Admin_Room_List from "../components/pages/admin/admin_room_list/Admin_Room_List";
 import Admin_Room_Booking_List from "../components/pages/admin/admin_room_booking_list/Admin_Room_Booking_List";
+import Admin_Guest_List from "../components/pages/admin/admin_guest_list/Admin_Guest_List";
 
 const AllRoutes = () => {
   return (
@@ -53,7 +53,7 @@ const AllRoutes = () => {
           </ProtectedRoute>
         }
       />
-     
+
       <Route
         path="/admin-profit-list"
         element={
@@ -62,7 +62,7 @@ const AllRoutes = () => {
           </ProtectedRoute>
         }
       />
-      
+
       <Route
         path="/admin-profile"
         element={
@@ -88,11 +88,19 @@ const AllRoutes = () => {
           </ProtectedRoute>
         }
       />
- <Route
+      <Route
         path="/admin-room-booking-list"
         element={
           <ProtectedRoute requiredPermission="profile_view">
             <Admin_Room_Booking_List />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin-guest-list"
+        element={
+          <ProtectedRoute requiredPermission="guest_view">
+            <Admin_Guest_List />
           </ProtectedRoute>
         }
       />

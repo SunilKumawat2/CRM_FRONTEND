@@ -151,9 +151,9 @@ const Admin_List = () => {
       {/* ✅ Create Admin Modal */}
       <Modal show={showModal} onHide={() => setShowModal(false)} centered>
         <Modal.Header closeButton>
-          <Modal.Title>Create New Admin</Modal.Title>
+          <Modal.Title className="small-form-title">Create New Admin</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body className="small-form">
           <Form onSubmit={handleCreate}>
             {/* Name */}
             <Form.Group className="mb-3">
@@ -217,14 +217,16 @@ const Admin_List = () => {
               </Form.Select>
             </Form.Group>
 
-            <div className="text-end">
-              <Button variant="secondary" onClick={() => setShowModal(false)}>
+            
+              <Modal.Footer>
+              <button className="secondary-button btn-sm small-add-button" onClick={() => setShowModal(false)}>
                 Cancel
-              </Button>{" "}
-              <Button variant="primary" type="submit">
+              </button>{" "}
+              <button className="primary-button btn-sm small-add-button" type="submit">
                 Create
-              </Button>
-            </div>
+              </button>
+              </Modal.Footer>
+          
           </Form>
         </Modal.Body>
       </Modal>

@@ -127,6 +127,18 @@ const Sidebar_Admin = ({ isCollapsed, setIsCollapsed }) => {
             {!isCollapsed && <span>Room Booking</span>}
           </NavLink>
         )}
+        {/* Rooms booking Management */}
+        {hasPermission("booking_view") && (
+          <NavLink
+            to="/admin-guest-list"
+            className={({ isActive }) =>
+              isActive ? "menu-link active" : "menu-link"
+            }
+          >
+            <MdOutlineBedroomParent className="menu-icon" /> {/* you can change to a bed icon */}
+            {!isCollapsed && <span>Guests</span>}
+          </NavLink>
+        )}
 
 
         {/* Settings */}

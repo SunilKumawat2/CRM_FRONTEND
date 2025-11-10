@@ -714,3 +714,67 @@
 .small-amenity-checkbox {
   margin-bottom: 4px !important;
 }
+.small-checkbox-group .form-check-label {
+  font-size: 0.75rem;    /* smaller label text */
+}
+
+.small-checkbox-group .form-check-input {
+  transform: scale(0.9); /* slight checkbox shrink */
+  margin-top: 0.2rem;
+}
+.pagination-container {
+  gap: 10px;
+}
+
+.pagination-btn {
+  background: #ffdea1;
+  border: 1px solid #d1d1d1;
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.pagination-btn:hover {
+  background: #f1c97f;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: #f8f8f8;
+}
+
+.pagination-info {
+  font-size: 14px;
+  background: #f8f9fa;
+  padding: 6px 14px;
+  border: 1px solid #dcdcdc;
+  border-radius: 6px;
+}
+.table-skeleton {
+  width: 100%;
+  height: 16px;
+  border-radius: 4px;
+  background: linear-gradient(
+    90deg,
+    #e0e0e0 0%,
+    #f0f0f0 50%,
+    #e0e0e0 100%
+  );
+  background-size: 200% 100%;
+  animation: tableSkeletonShimmer 1.3s infinite linear;
+}
+
+@keyframes tableSkeletonShimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

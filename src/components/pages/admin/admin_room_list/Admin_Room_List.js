@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Modal, Form, Row, Col } from "react-bootstrap";
+import { Table, Button, Modal, Form, Row, Col, Spinner } from "react-bootstrap";
 import { FaPlus, FaEdit, FaTrash, FaEye } from "react-icons/fa";
 import AdminLayout from "../admin_layout/Admin_Layout";
 import {
@@ -10,19 +10,20 @@ import {
 } from "../../../../api/admin/Admin";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import {
+  TbPlayerTrackNextFilled,
+  TbPlayerTrackPrevFilled,
+} from "react-icons/tb";
 
 const Admin_Room_List = () => {
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(false);
-
   // Modal States
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
-
   // Selected Room
   const [selectedRoom, setSelectedRoom] = useState(null);
-
   // Room Form Data
   const [formData, setFormData] = useState({
     roomNumber: "",
@@ -41,13 +42,18 @@ const Admin_Room_List = () => {
     ],
     description: "",
   });
+  const [page, setPage] = useState(1);
+  const [limit] = useState(10);
+  const [total, setTotal] = useState(0);
+  const totalPages = Math.ceil(total / limit);
 
   // Fetch Rooms
   const fetchRooms = async () => {
     try {
       setLoading(true);
-      const res = await Admin_Get_Rooms();
+      const res = await Admin_Get_Rooms(page, limit);
       setRooms(res.data?.data || []);
+      setTotal(res.data.total);
     } catch (err) {
       console.error("Error fetching rooms:", err);
       toast.error(err.response?.data?.message || "Failed to fetch rooms");
@@ -58,7 +64,7 @@ const Admin_Room_List = () => {
 
   useEffect(() => {
     fetchRooms();
-  }, []);
+  }, [page]);
 
   // Create Room
   const handleCreateRoom = async (e) => {
@@ -159,113 +165,145 @@ const Admin_Room_List = () => {
           </button>
         </div>
         <ToastContainer position="top-right" autoClose={2000} />
+        {loading ? (
+          <div className="text-center my-4">
+            <Spinner animation="border" /> <p>Loading...</p>
+          </div>
+        ) : (
         <Table striped bordered hover responsive className="table-smaller">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Room No</th>
-              <th>Type</th>
-              <th>Base Rate ($)</th>
-              <th>Seasonal Rates</th>
-              <th>Available</th>
-              <th>Housekeeping</th>
-              <th>Amenities</th>
-              <th>Description</th>
-              <th>Created By</th>
-              <th>Created At</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rooms?.length > 0 ? (
-              rooms.map((room, index) => (
-                <tr key={room._id}>
-                  <td>{index + 1}</td>
-                  <td>{room.roomNumber}</td>
-                  <td>{room.roomType}</td>
-                  <td>{room.baseRate}</td>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Room No</th>
+                <th>Type</th>
+                <th>Base Rate ($)</th>
+                <th>Seasonal Rates</th>
+                <th>Available</th>
+                <th>Housekeeping</th>
+                <th>Amenities</th>
+                <th>Description</th>
+                <th>Created By</th>
+                <th>Created At</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rooms?.length > 0 ? (
+                rooms.map((room, index) => (
+                  <tr key={room._id}>
+                    <td>{index + 1}</td>
+                    <td>{room.roomNumber}</td>
+                    <td>{room.roomType}</td>
+                    <td>{room.baseRate}</td>
 
-                  {/* ✅ Seasonal Rates */}
-                  <td>
-                    {room.seasonalRates?.length > 0 ? (
-                      room.seasonalRates.map((s, i) => (
-                        <div key={i}>
-                          <strong>{s.seasonName}</strong>: ${s.price}
-                          <br />
-                          <small>
-                            {new Date(s.startDate).toLocaleDateString()} -{" "}
-                            {new Date(s.endDate).toLocaleDateString()}
-                          </small>
-                        </div>
-                      ))
-                    ) : (
-                      <span className="text-muted">None</span>
-                    )}
-                  </td>
+                    {/* ✅ Seasonal Rates */}
+                    <td>
+                      {room.seasonalRates?.length > 0 ? (
+                        room.seasonalRates.map((s, i) => (
+                          <div key={i}>
+                            <strong>{s.seasonName}</strong>: ${s.price}
+                            <br />
+                            <small>
+                              {new Date(s.startDate).toLocaleDateString()} -{" "}
+                              {new Date(s.endDate).toLocaleDateString()}
+                            </small>
+                          </div>
+                        ))
+                      ) : (
+                        <span className="text-muted">None</span>
+                      )}
+                    </td>
 
-                  {/* ✅ Availability */}
-                  <td>
-                    <span
-                      className={`badge ${room.isAvailable ? "bg-success" : "bg-danger"
+                    {/* ✅ Availability */}
+                    <td>
+                      <span
+                        className={`badge ${
+                          room.isAvailable ? "bg-success" : "bg-danger"
                         }`}
-                    >
-                      {room.isAvailable ? "Available" : "Not Available"}
-                    </span>
-                  </td>
+                      >
+                        {room.isAvailable ? "Available" : "Not Available"}
+                      </span>
+                    </td>
 
-                  {/* ✅ Housekeeping */}
-                  <td>{room.housekeepingStatus || "N/A"}</td>
+                    {/* ✅ Housekeeping */}
+                    <td>{room.housekeepingStatus || "N/A"}</td>
 
-                  {/* ✅ Amenities */}
-                  <td>{room.amenities?.join(", ") || "N/A"}</td>
+                    {/* ✅ Amenities */}
+                    <td>{room.amenities?.join(", ") || "N/A"}</td>
 
-                  {/* ✅ Description */}
-                  <td style={{ maxWidth: "200px" }}>
-                    {room.description?.length > 80
-                      ? room.description.slice(0, 80) + "..."
-                      : room.description}
-                  </td>
+                    {/* ✅ Description */}
+                    <td style={{ maxWidth: "200px" }}>
+                      {room.description?.length > 80
+                        ? room.description.slice(0, 80) + "..."
+                        : room.description}
+                    </td>
 
-                  {/* ✅ Created By */}
-                  <td>{room.createdBy?.name || "N/A"}</td>
+                    {/* ✅ Created By */}
+                    <td>{room.createdBy?.name || "N/A"}</td>
 
-                  {/* ✅ Created Date */}
-                  <td>{new Date(room.createdAt).toLocaleDateString()}</td>
+                    {/* ✅ Created Date */}
+                    <td>{new Date(room.createdAt).toLocaleDateString()}</td>
 
-                  {/* ✅ Actions */}
-                  <td>
-                    <div className="d-flex align-items-center gap-2">
-                      <FaEye
-                        className="text-success"
-                        size={17}
-                        role="button"
-                        onClick={() => handleViewClick(room)}
-                      />
-                      <FaEdit
-                        className="text-warning"
-                        size={17}
-                        role="button"
-                        onClick={() => handleEditClick(room)}
-                      />
-                      <FaTrash
-                        className="text-danger"
-                        size={17}
-                        role="button"
-                        onClick={() => handleDeleteRoom(room._id)}
-                      />
-                    </div>
+                    {/* ✅ Actions */}
+                    <td>
+                      <div className="d-flex align-items-center gap-2">
+                        <FaEye
+                          className="text-success"
+                          size={17}
+                          role="button"
+                          onClick={() => handleViewClick(room)}
+                        />
+                        <FaEdit
+                          className="text-warning"
+                          size={17}
+                          role="button"
+                          onClick={() => handleEditClick(room)}
+                        />
+                        <FaTrash
+                          className="text-danger"
+                          size={17}
+                          role="button"
+                          onClick={() => handleDeleteRoom(room._id)}
+                        />
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="12" className="text-center">
+                    {loading ? "Loading rooms..." : "No rooms found"}
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="12" className="text-center">
-                  {loading ? "Loading rooms..." : "No rooms found"}
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </Table>
+              )}
+            </tbody>
+          </Table>
+        )}
+
+        <div className="pagination-container d-flex justify-content-center mt-3">
+          {/* Prev */}
+          <button
+            className="pagination-btn"
+            disabled={page === 1}
+            onClick={() => setPage(page - 1)}
+          >
+            <TbPlayerTrackPrevFilled size={20} />
+          </button>
+
+          {/* Page Label */}
+          <span className="pagination-info">
+            Page {page} / {totalPages || 1}
+          </span>
+
+          {/* Next */}
+          <button
+            className="pagination-btn"
+            disabled={page >= totalPages}
+            onClick={() => setPage(page + 1)}
+          >
+            <TbPlayerTrackNextFilled size={20} />
+          </button>
+        </div>
       </div>
 
       {/* ✅ Add Room Modal */}
@@ -276,7 +314,12 @@ const Admin_Room_List = () => {
         centered
       >
         <Modal.Header closeButton className="bg-light">
-          <Modal.Title className="small-form-title" style={{ color: "#f87951" }}>Add New Room</Modal.Title>
+          <Modal.Title
+            className="small-form-title"
+            style={{ color: "#f87951" }}
+          >
+            Add New Room
+          </Modal.Title>
         </Modal.Header>
 
         <Modal.Body className="small-form">
@@ -353,7 +396,9 @@ const Admin_Room_List = () => {
 
               <Col md={6}>
                 <Form.Group className="mb-3">
-                  <Form.Label className="small-switch-label">Availability</Form.Label>
+                  <Form.Label className="small-switch-label">
+                    Availability
+                  </Form.Label>
                   <Form.Check
                     type="switch"
                     id="availability-switch"
@@ -521,7 +566,10 @@ const Admin_Room_List = () => {
         </Modal.Body>
 
         <Modal.Footer>
-          <button className="secondary-button btn-sm small-add-button" onClick={() => setShowAddModal(false)}>
+          <button
+            className="secondary-button btn-sm small-add-button"
+            onClick={() => setShowAddModal(false)}
+          >
             Cancel
           </button>
           <button
@@ -543,7 +591,12 @@ const Admin_Room_List = () => {
         centered
       >
         <Modal.Header closeButton className="bg-light">
-          <Modal.Title className="small-form-title" style={{ color: "#f87951" }}>Edit Room</Modal.Title>
+          <Modal.Title
+            className="small-form-title"
+            style={{ color: "#f87951" }}
+          >
+            Edit Room
+          </Modal.Title>
         </Modal.Header>
 
         <Modal.Body className="small-form">
@@ -620,7 +673,9 @@ const Admin_Room_List = () => {
 
               <Col md={6}>
                 <Form.Group className="mb-2 small-switch-group">
-                  <Form.Label className="small-switch-label">Availability</Form.Label>
+                  <Form.Label className="small-switch-label">
+                    Availability
+                  </Form.Label>
                   <Form.Check
                     type="switch"
                     id="availability-switch"
@@ -636,7 +691,6 @@ const Admin_Room_List = () => {
                   />
                 </Form.Group>
               </Col>
-
             </Row>
 
             {/* 🔹 Amenities */}
@@ -668,7 +722,6 @@ const Admin_Room_List = () => {
                 )
               )}
             </Row>
-
 
             {/* 🔹 Seasonal Rates */}
             <h5 className="text-secondary border-bottom pb-2 mb-3 mt-4">
@@ -791,7 +844,11 @@ const Admin_Room_List = () => {
         </Modal.Body>
 
         <Modal.Footer>
-          <button className="btn-secondary btn-sm small-add-button" variant="secondary" onClick={() => setShowEditModal(false)}>
+          <button
+            className="secondary-button btn-sm small-add-button"
+            variant="secondary"
+            onClick={() => setShowEditModal(false)}
+          >
             Cancel
           </button>
           <button
@@ -842,8 +899,9 @@ const Admin_Room_List = () => {
                   <div className="col-md-6 mb-2">
                     <strong>Availability:</strong> <br />
                     <span
-                      className={`badge ${selectedRoom.isAvailable ? "bg-success" : "bg-danger"
-                        }`}
+                      className={`badge ${
+                        selectedRoom.isAvailable ? "bg-success" : "bg-danger"
+                      }`}
                     >
                       {selectedRoom.isAvailable ? "Available" : "Unavailable"}
                     </span>
@@ -902,7 +960,8 @@ const Admin_Room_List = () => {
                     {selectedRoom.amenities.map((a, i) => (
                       <span
                         key={i}
-                        className="badge text-white px-3 py-2" style={{ backgroundColor: "#f87951" }}
+                        className="badge text-white px-3 py-2"
+                        style={{ backgroundColor: "#f87951" }}
                       >
                         {a}
                       </span>
@@ -938,7 +997,10 @@ const Admin_Room_List = () => {
         </Modal.Body>
 
         <Modal.Footer>
-          <button className="secondary-button btn-sm small-add-button" onClick={() => setShowViewModal(false)}>
+          <button
+            className="secondary-button btn-sm small-add-button"
+            onClick={() => setShowViewModal(false)}
+          >
             Close
           </button>
         </Modal.Footer>

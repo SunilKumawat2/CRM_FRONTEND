@@ -185,10 +185,10 @@ export const Admin_Create_Role = async (data) => {
 };
 
 // <----------------  Get Role List ----------------->
-export const Admin_Get_Role_List = async () => {
+export const Admin_Get_Role_List = async (page,limit) => {
   try {
     const token = getToken();
-    const response = await axios.get(`${API_BASE_URL}/get-roles`, {
+    const response = await axios.get(`${API_BASE_URL}/get-roles?page=${page}&limit=${limit}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response;
@@ -330,10 +330,10 @@ export const Admin_Post_Categories = async (userData) => {
 };
 
 // <----------------  Admin Get Room  ----------------->
-export const Admin_Get_Rooms = async () => {
+export const Admin_Get_Rooms = async (page, limit, search = "") => {
   try {
     const token = getToken();
-    const response = await axios.get(`${API_BASE_URL}/get-rooms`, {
+    const response = await axios.get(`${API_BASE_URL}/get-rooms?page=${page}&limit=${limit}&search=${search}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response;
@@ -531,3 +531,81 @@ export const Admin_Get_Bookings_By_Range = async (startDate, endDate) => {
     throw error.response || error;
   }
 };
+
+
+// ✅ Get Guest List with Pagination
+export const Admin_Get_Rooms_Guest_list = async (page, limit) => {
+  try {
+    const token = getToken();
+    const response = await axios.get(
+      `${API_BASE_URL}/get-guests?page=${page}&limit=${limit}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+
+
+// <----------- get room Guest Details ------------>
+export const Admin_Get_Rooms_Guest_Details = async (guestId) => {
+  try {
+    const token = getToken();
+    const response = await axios.get(`${API_BASE_URL}/get-guest/${guestId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <---------- Admin Create the Guest Booking ------------>
+export const Admin_Post_Room_Guest = async (userData) => {
+  try {
+    const token = getToken();
+    const response = await axios.post(`${API_BASE_URL}/create-guest`, userData, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <---------------- Admin Delete Guest Booking  ----------------->
+export const Admin_Room_Guest_Delete = async (guestId) => {
+  try {
+    const token = getToken();
+    const response = await axios.delete(
+      `${API_BASE_URL}/delete-guest/${guestId}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+export const Admin_Room_Guest_Update = async (guestId, formData) => {
+  try {
+    const token = getToken();
+    const response = await axios.put(
+      `${API_BASE_URL}/update-guest/${guestId}`,
+      formData,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+

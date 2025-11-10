@@ -16,6 +16,10 @@ import {
     Admin_Room_Cancel_Booking,
     Admin_Get_Bookings_By_Range,
 } from "../../../../api/admin/Admin";
+import {
+  TbPlayerTrackNextFilled,
+  TbPlayerTrackPrevFilled,
+} from "react-icons/tb";
 
 const Admin_Room_Booking_List = () => {
     const [bookings, setBookings] = useState([]);
@@ -394,29 +398,32 @@ const Admin_Room_Booking_List = () => {
                     <strong>{Math.min(page * limit, total)}</strong> of{" "}
                     <strong>{total}</strong> bookings
                 </p>
-                <div className="d-flex gap-2 align-items-center">
-                    {/* Prev */}
-                    <button
-                        className="btn btn-sm btn-danger"
-                        disabled={page === 1}
-                        onClick={() => setPage(page - 1)}
-                    >
-                        ⬅ Previous
-                    </button>
-                    {/* Page Number */}
-                    <span className="px-3 py-1 border rounded bg-light small">
-                        Page {page} / {totalPages}
-                    </span>
-                    {/* Next */}
-                    <button
-                        className="btn btn-sm btn-danger"
-                        disabled={page >= totalPages}
-                        onClick={() => setPage(page + 1)}
-                    >
-                        Next ➡
-                    </button>
+               
 
-                </div>
+                <div className="pagination-container d-flex justify-content-center mt-3">
+                            {/* Prev Button */}
+                            <button
+                              className="pagination-btn"
+                              disabled={page === 1}
+                              onClick={() => setPage(page - 1)}
+                            >
+                              <TbPlayerTrackPrevFilled size={20} />
+                            </button>
+                
+                            {/* Page Indicator */}
+                            <span className="pagination-info">
+                              Page {page} / {totalPages || 1}
+                            </span>
+                
+                            {/* Next Button */}
+                            <button
+                              className="pagination-btn"
+                              disabled={page >= totalPages}
+                              onClick={() => setPage(page + 1)}
+                            >
+                              <TbPlayerTrackNextFilled size={20} />
+                            </button>
+                          </div>
             </div>
 
             {/* =================== ADD BOOKING MODAL ===================== */}
