@@ -12,6 +12,8 @@ import Admin_Lead_List from "../components/pages/admin/admin_lead_list/Admin_Lea
 import Admin_Room_List from "../components/pages/admin/admin_room_list/Admin_Room_List";
 import Admin_Room_Booking_List from "../components/pages/admin/admin_room_booking_list/Admin_Room_Booking_List";
 import Admin_Guest_List from "../components/pages/admin/admin_guest_list/Admin_Guest_List";
+import Admin_Housekeeping from "../components/pages/admin/admin_housekeeping/Admin_Housekeeping";
+import Admin_Staff_Attendance from "../components/pages/admin/admin_staff_attendance/Admin_Staff_Attendance";
 
 const AllRoutes = () => {
   return (
@@ -101,6 +103,22 @@ const AllRoutes = () => {
         element={
           <ProtectedRoute requiredPermission="guest_view">
             <Admin_Guest_List />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin-housekeeping-list"
+        element={
+          <ProtectedRoute requiredPermission="guest_view">
+            <Admin_Housekeeping />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin-staff-attendance"
+        element={
+          <ProtectedRoute requiredPermission="guest_view">
+            <Admin_Staff_Attendance />
           </ProtectedRoute>
         }
       />

@@ -16,6 +16,7 @@ import {
 } from "react-icons/tb";
 
 const Admin_Guest_List = () => {
+  const [showMoreHistory, setShowMoreHistory] = useState(false);
   const [guests, setGuests] = useState([]);
   const [total, setTotal] = useState(0);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -722,7 +723,7 @@ const Admin_Guest_List = () => {
           show={showViewModal}
           onHide={() => setShowViewModal(false)}
           centered
-          size="md"
+          size="lg"
         >
           <Modal.Header
             closeButton
@@ -826,29 +827,74 @@ const Admin_Guest_List = () => {
                 <h6 className="primary-color mb-2">Stay History</h6>
 
                 {selectedGuest.stayHistory?.length > 0 ? (
-                  selectedGuest.stayHistory.map((stay, i) => (
-                    <div
-                      key={i}
-                      className="border rounded p-2 mb-2 small-modal-text"
-                    >
-                      <div>
-                        <strong>Booking ID:</strong> {stay.booking}
-                      </div>
-                      <div>
-                        <strong>Check-In:</strong> {stay.checkIn?.slice(0, 10)}
-                      </div>
-                      <div>
-                        <strong>Check-Out:</strong>{" "}
-                        {stay.checkOut?.slice(0, 10)}
-                      </div>
-                      <div>
-                        <strong>Rooms:</strong> {stay.roomNumbers.join(", ")}
-                      </div>
-                      <div>
-                        <strong>Amount Paid:</strong> ₹{stay.amountPaid}
-                      </div>
+                  <>
+                    <div className="row">
+                      {(showMoreHistory
+                        ? selectedGuest.stayHistory // Show all
+                        : selectedGuest.stayHistory.slice(0, 2)
+                      ) // Show only first 4 (2 rows)
+                        .map((stay, i) => (
+                          <div key={i} className="col-6 mb-3">
+                            <div className="border rounded p-2 small-modal-text">
+                              <div>
+                                <strong>Booking Number:</strong>{" "}
+                                {stay.booking?.bookingNumber || "—"}
+                              </div>
+
+                              <div>
+                                <strong>Booking Check-In:</strong>{" "}
+                                {stay.booking?.checkIn?.slice(0, 10) || "—"}
+                              </div>
+
+                              <div>
+                                <strong>Booking Check-Out:</strong>{" "}
+                                {stay.booking?.checkOut?.slice(0, 10) || "—"}
+                              </div>
+
+                              <div>
+                                <strong>Total Amount:</strong> ₹
+                                {stay.booking?.totalAmount || 0}
+                              </div>
+
+                              <hr />
+
+                              <div>
+                                <strong>Stay Check-In:</strong>{" "}
+                                {stay.checkIn?.slice(0, 10)}
+                              </div>
+
+                              <div>
+                                <strong>Stay Check-Out:</strong>{" "}
+                                {stay.checkOut?.slice(0, 10)}
+                              </div>
+
+                              <div>
+                                <strong>Rooms:</strong>{" "}
+                                {stay.roomNumbers.join(", ")}
+                              </div>
+
+                              <div>
+                                <strong>Amount Paid:</strong> ₹{stay.amountPaid}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
                     </div>
-                  ))
+
+                    {/* VIEW MORE / VIEW LESS BUTTON */}
+                    {selectedGuest.stayHistory.length > 2 && (
+                      <div className="text-center mt-2">
+                        <button
+                          className="secondary-button btn-sm"
+                          onClick={() => setShowMoreHistory(!showMoreHistory)}
+                        >
+                          {showMoreHistory
+                            ? "View Less History"
+                            : "View More History"}
+                        </button>
+                      </div>
+                    )}
+                  </>
                 ) : (
                   <div>No previous stays</div>
                 )}

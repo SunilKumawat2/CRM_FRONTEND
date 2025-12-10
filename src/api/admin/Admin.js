@@ -143,10 +143,10 @@ export const Admin_Profile_Update = async (formData) => {
 };
 
 // <----------------  Get Admin List ----------------->
-export const Admin_Get_List = async () => {
+export const Admin_Get_List = async (page,limit) => {
   try {
     const token = getToken();
-    const response = await axios.get(`${API_BASE_URL}/admin-list`, {
+    const response = await axios.get(`${API_BASE_URL}/admin-list?page=${page}&limit=${limit}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response;
@@ -609,3 +609,149 @@ export const Admin_Room_Guest_Update = async (guestId, formData) => {
   }
 };
 
+// <----------------  Get House Keeping List ----------------->
+export const Admin_Get_Housekeeping = async () => {
+  try {
+    const token = getToken();
+    const response = await axios.get(`${API_BASE_URL}/get-housekeeping`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <----------------  Create House Keeping List ----------------->
+export const Admin_Create_Housekeeping = async (formData) => {
+  try {
+    const token = getToken();
+    const response = await axios.post(`${API_BASE_URL}/create-housekeeping`,formData, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <----------------  Update House Keeping List ----------------->
+export const Admin_Update_Housekeeping = async (housekeeping_id,formData) => {
+  try {
+    const token = getToken();
+    const response = await axios.put(`${API_BASE_URL}/update-housekeeping/${housekeeping_id}`,formData, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <----------------  Delete House Keeping List ----------------->
+export const Admin_Delete_Housekeeping = async (housekeeping_id) => {
+  try {
+    const token = getToken();
+    const response = await axios.delete(`${API_BASE_URL}/delete-housekeeping/${housekeeping_id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <----------------  Verify House Keeping Status ----------------->
+export const Admin_Verify_Clean_Housekeeping = async (housekeeping_id) => {
+  try {
+    const token = getToken();
+    const response = await axios.post(`${API_BASE_URL}/verify-cleaning/${housekeeping_id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <----------------  Get Staff Attendance with Pagination ----------------->
+export const Admin_Get_Staff_Attendance = async (staffId, page = 1, limit = 10) => {
+  try {
+    const token = getToken();
+    const response = await axios.get(
+      `${API_BASE_URL}/get-staff-attendance?staffId=${staffId}&page=${page}&limit=${limit}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+
+// <----------------  Create Staff Attendance  ----------------->
+export const Admin_Create_Staff_Attendance = async (formData) => {
+  try {
+    const token = getToken();
+    const response = await axios.post(`${API_BASE_URL}/create-staff-attendance`,formData, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <----------------  Update Staff Attendance  ----------------->
+export const Admin_Update_Staff_Attendance = async (staffId,formData) => {
+  try {
+    const token = getToken();
+    const response = await axios.put(`${API_BASE_URL}/update-staff-attendance/${staffId}`,formData, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <----------------  Delete Staff Attendance  ----------------->
+export const Admin_Delete_Staff_Attendance = async (staffId) => {
+  try {
+    const token = getToken();
+    const response = await axios.delete(`${API_BASE_URL}/delete-staff-attendance/${staffId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <----------------  Delete Staff Attendance  ----------------->
+export const Admin_Verify_Staff_Attendance = async (staffId) => {
+  try {
+    const token = getToken();
+    const response = await axios.post(`${API_BASE_URL}/verify-staff-attendance/${staffId}`,{}, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <----------------  Delete Staff Attendance  ----------------->
+export const Admin_Get_Staff_Summary = async (month,year) => {
+  try {
+    const token = getToken();
+    const response = await axios.get(`${API_BASE_URL}/staff-attendance-summary?month=${month}&year=${year}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};

@@ -139,7 +139,28 @@ const Sidebar_Admin = ({ isCollapsed, setIsCollapsed }) => {
             {!isCollapsed && <span>Guests</span>}
           </NavLink>
         )}
-
+        {hasPermission("booking_view") && (
+          <NavLink
+            to="/admin-housekeeping-list"
+            className={({ isActive }) =>
+              isActive ? "menu-link active" : "menu-link"
+            }
+          >
+            <MdOutlineBedroomParent className="menu-icon" /> {/* you can change to a bed icon */}
+            {!isCollapsed && <span>Housekeeping</span>}
+          </NavLink>
+        )}
+   {hasPermission("attendance_view") && (
+          <NavLink
+            to="/admin-staff-attendance"
+            className={({ isActive }) =>
+              isActive ? "menu-link active" : "menu-link"
+            }
+          >
+            <MdOutlineBedroomParent className="menu-icon" /> {/* you can change to a bed icon */}
+            {!isCollapsed && <span>Staff Attendance</span>}
+          </NavLink>
+        )}
 
         {/* Settings */}
         {/* {hasPermission("settings_view") && (
