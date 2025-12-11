@@ -755,3 +755,75 @@ export const Admin_Get_Staff_Summary = async (month,year) => {
     throw error.response || error;
   }
 };
+
+// <----------------  Admin Create Invoice  ----------------->
+export const Admin_Create_invoice = async (formData) => {
+  try {
+    const token = getToken();
+    const response = await axios.post(
+      `${API_BASE_URL}/create-invoice`,
+      formData,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+
+// <----------------  Admin Get invoice  ----------------->
+export const Admin_Get_invoice = async (page, limit) => {
+  try {
+    const token = getToken();
+    const response = await axios.get(
+      `${API_BASE_URL}/get-invoices?page=${page}&limit=${limit}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <----------------  Admin Get invoice  ----------------->
+export const Admin_Get_invoice_Details = async (invoice_id) => {
+  try {
+    const token = getToken();
+    const response = await axios.get(
+      `${API_BASE_URL}/get-invoice/${invoice_id}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <----------------  Admin Get invoice  ----------------->
+export const Admin_Invoice_create_Payment = async (formData) => {
+  try {
+    const token = getToken();
+    const response = await axios.post(
+      `${API_BASE_URL}/create-payment`,formData,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <----------------  Admin Get invoice  ----------------->
+export const Admin_create_expense = async (formData) => {
+  try {
+    const token = getToken();
+    const response = await axios.post(
+      `${API_BASE_URL}/create-expense`,formData,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};

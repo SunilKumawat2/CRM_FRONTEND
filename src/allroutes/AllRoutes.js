@@ -14,6 +14,7 @@ import Admin_Room_Booking_List from "../components/pages/admin/admin_room_bookin
 import Admin_Guest_List from "../components/pages/admin/admin_guest_list/Admin_Guest_List";
 import Admin_Housekeeping from "../components/pages/admin/admin_housekeeping/Admin_Housekeeping";
 import Admin_Staff_Attendance from "../components/pages/admin/admin_staff_attendance/Admin_Staff_Attendance";
+import Admin_Invoice from "../components/pages/admin/admin_invoice/Admin_Invoice";
 
 const AllRoutes = () => {
   return (
@@ -119,6 +120,14 @@ const AllRoutes = () => {
         element={
           <ProtectedRoute requiredPermission="guest_view">
             <Admin_Staff_Attendance />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin-invoice"
+        element={
+          <ProtectedRoute requiredPermission="invoice_view">
+            <Admin_Invoice />
           </ProtectedRoute>
         }
       />

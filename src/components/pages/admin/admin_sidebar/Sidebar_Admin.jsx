@@ -161,6 +161,17 @@ const Sidebar_Admin = ({ isCollapsed, setIsCollapsed }) => {
             {!isCollapsed && <span>Staff Attendance</span>}
           </NavLink>
         )}
+   {hasPermission("invoice_view") && (
+          <NavLink
+            to="/admin-invoice"
+            className={({ isActive }) =>
+              isActive ? "menu-link active" : "menu-link"
+            }
+          >
+            <MdOutlineBedroomParent className="menu-icon" /> {/* you can change to a bed icon */}
+            {!isCollapsed && <span>Invoice</span>}
+          </NavLink>
+        )}
 
         {/* Settings */}
         {/* {hasPermission("settings_view") && (
