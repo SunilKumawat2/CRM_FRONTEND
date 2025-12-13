@@ -172,6 +172,17 @@ const Sidebar_Admin = ({ isCollapsed, setIsCollapsed }) => {
             {!isCollapsed && <span>Invoice</span>}
           </NavLink>
         )}
+   {hasPermission("valet_view") && (
+          <NavLink
+            to="/admin-valet-parking"
+            className={({ isActive }) =>
+              isActive ? "menu-link active" : "menu-link"
+            }
+          >
+            <MdOutlineBedroomParent className="menu-icon" /> {/* you can change to a bed icon */}
+            {!isCollapsed && <span>Valet Parking</span>}
+          </NavLink>
+        )}
 
         {/* Settings */}
         {/* {hasPermission("settings_view") && (

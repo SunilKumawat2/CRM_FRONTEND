@@ -827,3 +827,30 @@ export const Admin_create_expense = async (formData) => {
     throw error.response || error;
   }
 };
+
+// <----------------  Admin Create Parking  ----------------->
+export const Admin_create_valet_parking = async (formData) => {
+  try {
+    const token = getToken();
+    const response = await axios.post(
+      `${API_BASE_URL}/create-valet-parking`,formData,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+// <----------------  Admin Get invoice  ----------------->
+export const Admin_Get_valet_parking = async () => {
+  try {
+    const token = getToken();
+    const response = await axios.get(
+      `${API_BASE_URL}/get-valet-parking`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};

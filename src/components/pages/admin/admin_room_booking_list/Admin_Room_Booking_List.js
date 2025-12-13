@@ -222,9 +222,7 @@ const Admin_Room_Booking_List = () => {
 
             </div>
             <ToastContainer position="top-right" autoClose={2000} />
-
             <div className="d-flex gap-3 mb-3 filter-bar-small">
-
                 <div>
                     <label className="form-label fw-bold">Start Date</label>
                     <input
