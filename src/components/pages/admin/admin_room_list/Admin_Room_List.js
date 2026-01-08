@@ -367,11 +367,7 @@ const Admin_Room_List = () => {
 
         <div className="pagination-container d-flex justify-content-center mt-3">
           {/* Prev */}
-          <button
-            className="pagination-btn"
-            disabled={page === 1}
-            onClick={() => setPage(page - 1)}
-          >
+          <button className="pagination-btn" disabled={page === 1} onClick={() => setPage(page - 1)}>
             <TbPlayerTrackPrevFilled size={20} />
           </button>
 
@@ -381,11 +377,7 @@ const Admin_Room_List = () => {
           </span>
 
           {/* Next */}
-          <button
-            className="pagination-btn"
-            disabled={page >= totalPages}
-            onClick={() => setPage(page + 1)}
-          >
+          <button className="pagination-btn" disabled={page >= totalPages} onClick={() => setPage(page + 1)}>
             <TbPlayerTrackNextFilled size={20} />
           </button>
         </div>
@@ -664,18 +656,18 @@ const Admin_Room_List = () => {
           </button>
         </Modal.Footer>
       </Modal> */}
-      <Modal show={showAddModal} onHide={() => setShowAddModal(false)} size="lg" centered>
+      <Modal show={showAddModal} onHide={() => setShowAddModal(false)} size="xl" centered>
         <Modal.Header closeButton>
-          <Modal.Title>Add New Room</Modal.Title>
+          <Modal.Title className="small-form-title">Add New Room</Modal.Title>
         </Modal.Header>
 
-        <Modal.Body>
+        <Modal.Body className="small-form">
           <Form onSubmit={handleCreateRoom}>
             {/* ----------------- Basic Info ----------------- */}
-            <h5 className="text-secondary border-bottom pb-2 mb-3">Room Information</h5>
+            <h5 className="text-secondary border-bottom pb-2 mb-3 small-form-title">Room Information</h5>
             <Row>
               <Col md={4}>
-                <Form.Group className="mb-3">
+                <Form.Group className="mb-3 ">
                   <Form.Label>Room Number</Form.Label>
                   <Form.Control
                     type="text"
@@ -729,7 +721,7 @@ const Admin_Room_List = () => {
             </Row>
 
             {/* ----------------- Capacity & Bed ----------------- */}
-            <h5 className="text-secondary border-bottom pb-2 mb-3 mt-4">Capacity & Bed</h5>
+            <h5 className="text-secondary border-bottom pb-2 mb-3 mt-4 small-form-title">Capacity & Bed</h5>
             <Row>
               <Col md={3}>
                 <Form.Group className="mb-3">
@@ -791,7 +783,7 @@ const Admin_Room_List = () => {
             </Row>
 
             {/* ----------------- Bathroom ----------------- */}
-            <h5 className="text-secondary border-bottom pb-2 mb-3 mt-4">Bathroom Features</h5>
+            <h5 className="text-secondary border-bottom pb-2 mb-3 mt-4 small-form-title">Bathroom Features</h5>
             <Row>
               <Col md={3}>{yesNoSelect("Bathtub", formData.bathtub, "bathtub")}</Col>
               <Col md={3}>{yesNoSelect("Jacuzzi", formData.jacuzzi, "jacuzzi")}</Col>
@@ -799,7 +791,7 @@ const Admin_Room_List = () => {
             </Row>
 
             {/* ----------------- View & Location ----------------- */}
-            <h5 className="text-secondary border-bottom pb-2 mb-3 mt-4">View & Location</h5>
+            <h5 className="text-secondary border-bottom pb-2 mb-3 mt-4 small-form-title">View & Location</h5>
             <Row>
               <Col md={3}>
                 <Form.Group className="mb-3">
@@ -833,7 +825,7 @@ const Admin_Room_List = () => {
             </Row>
 
             {/* ----------------- Accessibility & Policies ----------------- */}
-            <h5 className="text-secondary border-bottom pb-2 mb-3 mt-4">Accessibility & Policies</h5>
+            <h5 className="text-secondary border-bottom pb-2 mb-3 mt-4 small-form-title">Accessibility & Policies</h5>
             <Row>
               <Col md={4}>{yesNoSelect("Wheelchair Accessible", formData.wheelchairAccessible, "wheelchairAccessible")}</Col>
               <Col md={4}>{yesNoSelect("Ground Floor", formData.groundFloor, "groundFloor")}</Col>
@@ -873,29 +865,34 @@ const Admin_Room_List = () => {
             </Row>
 
             {/* ----------------- Amenities ----------------- */}
-            <h5 className="text-secondary border-bottom pb-2 mb-2 mt-2">Amenities</h5>
-            <Row className="mb-3">
-              {["WiFi", "TV", "AC", "Mini Bar", "Balcony", "Room Service", "Breakfast", "Smart TV"].map((amenity) => (
-                <Col md={4} key={amenity}>
-                  <Form.Check
-                    type="checkbox"
-                    label={amenity}
-                    value={amenity}
-                    checked={formData.amenities.includes(amenity)}
-                    onChange={(e) => {
-                      const { checked, value } = e.target;
-                      setFormData((prev) => ({
-                        ...prev,
-                        amenities: checked ? [...prev.amenities, value] : prev.amenities.filter((a) => a !== value),
-                      }));
-                    }}
-                  />
-                </Col>
-              ))}
+            <h5 className="text-secondary border-bottom pb-2 mb-2 mt-2 small-form-title">Amenities</h5>
+            <Row className="small-amenities">
+              {["WiFi", "TV", "AC", "Mini Bar", "Balcony", "Room Service"].map(
+                (amenity) => (
+                  <Col md={4} key={amenity}>
+                    <Form.Check
+                      type="checkbox"
+                      label={amenity}
+                      value={amenity}
+                      className="custom-amenity-checkbox small-amenity-checkbox"
+                      checked={formData.amenities.includes(amenity)}
+                      onChange={(e) => {
+                        const { checked, value } = e.target;
+                        setFormData((prev) => ({
+                          ...prev,
+                          amenities: checked
+                            ? [...prev.amenities, value]
+                            : prev.amenities.filter((a) => a !== value),
+                        }));
+                      }}
+                    />
+                  </Col>
+                )
+              )}
             </Row>
 
             {/* ----------------- Seasonal Rates ----------------- */}
-            <h5 className="text-secondary border-bottom pb-2 mb-3 mt-4">Seasonal Pricing</h5>
+            <h5 className="text-secondary border-bottom pb-2 mb-3 mt-4 small-form-title">Seasonal Pricing</h5>
             {formData.seasonalRates.map((rate, index) => (
               <Row key={index} className="align-items-end mb-3">
                 <Col md={3}>
@@ -956,10 +953,15 @@ const Admin_Room_List = () => {
                 </Col>
                 <Col md={1}>
                   <button
-                    type="button"
-                    className="btn btn-danger"
+                    className="primary-checkout-button "
+                    size="sm"
                     onClick={() =>
-                      setFormData({ ...formData, seasonalRates: formData.seasonalRates.filter((_, i) => i !== index) })
+                      setFormData({
+                        ...formData,
+                        seasonalRates: formData.seasonalRates.filter(
+                          (_, i) => i !== index
+                        ),
+                      })
                     }
                   >
                     ✕
@@ -969,10 +971,16 @@ const Admin_Room_List = () => {
             ))}
             <div className="text-end mb-3">
               <button
-                type="button"
-                className="btn btn-primary"
+                className="primary-button btn-sm small-add-button"
+                size="sm"
                 onClick={() =>
-                  setFormData({ ...formData, seasonalRates: [...formData.seasonalRates, { seasonName: "", startDate: "", endDate: "", price: "" }] })
+                  setFormData({
+                    ...formData,
+                    seasonalRates: [
+                      ...formData.seasonalRates,
+                      { seasonName: "", startDate: "", endDate: "", price: "" },
+                    ],
+                  })
                 }
               >
                 + Add Seasonal Rate
@@ -995,7 +1003,7 @@ const Admin_Room_List = () => {
         <Modal.Footer>
           <button
             type="button"
-            className="btn btn-secondary"
+            className="secondary-button btn-sm small-add-button"
             onClick={() => setShowAddModal(false)}
             disabled={loading}
           >
@@ -1003,7 +1011,7 @@ const Admin_Room_List = () => {
           </button>
           <button
             type="submit"
-            className="btn btn-primary"
+            className="primary-button btn-sm small-add-button"
             onClick={handleCreateRoom}
             disabled={loading}
           >
