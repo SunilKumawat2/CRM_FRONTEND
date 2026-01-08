@@ -1,21 +1,17 @@
 import React, { useState } from "react";
-import {
-  Form,
-  Button,
-  Card,
-  Container,
-  Row,
-  Col,
-  Alert,
-} from "react-bootstrap";
-import { Admin_Login as AdminLoginAPI } from "../../../../api/admin/Admin"; // ✅ import your global function
+import { Form, Button, Card, Container, Row, Col, Alert, InputGroup } from "react-bootstrap";
+import { Admin_Login as AdminLoginAPI } from "../../../../api/admin/Admin";
 import { useNavigate } from "react-router-dom";
-// adjust the import path as needed
-import login_bg from "../../../../assets/images/login_bg.jpg"
+import login_bg from "../../../../assets/images/login_bg.jpg";
+
+// 👇 React Icons
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+
 const Admin_Login = () => {
   const nevigate = useNavigate("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // 👈 new state
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
@@ -34,17 +30,18 @@ const Admin_Login = () => {
     setSuccess("");
 
     try {
-      const response = await AdminLoginAPI({ email, password }); // ✅ call API
+      const response = await AdminLoginAPI({ email, password });
       if (response.status === 200) {
         const adminData = response.data.data.admin;
         localStorage.setItem("admin_token", response.data.data.token);
-        localStorage.setItem("login_role", adminData.isSuperAdmin ? "super_admin" : adminData.role?.name || "admin");
+        localStorage.setItem(
+          "login_role",
+          adminData.isSuperAdmin ? "super_admin" : adminData.role?.name || "admin"
+        );
         localStorage.setItem("permissions", JSON.stringify(adminData.permissions || []));
         localStorage.setItem("adminData", JSON.stringify(response.data.data));
         nevigate("/admin-dashboard");
       }
-
-
     } catch (err) {
       console.error("Login error:", err);
       setError(err?.data?.message || "Invalid email or password.");
@@ -60,15 +57,14 @@ const Admin_Login = () => {
       className="vh-100 d-flex justify-content-center align-items-center"
       style={{
         backgroundImage: `linear-gradient(
-      rgba(0,0,0,0.35),
-      rgba(0,0,0,0.35)
-    ), url(${login_bg})`,
+          rgba(0,0,0,0.35),
+          rgba(0,0,0,0.35)
+        ), url(${login_bg})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
       }}
     >
-
       <Row className="w-100 justify-content-center">
         <Col xs={10} sm={8} md={5} lg={4}>
           <Card className="glass-card p-4">
@@ -81,6 +77,7 @@ const Admin_Login = () => {
               {success && <Alert variant="success">{success}</Alert>}
 
               <Form onSubmit={handleSubmit}>
+                {/* Email */}
                 <Form.Group className="mb-3">
                   <Form.Label className="text-white">
                     Email address
@@ -95,25 +92,32 @@ const Admin_Login = () => {
                   />
                 </Form.Group>
 
+                {/* Password with Show/Hide */}
                 <Form.Group className="mb-3">
                   <Form.Label className="text-white">
                     Password
                   </Form.Label>
-                  <Form.Control
-                    type="password"
-                    placeholder="Enter password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    disabled={loading}
-                    className="glass-input"
-                  />
+
+                  <InputGroup>
+                    <Form.Control
+                      type={showPassword ? "text" : "password"} 
+                      placeholder="Enter password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      disabled={loading}
+                      className="glass-input"
+                    />
+
+                    <InputGroup.Text
+                      onClick={() => setShowPassword(!showPassword)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      {showPassword ? <FaEyeSlash /> : <FaEye />}
+                    </InputGroup.Text>
+                  </InputGroup>
                 </Form.Group>
 
-                <Button
-                  type="submit"
-                  className="w-100 mt-2 rounded-3"
-                  disabled={loading}
-                >
+                <Button type="submit" className="w-100 mt-2 rounded-3" disabled={loading}>
                   {loading ? "Logging in..." : "Login"}
                 </Button>
               </Form>
@@ -121,7 +125,6 @@ const Admin_Login = () => {
           </Card>
         </Col>
       </Row>
-
     </Container>
   );
 };

@@ -150,7 +150,7 @@ const Sidebar_Admin = ({ isCollapsed, setIsCollapsed }) => {
             {!isCollapsed && <span>Housekeeping</span>}
           </NavLink>
         )}
-   {hasPermission("attendance_view") && (
+        {hasPermission("attendance_view") && (
           <NavLink
             to="/admin-staff-attendance"
             className={({ isActive }) =>
@@ -161,7 +161,7 @@ const Sidebar_Admin = ({ isCollapsed, setIsCollapsed }) => {
             {!isCollapsed && <span>Staff Attendance</span>}
           </NavLink>
         )}
-   {hasPermission("invoice_view") && (
+        {hasPermission("invoice_view") && (
           <NavLink
             to="/admin-invoice"
             className={({ isActive }) =>
@@ -172,7 +172,7 @@ const Sidebar_Admin = ({ isCollapsed, setIsCollapsed }) => {
             {!isCollapsed && <span>Invoice</span>}
           </NavLink>
         )}
-   {hasPermission("valet_view") && (
+        {hasPermission("valet_view") && (
           <NavLink
             to="/admin-valet-parking"
             className={({ isActive }) =>
@@ -183,7 +183,50 @@ const Sidebar_Admin = ({ isCollapsed, setIsCollapsed }) => {
             {!isCollapsed && <span>Valet Parking</span>}
           </NavLink>
         )}
-
+        {hasPermission("event_view") && (
+          <NavLink
+            to="/admin-hotel-event-package"
+            className={({ isActive }) =>
+              isActive ? "menu-link active" : "menu-link"
+            }
+          >
+            <MdOutlineBedroomParent className="menu-icon" /> {/* you can change to a bed icon */}
+            {!isCollapsed && <span>Event Package</span>}
+          </NavLink>
+        )}
+        {hasPermission("catering_view") && (
+          <NavLink
+            to="/admin-catering"
+            className={({ isActive }) =>
+              isActive ? "menu-link active" : "menu-link"
+            }
+          >
+            <MdOutlineBedroomParent className="menu-icon" /> {/* you can change to a bed icon */}
+            {!isCollapsed && <span>Catering</span>}
+          </NavLink>
+        )}
+        {hasPermission("guest_request_view") && (
+          <NavLink
+            to="/admin-guest-request"
+            className={({ isActive }) =>
+              isActive ? "menu-link active" : "menu-link"
+            }
+          >
+            <MdOutlineBedroomParent className="menu-icon" /> {/* you can change to a bed icon */}
+            {!isCollapsed && <span>Guest Request</span>}
+          </NavLink>
+        )}
+        {hasPermission("feedback_view") && (
+          <NavLink
+            to="/admin-user-feedback"
+            className={({ isActive }) =>
+              isActive ? "menu-link active" : "menu-link"
+            }
+          >
+            <MdOutlineBedroomParent className="menu-icon" /> {/* you can change to a bed icon */}
+            {!isCollapsed && <span>User Feedback</span>}
+          </NavLink>
+        )}
         {/* Settings */}
         {/* {hasPermission("settings_view") && (
           <NavLink

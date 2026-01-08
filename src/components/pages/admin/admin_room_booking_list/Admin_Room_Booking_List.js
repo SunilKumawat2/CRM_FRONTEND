@@ -500,11 +500,12 @@ const Admin_Room_Booking_List = () => {
                                         }}
                                     >
                                         <option value="">-- Select Room --</option>
-                                        {roomList.map((room) => (
+                                        {roomList?.filter((room) => room.isAvailable === true)?.map((room) => (
                                             <option key={room._id} value={room._id}>
                                                 {room.roomNumber} - {room.roomType}
                                             </option>
                                         ))}
+
                                     </Form.Select>
                                 </Form.Group>
                             </div>

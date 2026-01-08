@@ -143,7 +143,7 @@ export const Admin_Profile_Update = async (formData) => {
 };
 
 // <----------------  Get Admin List ----------------->
-export const Admin_Get_List = async (page,limit) => {
+export const Admin_Get_List = async (page, limit) => {
   try {
     const token = getToken();
     const response = await axios.get(`${API_BASE_URL}/admin-list?page=${page}&limit=${limit}`, {
@@ -185,7 +185,7 @@ export const Admin_Create_Role = async (data) => {
 };
 
 // <----------------  Get Role List ----------------->
-export const Admin_Get_Role_List = async (page,limit) => {
+export const Admin_Get_Role_List = async (page, limit) => {
   try {
     const token = getToken();
     const response = await axios.get(`${API_BASE_URL}/get-roles?page=${page}&limit=${limit}`, {
@@ -481,7 +481,7 @@ export const Admin_Room_Booking_Update = async (bookingId, formData) => {
 export const Admin_Room_Booking_CheckIn = async (bookingId) => {
   try {
     const token = getToken();
-    const response = await axios.post(`${API_BASE_URL}/checkin/${bookingId}`,{}, {
+    const response = await axios.post(`${API_BASE_URL}/checkin/${bookingId}`, {}, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response;
@@ -494,7 +494,7 @@ export const Admin_Room_Booking_CheckIn = async (bookingId) => {
 export const Admin_Room_Booking_Checkout = async (bookingId) => {
   try {
     const token = getToken();
-    const response = await axios.post(`${API_BASE_URL}/checkout/${bookingId}`,{}, {
+    const response = await axios.post(`${API_BASE_URL}/checkout/${bookingId}`, {}, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response;
@@ -507,7 +507,7 @@ export const Admin_Room_Booking_Checkout = async (bookingId) => {
 export const Admin_Room_Cancel_Booking = async (bookingId) => {
   try {
     const token = getToken();
-    const response = await axios.post(`${API_BASE_URL}/cancel-booking/${bookingId}`,{}, {
+    const response = await axios.post(`${API_BASE_URL}/cancel-booking/${bookingId}`, {}, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response;
@@ -626,7 +626,7 @@ export const Admin_Get_Housekeeping = async () => {
 export const Admin_Create_Housekeeping = async (formData) => {
   try {
     const token = getToken();
-    const response = await axios.post(`${API_BASE_URL}/create-housekeeping`,formData, {
+    const response = await axios.post(`${API_BASE_URL}/create-housekeeping`, formData, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response;
@@ -636,10 +636,10 @@ export const Admin_Create_Housekeeping = async (formData) => {
 };
 
 // <----------------  Update House Keeping List ----------------->
-export const Admin_Update_Housekeeping = async (housekeeping_id,formData) => {
+export const Admin_Update_Housekeeping = async (housekeeping_id, formData) => {
   try {
     const token = getToken();
-    const response = await axios.put(`${API_BASE_URL}/update-housekeeping/${housekeeping_id}`,formData, {
+    const response = await axios.put(`${API_BASE_URL}/update-housekeeping/${housekeeping_id}`, formData, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response;
@@ -695,7 +695,7 @@ export const Admin_Get_Staff_Attendance = async (staffId, page = 1, limit = 10) 
 export const Admin_Create_Staff_Attendance = async (formData) => {
   try {
     const token = getToken();
-    const response = await axios.post(`${API_BASE_URL}/create-staff-attendance`,formData, {
+    const response = await axios.post(`${API_BASE_URL}/create-staff-attendance`, formData, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response;
@@ -705,10 +705,10 @@ export const Admin_Create_Staff_Attendance = async (formData) => {
 };
 
 // <----------------  Update Staff Attendance  ----------------->
-export const Admin_Update_Staff_Attendance = async (staffId,formData) => {
+export const Admin_Update_Staff_Attendance = async (staffId, formData) => {
   try {
     const token = getToken();
-    const response = await axios.put(`${API_BASE_URL}/update-staff-attendance/${staffId}`,formData, {
+    const response = await axios.put(`${API_BASE_URL}/update-staff-attendance/${staffId}`, formData, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response;
@@ -734,7 +734,7 @@ export const Admin_Delete_Staff_Attendance = async (staffId) => {
 export const Admin_Verify_Staff_Attendance = async (staffId) => {
   try {
     const token = getToken();
-    const response = await axios.post(`${API_BASE_URL}/verify-staff-attendance/${staffId}`,{}, {
+    const response = await axios.post(`${API_BASE_URL}/verify-staff-attendance/${staffId}`, {}, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response;
@@ -744,7 +744,7 @@ export const Admin_Verify_Staff_Attendance = async (staffId) => {
 };
 
 // <----------------  Delete Staff Attendance  ----------------->
-export const Admin_Get_Staff_Summary = async (month,year) => {
+export const Admin_Get_Staff_Summary = async (month, year) => {
   try {
     const token = getToken();
     const response = await axios.get(`${API_BASE_URL}/staff-attendance-summary?month=${month}&year=${year}`, {
@@ -805,7 +805,7 @@ export const Admin_Invoice_create_Payment = async (formData) => {
   try {
     const token = getToken();
     const response = await axios.post(
-      `${API_BASE_URL}/create-payment`,formData,
+      `${API_BASE_URL}/create-payment`, formData,
       { headers: { Authorization: `Bearer ${token}` } }
     );
     return response;
@@ -819,7 +819,7 @@ export const Admin_create_expense = async (formData) => {
   try {
     const token = getToken();
     const response = await axios.post(
-      `${API_BASE_URL}/create-expense`,formData,
+      `${API_BASE_URL}/create-expense`, formData,
       { headers: { Authorization: `Bearer ${token}` } }
     );
     return response;
@@ -833,7 +833,7 @@ export const Admin_create_valet_parking = async (formData) => {
   try {
     const token = getToken();
     const response = await axios.post(
-      `${API_BASE_URL}/create-valet-parking`,formData,
+      `${API_BASE_URL}/create-valet-parking`, formData,
       { headers: { Authorization: `Bearer ${token}` } }
     );
     return response;
@@ -847,6 +847,236 @@ export const Admin_Get_valet_parking = async () => {
     const token = getToken();
     const response = await axios.get(
       `${API_BASE_URL}/get-valet-parking`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+// <----------------  Admin create event package  ----------------->
+export const Admin_create_event_package = async (formData) => {
+  try {
+    const token = getToken();
+    const response = await axios.post(
+      `${API_BASE_URL}/create-event-package`, formData,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+// <----------------  Admin get event package (pagination)  ----------------->
+export const Admin_Get_event_package = async (page = 1, limit = 1) => {
+  try {
+    const token = getToken();
+    const response = await axios.get(
+      `${API_BASE_URL}/get-event-package?page=${page}&limit=${limit}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <----------------  Admin update event package  ----------------->
+export const Admin_Update_event_package = async (_id, formData) => {
+  try {
+    const token = getToken();
+    const response = await axios.put(
+      `${API_BASE_URL}/update-event-package/${_id}`, formData,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+// <----------------  Admin delete event package  ----------------->
+export const Admin_delete_event_package = async (_id) => {
+  try {
+    const token = getToken();
+    const response = await axios.delete(
+      `${API_BASE_URL}/delete-event-package/${_id}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <----------------  Admin create catering package  ----------------->
+export const Admin_create_catering = async (formData) => {
+  try {
+    const token = getToken();
+    const response = await axios.post(
+      `${API_BASE_URL}/create-catering`, formData,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+// <----------------  Admin get catering package (pagination)  ----------------->
+export const Admin_Get_catering = async (page = 1, limit = 1) => {
+  try {
+    const token = getToken();
+    const response = await axios.get(
+      `${API_BASE_URL}/get-catering`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <----------------  Admin update catering package  ----------------->
+export const Admin_update_catering = async (_id, formData) => {
+  try {
+    const token = getToken();
+    const response = await axios.put(
+      `${API_BASE_URL}/update-catering/${_id}`, formData,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+// <----------------  Admin delete catering package  ----------------->
+export const Admin_delete_catering = async (_id) => {
+  try {
+    const token = getToken();
+    const response = await axios.delete(
+      `${API_BASE_URL}/delete-catering/${_id}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <----------------  Admin create catering package  ----------------->
+export const Admin_create_guest_request = async (formData) => {
+  try {
+    const token = getToken();
+    const response = await axios.post(
+      `${API_BASE_URL}/create-guest-request`, formData,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+// <----------------  Admin get catering package (pagination)  ----------------->
+export const Admin_get_guest_request = async (page = 1, limit = 1) => {
+  try {
+    const token = getToken();
+    const response = await axios.get(
+      `${API_BASE_URL}/get-guest-requests`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <----------------  Admin update catering package  ----------------->
+export const Admin_update_guest_request = async (_id, formData) => {
+  try {
+    const token = getToken();
+    const response = await axios.put(
+      `${API_BASE_URL}/update-guest-request/${_id}/status`, formData,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+// <----------------  Admin delete catering package  ----------------->
+export const Admin_booking_guest_requests = async (booking_id) => {
+  try {
+    const token = getToken();
+    const response = await axios.get(
+      `${API_BASE_URL}/booking/${booking_id}/guest-requests/`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <----------------  Admin create catering package  ----------------->
+export const Admin_create_feedback = async (formData) => {
+  try {
+    const token = getToken();
+    const response = await axios.post(
+      `${API_BASE_URL}/create-feedback`, formData,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+// <----------------  Admin get catering package (pagination)  ----------------->
+export const Admin_Get_feedbacks = async (page = 1, limit = 1) => {
+  try {
+    const token = getToken();
+    const response = await axios.get(
+      `${API_BASE_URL}/get-feedbacks`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+// <----------------  Admin get catering package (pagination)  ----------------->
+export const Admin_Get_feedback_details = async (_id) => {
+  try {
+    const token = getToken();
+    const response = await axios.get(
+      `${API_BASE_URL}/get-feedback/${_id}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <----------------  Admin get catering package (pagination)  ----------------->
+export const Admin_Get_Notifications = async () => {
+  try {
+    const token = getToken();
+    const response = await axios.get(
+      `${API_BASE_URL}/get-notifications`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// Mark all notifications as read
+export const Admin_Get_Notifications_Marked_All_Read = async () => {
+  try {
+    const token = getToken();
+    const response = await axios.post(
+      `${API_BASE_URL}/notifications/mark-all-read`,
+      {},
       { headers: { Authorization: `Bearer ${token}` } }
     );
     return response;

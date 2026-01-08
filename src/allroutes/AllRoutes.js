@@ -16,6 +16,12 @@ import Admin_Housekeeping from "../components/pages/admin/admin_housekeeping/Adm
 import Admin_Staff_Attendance from "../components/pages/admin/admin_staff_attendance/Admin_Staff_Attendance";
 import Admin_Invoice from "../components/pages/admin/admin_invoice/Admin_Invoice";
 import Admin_Valet_parking from "../components/pages/admin/admin_valet_parking/Admin_Valet_parking";
+import Admin_Hotel_Event_Package from "../components/pages/admin/admin_hotel_event_package/Admin_Hotel_Event_Package";
+import Admin_Catering from "../components/pages/admin/admin_catering/Admin_Catering";
+import Admin_Guest_Feedback from "../components/pages/admin/admin_guest_request/Admin_Guest_Request";
+import Admin_Guest_Request from "../components/pages/admin/admin_guest_request/Admin_Guest_Request";
+import Admin_User_Feedback from "../components/pages/admin/admin_user_feedback/Admin_User_Feedback";
+import AdminNotifications from "../components/pages/admin/admin_notification/AdminNotifications";
 
 const AllRoutes = () => {
   return (
@@ -137,6 +143,46 @@ const AllRoutes = () => {
         element={
           <ProtectedRoute requiredPermission="valet_view">
             <Admin_Valet_parking />
+          </ProtectedRoute>
+        }
+      />
+        <Route
+        path="/admin-hotel-event-package"
+        element={
+          <ProtectedRoute requiredPermission="valet_view">
+            <Admin_Hotel_Event_Package />
+          </ProtectedRoute>
+        }
+      />
+          <Route
+        path="/admin-catering"
+        element={
+          <ProtectedRoute requiredPermission="valet_view">
+            <Admin_Catering />
+          </ProtectedRoute>
+        }
+      />
+         <Route
+        path="/admin-guest-request"
+        element={
+          <ProtectedRoute requiredPermission="guest_request_view">
+            <Admin_Guest_Request />
+          </ProtectedRoute>
+        }
+      />
+        <Route
+        path="/admin-user-feedback"
+        element={
+          <ProtectedRoute requiredPermission="guest_request_view">
+            <Admin_User_Feedback />
+          </ProtectedRoute>
+        }
+      />
+       <Route
+        path="/admin-notifications"
+        element={
+          <ProtectedRoute requiredPermission="notification_view">
+            <AdminNotifications />
           </ProtectedRoute>
         }
       />

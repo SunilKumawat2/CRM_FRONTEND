@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import Sidebar_Admin from "../admin_sidebar/Sidebar_Admin";
 import Header_Admin from "../../../common/admin_header/Admin_Header";
 import Admin_Footer from "../../../common/admin_footer/Admin_Footer";
-import "../../../../assets/css/AdminLayout.css"
+import "../../../../assets/css/AdminLayout.css";
+
 const AdminLayout = ({ children }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [theme, setTheme] = useState(
