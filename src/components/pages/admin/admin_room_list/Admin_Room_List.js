@@ -14,6 +14,7 @@ import {
   TbPlayerTrackNextFilled,
   TbPlayerTrackPrevFilled,
 } from "react-icons/tb";
+import { IMG_BASE_URL } from "../../../../config/Config";
 
 const Admin_Room_List = () => {
   const [rooms, setRooms] = useState([]);
@@ -102,11 +103,55 @@ const Admin_Room_List = () => {
     fetchRooms();
   }, [page]);
 
+  // const handleCreateRoom = async (e) => {
+  //   e.preventDefault();
+  //   setLoading(true);
+  //   try {
+  //     const res = await Admin_Post_Room(formData);
+  //     toast.success(res.data?.message || "Room created successfully");
+  //     setShowAddModal(false);
+  //     setFormData(initialFormData);
+  //     fetchRooms();
+  //   } catch (err) {
+  //     toast.error(err.response?.data?.message || "Failed to create room");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const handleCreateRoom = async (e) => {
     e.preventDefault();
     setLoading(true);
+
     try {
-      const res = await Admin_Post_Room(formData);
+      const formPayload = new FormData();
+
+      // 🔹 Append normal fields
+      Object.keys(formData).forEach((key) => {
+        if (key !== "images" && key !== "seasonalRates" && key !== "amenities" && key !== "tags") {
+          formPayload.append(key, formData[key]);
+        }
+      });
+
+      // 🔹 Arrays
+      formData.amenities.forEach((a) => formPayload.append("amenities[]", a));
+      formData.tags.forEach((t) => formPayload.append("tags[]", t));
+
+      // 🔹 Seasonal Rates
+      formData.seasonalRates.forEach((rate, index) => {
+        formPayload.append(`seasonalRates[${index}][seasonName]`, rate.seasonName);
+        formPayload.append(`seasonalRates[${index}][startDate]`, rate.startDate);
+        formPayload.append(`seasonalRates[${index}][endDate]`, rate.endDate);
+        formPayload.append(`seasonalRates[${index}][price]`, rate.price);
+      });
+
+      // 🔹 Images (IMPORTANT)
+      formData.images.forEach((image) => {
+        formPayload.append("images", image);
+      });
+
+      const res = await Admin_Post_Room(formPayload);
+
       toast.success(res.data?.message || "Room created successfully");
       setShowAddModal(false);
       setFormData(initialFormData);
@@ -117,6 +162,7 @@ const Admin_Room_List = () => {
       setLoading(false);
     }
   };
+
 
   const yesNoSelect = (label, value, key) => (
     <Form.Group className="mb-3">
@@ -343,9 +389,8 @@ const Admin_Room_List = () => {
                     {/* ✅ Availability */}
                     <td>
                       <span
-                        className={`badge ${
-                          room.isAvailable ? "bg-success" : "bg-danger"
-                        }`}
+                        className={`badge ${room.isAvailable ? "bg-success" : "bg-danger"
+                          }`}
                       >
                         {room.isAvailable ? "Available" : "Not Available"}
                       </span>
@@ -895,6 +940,75 @@ const Admin_Room_List = () => {
                 + Add Seasonal Rate
               </button>
             </div>
+            {/* ----------------- Room Images ----------------- */}
+            <h5 className="text-secondary border-bottom pb-2 mb-3 mt-4 small-form-title">
+              Room Images (Max 5)
+            </h5>
+
+            <Form.Group className="mb-3">
+              <Form.Control
+                type="file"
+                multiple
+                accept="image/*"
+                onChange={(e) => {
+                  const newFiles = Array.from(e.target.files);
+
+                  setFormData((prev) => {
+                    const combined = [...prev.images, ...newFiles].slice(0, 5);
+                    return { ...prev, images: combined };
+                  });
+                }}
+
+              />
+              <small className="text-muted">
+                Upload up to 5 images (jpg, png, jpeg)
+              </small>
+            </Form.Group>
+            {/* Image Preview */}
+            {formData.images.length > 0 && (
+              <Row className="mt-3">
+                {formData.images.map((file, index) => (
+                  <Col md={2} key={index} className="mb-2 position-relative">
+                    <img
+                      src={URL.createObjectURL(file)}
+                      alt="preview"
+                      style={{
+                        width: "100%",
+                        height: "100px",
+                        objectFit: "cover",
+                        borderRadius: "6px",
+                        border: "1px solid #ddd",
+                      }}
+                    />
+
+                    {/* Remove button */}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          images: prev.images.filter((_, i) => i !== index),
+                        }))
+                      }
+                      style={{
+                        position: "absolute",
+                        top: "4px",
+                        right: "8px",
+                        background: "rgba(0,0,0,0.6)",
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: "50%",
+                        width: "22px",
+                        height: "22px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      ×
+                    </button>
+                  </Col>
+                ))}
+              </Row>
+            )}
 
             {/* ----------------- Description ----------------- */}
             <Form.Group className="mb-3">
@@ -1369,8 +1483,8 @@ const Admin_Room_List = () => {
                             amenities: checked
                               ? [...(prev.amenities || []), value]
                               : (prev.amenities || []).filter(
-                                  (a) => a !== value
-                                ),
+                                (a) => a !== value
+                              ),
                           }));
                         }}
                       />
@@ -1678,6 +1792,33 @@ const Admin_Room_List = () => {
           ) : (
             <p className="text-center text-muted">No details available</p>
           )}
+
+          {/* ================= ROOM IMAGES ================= */}
+          <Section title="Room Images">
+            {selectedRoom?.images && selectedRoom?.images?.length > 0 ? (
+              <Row className="g-3">
+                {selectedRoom?.images.map((img, index) => (
+                  <Col md={3} key={index}>
+                    <img
+                      src={`${IMG_BASE_URL}/${img}`}
+                      alt={`Room ${index + 1}`}
+                      className="img-fluid rounded shadow-sm"
+                      style={{
+                        height: "150px",
+                        objectFit: "cover",
+                        width: "100%",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => window.open(`${IMG_BASE_URL}/${img}`, "_blank")}
+                    />
+                  </Col>
+                ))}
+              </Row>
+            ) : (
+              <p className="text-muted">No images available</p>
+            )}
+          </Section>
+
         </Modal.Body>
 
         <Modal.Footer>
