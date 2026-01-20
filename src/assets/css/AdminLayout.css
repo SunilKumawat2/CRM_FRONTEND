@@ -1886,3 +1886,24 @@
     background-color: #f87951;
     border-color: #f87951;
 }
+/* Override Bootstrap file input button */
+.gold-file-input::file-selector-button {
+  background-color: #f87951 !important;
+  color: #ffffff !important;
+  border: none !important;
+  padding: 6px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Hover */
+.gold-file-input::file-selector-button:hover {
+  background-color: #f87951 !important;
+}
+
+/* Firefox support */
+.gold-file-input::-webkit-file-upload-button {
+  background-color: #f87951 !important;
+  color: #ffffff !important;
+  border: none !important;
+}

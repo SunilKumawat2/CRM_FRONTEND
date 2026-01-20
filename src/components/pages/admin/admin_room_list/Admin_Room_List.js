@@ -15,6 +15,8 @@ import {
   TbPlayerTrackPrevFilled,
 } from "react-icons/tb";
 import { IMG_BASE_URL } from "../../../../config/Config";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 const Admin_Room_List = () => {
   const [rooms, setRooms] = useState([]);
@@ -103,22 +105,6 @@ const Admin_Room_List = () => {
     fetchRooms();
   }, [page]);
 
-  // const handleCreateRoom = async (e) => {
-  //   e.preventDefault();
-  //   setLoading(true);
-  //   try {
-  //     const res = await Admin_Post_Room(formData);
-  //     toast.success(res.data?.message || "Room created successfully");
-  //     setShowAddModal(false);
-  //     setFormData(initialFormData);
-  //     fetchRooms();
-  //   } catch (err) {
-  //     toast.error(err.response?.data?.message || "Failed to create room");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
   const handleCreateRoom = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -128,7 +114,12 @@ const Admin_Room_List = () => {
 
       // 🔹 Append normal fields
       Object.keys(formData).forEach((key) => {
-        if (key !== "images" && key !== "seasonalRates" && key !== "amenities" && key !== "tags") {
+        if (
+          key !== "images" &&
+          key !== "seasonalRates" &&
+          key !== "amenities" &&
+          key !== "tags"
+        ) {
           formPayload.append(key, formData[key]);
         }
       });
@@ -139,8 +130,14 @@ const Admin_Room_List = () => {
 
       // 🔹 Seasonal Rates
       formData.seasonalRates.forEach((rate, index) => {
-        formPayload.append(`seasonalRates[${index}][seasonName]`, rate.seasonName);
-        formPayload.append(`seasonalRates[${index}][startDate]`, rate.startDate);
+        formPayload.append(
+          `seasonalRates[${index}][seasonName]`,
+          rate.seasonName
+        );
+        formPayload.append(
+          `seasonalRates[${index}][startDate]`,
+          rate.startDate
+        );
         formPayload.append(`seasonalRates[${index}][endDate]`, rate.endDate);
         formPayload.append(`seasonalRates[${index}][price]`, rate.price);
       });
@@ -162,7 +159,6 @@ const Admin_Room_List = () => {
       setLoading(false);
     }
   };
-
 
   const yesNoSelect = (label, value, key) => (
     <Form.Group className="mb-3">
@@ -232,20 +228,20 @@ const Admin_Room_List = () => {
     setSelectedRoom(room);
 
     setFormData({
-      roomNumber: room.roomNumber || "",
-      roomType: room.roomType || "",
-      baseRate: room.baseRate || "",
-      discountedPrice: room.discountedPrice || "",
-      payAtHotel: room.payAtHotel ?? false,
-      freeCancellation: room.freeCancellation ?? false,
-      refundable: room.refundable ?? false,
+      roomNumber: room?.roomNumber || "",
+      roomType: room?.roomType || "",
+      baseRate: room?.baseRate || "",
+      discountedPrice: room?.discountedPrice || "",
+      payAtHotel: room?.payAtHotel ?? false,
+      freeCancellation: room?.freeCancellation ?? false,
+      refundable: room?.refundable ?? false,
 
-      maxAdults: room.maxAdults ?? 1,
-      maxChildren: room.maxChildren ?? 0,
-      extraBedAllowed: room.extraBedAllowed ?? false,
-      maxOccupancy: room.maxOccupancy ?? 1,
+      maxAdults: room?.maxAdults ?? 1,
+      maxChildren: room?.maxChildren ?? 0,
+      extraBedAllowed: room?.extraBedAllowed ?? false,
+      maxOccupancy: room?.maxOccupancy ?? 1,
 
-      bedType: room.bedType || "Single",
+      bedType: room?.bedType || "Single",
       numberOfBeds: room.numberOfBeds ?? 1,
       hasLivingArea: room.hasLivingArea ?? false,
       hasBalcony: room.hasBalcony ?? false,
@@ -277,7 +273,7 @@ const Admin_Room_List = () => {
         : [{ seasonName: "", startDate: "", endDate: "", price: "" }],
 
       description: room.description || "",
-      images: room.images || [],
+      // images: room.images || [],
       housekeepingStatus: room.housekeepingStatus || "Clean",
       isAvailable: room.isAvailable ?? true,
     });
@@ -389,8 +385,9 @@ const Admin_Room_List = () => {
                     {/* ✅ Availability */}
                     <td>
                       <span
-                        className={`badge ${room.isAvailable ? "bg-success" : "bg-danger"
-                          }`}
+                        className={`badge ${
+                          room.isAvailable ? "bg-success" : "bg-danger"
+                        }`}
                       >
                         {room.isAvailable ? "Available" : "Not Available"}
                       </span>
@@ -958,7 +955,6 @@ const Admin_Room_List = () => {
                     return { ...prev, images: combined };
                   });
                 }}
-
               />
               <small className="text-muted">
                 Upload up to 5 images (jpg, png, jpeg)
@@ -1013,13 +1009,14 @@ const Admin_Room_List = () => {
             {/* ----------------- Description ----------------- */}
             <Form.Group className="mb-3">
               <Form.Label>Description</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={3}
+
+              <ReactQuill
+                theme="snow"
                 value={formData.description}
-                onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
+                onChange={(value) =>
+                  setFormData({ ...formData, description: value })
                 }
+                placeholder="Enter room description..."
               />
             </Form.Group>
           </Form>
@@ -1046,557 +1043,205 @@ const Admin_Room_List = () => {
       </Modal>
 
       {/* <-------------- Edit Room  -----------------------> */}
-      <Modal
-        show={showEditModal}
-        onHide={() => setShowEditModal(false)}
-        size="xl"
-        centered
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Edit Room</Modal.Title>
-        </Modal.Header>
+     {/* <-------------- Edit Room  -----------------------> */}
+<Modal
+  show={showEditModal}
+  onHide={() => setShowEditModal(false)}
+  size="xl"
+  centered
+>
+  <Modal.Header closeButton>
+    <Modal.Title className="small-form-title">Edit Room</Modal.Title>
+  </Modal.Header>
 
-        <Modal.Body>
-          <Form onSubmit={handleUpdateRoom}>
-            {/* Basic Info */}
-            <h5 className="mb-3 border-bottom pb-2">Room Information</h5>
-            <Row>
-              <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Room Number</Form.Label>
-                  <Form.Control
-                    value={formData.roomNumber}
-                    onChange={(e) =>
-                      setFormData({ ...formData, roomNumber: e.target.value })
-                    }
-                    required
-                  />
-                </Form.Group>
-              </Col>
-
-              <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Room Type</Form.Label>
-                  <Form.Select
-                    value={formData.roomType}
-                    onChange={(e) =>
-                      setFormData({ ...formData, roomType: e.target.value })
-                    }
-                    required
-                  >
-                    <option value="">Select</option>
-                    <option value="Standard">Standard</option>
-                    <option value="Deluxe">Deluxe</option>
-                    <option value="Suite">Suite</option>
-                  </Form.Select>
-                </Form.Group>
-              </Col>
-
-              <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Base Rate</Form.Label>
-                  <Form.Control
-                    type="number"
-                    value={formData.baseRate}
-                    onChange={(e) =>
-                      setFormData({ ...formData, baseRate: e.target.value })
-                    }
-                    required
-                  />
-                </Form.Group>
-              </Col>
-
-              <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Discounted Price</Form.Label>
-                  <Form.Control
-                    type="number"
-                    value={formData.discountedPrice}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        discountedPrice: e.target.value,
-                      })
-                    }
-                  />
-                </Form.Group>
-              </Col>
-
-              <Col md={4}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Max Adults</Form.Label>
-                  <Form.Control
-                    type="number"
-                    value={formData.maxAdults}
-                    onChange={(e) =>
-                      setFormData({ ...formData, maxAdults: e.target.value })
-                    }
-                  />
-                </Form.Group>
-              </Col>
-
-              <Col md={4}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Max Children</Form.Label>
-                  <Form.Control
-                    type="number"
-                    value={formData.maxChildren}
-                    onChange={(e) =>
-                      setFormData({ ...formData, maxChildren: e.target.value })
-                    }
-                  />
-                </Form.Group>
-              </Col>
-
-              <Col md={4}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Max Occupancy</Form.Label>
-                  <Form.Control
-                    type="number"
-                    value={formData.maxOccupancy}
-                    onChange={(e) =>
-                      setFormData({ ...formData, maxOccupancy: e.target.value })
-                    }
-                  />
-                </Form.Group>
-              </Col>
-
-              <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Bed Type</Form.Label>
-                  <Form.Select
-                    value={formData.bedType}
-                    onChange={(e) =>
-                      setFormData({ ...formData, bedType: e.target.value })
-                    }
-                  >
-                    <option value="Single">Single</option>
-                    <option value="Double">Double</option>
-                    <option value="Queen">Queen</option>
-                    <option value="King">King</option>
-                  </Form.Select>
-                </Form.Group>
-              </Col>
-
-              <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Number of Beds</Form.Label>
-                  <Form.Control
-                    type="number"
-                    value={formData.numberOfBeds}
-                    onChange={(e) =>
-                      setFormData({ ...formData, numberOfBeds: e.target.value })
-                    }
-                  />
-                </Form.Group>
-              </Col>
-
-              {/* Booleans / Switches */}
-              <Col md={3}>
-                <Form.Check
-                  type="switch"
-                  label="Pay at Hotel"
-                  checked={formData.payAtHotel}
-                  onChange={(e) =>
-                    setFormData({ ...formData, payAtHotel: e.target.checked })
-                  }
-                />
-              </Col>
-
-              <Col md={3}>
-                <Form.Check
-                  type="switch"
-                  label="Free Cancellation"
-                  checked={formData.freeCancellation}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      freeCancellation: e.target.checked,
-                    })
-                  }
-                />
-              </Col>
-
-              <Col md={3}>
-                <Form.Check
-                  type="switch"
-                  label="Refundable"
-                  checked={formData.refundable}
-                  onChange={(e) =>
-                    setFormData({ ...formData, refundable: e.target.checked })
-                  }
-                />
-              </Col>
-
-              <Col md={3}>
-                <Form.Check
-                  type="switch"
-                  label="Extra Bed Allowed"
-                  checked={formData.extraBedAllowed}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      extraBedAllowed: e.target.checked,
-                    })
-                  }
-                />
-              </Col>
-
-              <Col md={3}>
-                <Form.Check
-                  type="switch"
-                  label="Has Living Area"
-                  checked={formData.hasLivingArea}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      hasLivingArea: e.target.checked,
-                    })
-                  }
-                />
-              </Col>
-
-              <Col md={3}>
-                <Form.Check
-                  type="switch"
-                  label="Has Balcony"
-                  checked={formData.hasBalcony}
-                  onChange={(e) =>
-                    setFormData({ ...formData, hasBalcony: e.target.checked })
-                  }
-                />
-              </Col>
-
-              <Col md={3}>
-                <Form.Check
-                  type="switch"
-                  label="Bathtub"
-                  checked={formData.bathtub}
-                  onChange={(e) =>
-                    setFormData({ ...formData, bathtub: e.target.checked })
-                  }
-                />
-              </Col>
-
-              <Col md={3}>
-                <Form.Check
-                  type="switch"
-                  label="Jacuzzi"
-                  checked={formData.jacuzzi}
-                  onChange={(e) =>
-                    setFormData({ ...formData, jacuzzi: e.target.checked })
-                  }
-                />
-              </Col>
-
-              <Col md={3}>
-                <Form.Check
-                  type="switch"
-                  label="Hair Dryer"
-                  checked={formData.hairDryer}
-                  onChange={(e) =>
-                    setFormData({ ...formData, hairDryer: e.target.checked })
-                  }
-                />
-              </Col>
-
-              <Col md={3}>
-                <Form.Check
-                  type="switch"
-                  label="Near Elevator"
-                  checked={formData.nearElevator}
-                  onChange={(e) =>
-                    setFormData({ ...formData, nearElevator: e.target.checked })
-                  }
-                />
-              </Col>
-
-              <Col md={3}>
-                <Form.Check
-                  type="switch"
-                  label="Wheelchair Accessible"
-                  checked={formData.wheelchairAccessible}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      wheelchairAccessible: e.target.checked,
-                    })
-                  }
-                />
-              </Col>
-
-              <Col md={3}>
-                <Form.Check
-                  type="switch"
-                  label="Ground Floor"
-                  checked={formData.groundFloor}
-                  onChange={(e) =>
-                    setFormData({ ...formData, groundFloor: e.target.checked })
-                  }
-                />
-              </Col>
-
-              <Col md={3}>
-                <Form.Check
-                  type="switch"
-                  label="Senior Friendly"
-                  checked={formData.seniorFriendly}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      seniorFriendly: e.target.checked,
-                    })
-                  }
-                />
-              </Col>
-
-              <Col md={3}>
-                <Form.Check
-                  type="switch"
-                  label="Smoking Allowed"
-                  checked={formData.smokingAllowed}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      smokingAllowed: e.target.checked,
-                    })
-                  }
-                />
-              </Col>
-
-              <Col md={3}>
-                <Form.Check
-                  type="switch"
-                  label="Early Check-in"
-                  checked={formData.earlyCheckin}
-                  onChange={(e) =>
-                    setFormData({ ...formData, earlyCheckin: e.target.checked })
-                  }
-                />
-              </Col>
-
-              <Col md={3}>
-                <Form.Check
-                  type="switch"
-                  label="Late Checkout"
-                  checked={formData.lateCheckout}
-                  onChange={(e) =>
-                    setFormData({ ...formData, lateCheckout: e.target.checked })
-                  }
-                />
-              </Col>
-
-              <Col md={3}>
-                <Form.Check
-                  type="switch"
-                  label="Hourly Stay"
-                  checked={formData.hourlyStay}
-                  onChange={(e) =>
-                    setFormData({ ...formData, hourlyStay: e.target.checked })
-                  }
-                />
-              </Col>
-
-              <Col md={3}>
-                <Form.Check
-                  type="switch"
-                  label="Long Stay Friendly"
-                  checked={formData.longStayFriendly}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      longStayFriendly: e.target.checked,
-                    })
-                  }
-                />
-              </Col>
-              <Row>
-                <Col md={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Floor Level</Form.Label>
-                    <Form.Select
-                      value={formData.floorLevel}
-                      onChange={(e) =>
-                        setFormData({ ...formData, floorLevel: e.target.value })
-                      }
-                    >
-                      <option value="Top">Top</option>
-                      <option value="Middle">Middle</option>
-                      <option value="Ground">Ground</option>
-                    </Form.Select>
-                  </Form.Group>
-                </Col>
-
-                <Col md={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Room View</Form.Label>
-                    <Form.Select
-                      value={formData.roomView}
-                      onChange={(e) =>
-                        setFormData({ ...formData, roomView: e.target.value })
-                      }
-                    >
-                      <option value="Sea">Sea</option>
-                      <option value="City">City</option>
-                      <option value="Garden">Garden</option>
-                    </Form.Select>
-                  </Form.Group>
-                </Col>
-              </Row>
-
-              <Col md={12}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Description</Form.Label>
-                  <Form.Control
-                    as="textarea"
-                    rows={3}
-                    value={formData.description}
-                    onChange={(e) =>
-                      setFormData({ ...formData, description: e.target.value })
-                    }
-                  />
-                </Form.Group>
-              </Col>
-
-              {/* Amenities */}
-              <Col md={12}>
-                <h5>Amenities</h5>
-                <Row>
-                  {[
-                    "WiFi",
-                    "TV",
-                    "AC",
-                    "Mini Bar",
-                    "Balcony",
-                    "Room Service",
-                  ].map((amenity) => (
-                    <Col md={4} key={amenity}>
-                      <Form.Check
-                        type="checkbox"
-                        className="custom-amenity-checkbox small-amenity-checkbox"
-                        label={amenity}
-                        checked={formData.amenities?.includes(amenity)}
-                        onChange={(e) => {
-                          const { checked, value } = e.target;
-                          setFormData((prev) => ({
-                            ...prev,
-                            amenities: checked
-                              ? [...(prev.amenities || []), value]
-                              : (prev.amenities || []).filter(
-                                (a) => a !== value
-                              ),
-                          }));
-                        }}
-                      />
-                    </Col>
-                  ))}
-                </Row>
-              </Col>
-            </Row>
-
-            {/* Seasonal Rates */}
-            <h5 className="mt-3">Seasonal Rates</h5>
-            {formData.seasonalRates.map((rate, index) => (
-              <Row key={index} className="mb-2 align-items-end">
-                <Col>
-                  <Form.Control
-                    placeholder="Season Name"
-                    value={rate.seasonName}
-                    onChange={(e) => {
-                      const updated = [...formData.seasonalRates];
-                      updated[index].seasonName = e.target.value;
-                      setFormData({ ...formData, seasonalRates: updated });
-                    }}
-                  />
-                </Col>
-                <Col>
-                  <Form.Control
-                    type="date"
-                    value={rate.startDate?.split("T")[0] || ""}
-                    onChange={(e) => {
-                      const updated = [...formData.seasonalRates];
-                      updated[index].startDate = e.target.value;
-                      setFormData({ ...formData, seasonalRates: updated });
-                    }}
-                  />
-                </Col>
-                <Col>
-                  <Form.Control
-                    type="date"
-                    value={rate.endDate?.split("T")[0] || ""}
-                    onChange={(e) => {
-                      const updated = [...formData.seasonalRates];
-                      updated[index].endDate = e.target.value;
-                      setFormData({ ...formData, seasonalRates: updated });
-                    }}
-                  />
-                </Col>
-                <Col>
-                  <Form.Control
-                    type="number"
-                    placeholder="Price"
-                    value={rate.price}
-                    onChange={(e) => {
-                      const updated = [...formData.seasonalRates];
-                      updated[index].price = e.target.value;
-                      setFormData({ ...formData, seasonalRates: updated });
-                    }}
-                  />
-                </Col>
-                <Col xs="auto">
-                  <button
-                    type="button"
-                    className="primary-checkout-button "
-                    onClick={() =>
-                      setFormData({
-                        ...formData,
-                        seasonalRates: formData.seasonalRates.filter(
-                          (_, i) => i !== index
-                        ),
-                      })
-                    }
-                  >
-                    ✕
-                  </button>
-                </Col>
-              </Row>
-            ))}
-
-            <button
-              type="button"
-              className="primary-button btn-sm small-add-button"
-              onClick={() =>
-                setFormData({
-                  ...formData,
-                  seasonalRates: [
-                    ...formData.seasonalRates,
-                    { seasonName: "", startDate: "", endDate: "", price: "" },
-                  ],
-                })
+  <Modal.Body className="small-form">
+    <Form onSubmit={handleUpdateRoom}>
+      {/* ----------------- Room Information ----------------- */}
+      {/* Copy the entire Room Info section from Add modal here */}
+      <Row>
+        <Col md={4}>
+          <Form.Group className="mb-3">
+            <Form.Label>Room Number</Form.Label>
+            <Form.Control
+              value={formData.roomNumber}
+              onChange={(e) =>
+                setFormData({ ...formData, roomNumber: e.target.value })
               }
+              required
+            />
+          </Form.Group>
+        </Col>
+        <Col md={4}>
+          <Form.Group className="mb-3">
+            <Form.Label>Room Type</Form.Label>
+            <Form.Select
+              value={formData.roomType}
+              onChange={(e) =>
+                setFormData({ ...formData, roomType: e.target.value })
+              }
+              required
             >
-              + Add Seasonal Rate
-            </button>
+              <option value="">Select Type</option>
+              <option value="Standard">Standard</option>
+              <option value="Deluxe">Deluxe</option>
+              <option value="Suite">Suite</option>
+              <option value="Executive">Executive</option>
+              <option value="Penthouse">Penthouse</option>
+            </Form.Select>
+          </Form.Group>
+        </Col>
+        <Col md={4}>
+          <Form.Group className="mb-3">
+            <Form.Label>Base Rate</Form.Label>
+            <Form.Control
+              type="number"
+              value={formData.baseRate}
+              onChange={(e) =>
+                setFormData({ ...formData, baseRate: e.target.value })
+              }
+              required
+            />
+          </Form.Group>
+        </Col>
+      </Row>
 
-            <Modal.Footer>
-              <button
-                type="button"
-                className="secondary-button btn-sm small-add-button"
-                onClick={() => setShowEditModal(false)}
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="primary-button btn-sm small-add-button"
-                disabled={loading}
-              >
-                {loading ? "Updating..." : "Update Room"}
-              </button>
-            </Modal.Footer>
-          </Form>
-        </Modal.Body>
-      </Modal>
+      {/* ----------------- Capacity & Bed ----------------- */}
+      {/* Copy this section from Add modal */}
+
+      {/* ----------------- Bathroom Features ----------------- */}
+      {/* Copy this section from Add modal */}
+
+      {/* ----------------- View & Location ----------------- */}
+      {/* Copy this section from Add modal */}
+
+      {/* ----------------- Accessibility & Policies ----------------- */}
+      {/* Copy this section from Add modal */}
+
+      {/* ----------------- Rating & Tags ----------------- */}
+      {/* Copy this section from Add modal */}
+
+      {/* ----------------- Amenities ----------------- */}
+      {/* Copy this section from Add modal */}
+
+      {/* ----------------- Seasonal Rates ----------------- */}
+      {/* Copy this section from Add modal */}
+
+      {/* ----------------- Room Images ----------------- */}
+      <h5 className="text-secondary border-bottom pb-2 mb-3 mt-4 small-form-title">
+        Room Images (Max 5)
+      </h5>
+      <Form.Group className="mb-3">
+        <Form.Control
+          type="file"
+          multiple
+          accept="image/*"
+          onChange={(e) => {
+            const newFiles = Array.from(e.target.files);
+            setFormData((prev) => {
+              const combined = [...prev.images, ...newFiles].slice(0, 5);
+              return { ...prev, images: combined };
+            });
+          }}
+        />
+        <small className="text-muted">
+          Upload up to 5 images (jpg, png, jpeg)
+        </small>
+      </Form.Group>
+
+     <Row className="mt-3">
+  {formData.images.map((img, index) => {
+    if (!img) return null;
+
+    let src = "";
+
+    // 1️⃣ If img is a File object (newly uploaded)
+    if (img instanceof File) {
+      src = URL.createObjectURL(img);
+    }
+    // 2️⃣ If img is a string URL (existing images from backend)
+    else if (typeof img === "string") {
+      // If your backend provides only filename, prepend API URL
+      src = img.startsWith("http")
+        ? img
+        : `${process.env.REACT_APP_API_URL}/uploads/${img}`;
+    } else {
+      return null; // skip anything else
+    }
+
+    return (
+      <Col md={2} key={index} className="mb-2 position-relative">
+        <img
+          src={src}
+          alt="room"
+          style={{
+            width: "100%",
+            height: "100px",
+            objectFit: "cover",
+            borderRadius: "6px",
+            border: "1px solid #ddd",
+          }}
+        />
+        <button
+          type="button"
+          onClick={() =>
+            setFormData((prev) => ({
+              ...prev,
+              images: prev.images.filter((_, i) => i !== index),
+            }))
+          }
+          style={{
+            position: "absolute",
+            top: "4px",
+            right: "8px",
+            background: "rgba(0,0,0,0.6)",
+            color: "#fff",
+            border: "none",
+            borderRadius: "50%",
+            width: "22px",
+            height: "22px",
+          }}
+        >
+          ×
+        </button>
+      </Col>
+    );
+  })}
+</Row>
+
+
+
+      {/* ----------------- Description ----------------- */}
+      <Form.Group className="mb-3 mt-4">
+        <Form.Label>Description</Form.Label>
+        <ReactQuill
+          theme="snow"
+          value={formData.description}
+          onChange={(value) =>
+            setFormData({ ...formData, description: value })
+          }
+        />
+      </Form.Group>
+
+      <Modal.Footer>
+        <button
+          type="button"
+          className="secondary-button btn-sm small-add-button"
+          onClick={() => setShowEditModal(false)}
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          className="primary-button btn-sm small-add-button"
+          disabled={loading}
+        >
+          {loading ? "Updating..." : "Update Room"}
+        </button>
+      </Modal.Footer>
+    </Form>
+  </Modal.Body>
+</Modal>
+
 
       {/* ✅ View Room Modal */}
       <Modal
@@ -1809,7 +1454,9 @@ const Admin_Room_List = () => {
                         width: "100%",
                         cursor: "pointer",
                       }}
-                      onClick={() => window.open(`${IMG_BASE_URL}/${img}`, "_blank")}
+                      onClick={() =>
+                        window.open(`${IMG_BASE_URL}/${img}`, "_blank")
+                      }
                     />
                   </Col>
                 ))}
@@ -1818,7 +1465,6 @@ const Admin_Room_List = () => {
               <p className="text-muted">No images available</p>
             )}
           </Section>
-
         </Modal.Body>
 
         <Modal.Footer>
