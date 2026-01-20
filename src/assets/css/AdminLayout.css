@@ -1901,7 +1901,7 @@
   background-color: #f87951 !important;
 }
 
-/* Firefox support */
+/* Firefox support--- */
 .gold-file-input::-webkit-file-upload-button {
   background-color: #f87951 !important;
   color: #ffffff !important;
