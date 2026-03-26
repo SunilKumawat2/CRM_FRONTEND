@@ -83,14 +83,31 @@ const Admin_Room_List = () => {
   const [limit] = useState(10);
   const [total, setTotal] = useState(0);
   const totalPages = Math.ceil(total / limit);
+  const [checkIn, setCheckIn] = useState("");
+  const [checkOut, setCheckOut] = useState("");
 
   // Fetch Rooms
   const fetchRooms = async () => {
     try {
       setLoading(true);
-      const res = await Admin_Get_Rooms(page, limit);
+  
+      let formattedCheckIn = checkIn ? new Date(checkIn) : "";
+      let formattedCheckOut = checkOut ? new Date(checkOut) : "";
+  
+      // Ensure checkOut is next day if same as checkIn for 1-day booking
+      if (formattedCheckIn && formattedCheckOut && formattedCheckIn.getTime() === formattedCheckOut.getTime()) {
+        formattedCheckOut.setDate(formattedCheckOut.getDate() + 1);
+      }
+  
+      // Convert to yyyy-mm-dd for query
+      const checkInStr = formattedCheckIn ? formattedCheckIn.toISOString().split("T")[0] : "";
+      const checkOutStr = formattedCheckOut ? formattedCheckOut.toISOString().split("T")[0] : "";
+  
+      const res = await Admin_Get_Rooms(page, limit, "", checkInStr, checkOutStr);
+  
       setRooms(res.data?.data || []);
       setTotal(res.data.total);
+  
     } catch (err) {
       console.error("Error fetching rooms:", err);
       toast.error(err.response?.data?.message || "Failed to fetch rooms");
@@ -178,23 +195,6 @@ const Admin_Room_List = () => {
       </Form.Select>
     </Form.Group>
   );
-
-  const handleEditRoom = (room) => {
-    setSelectedRoom(room);
-
-    setFormData({
-      ...initialFormData, // default fallback
-      ...room,
-      amenities: room.amenities || [],
-      tags: room.tags || [],
-      seasonalRates:
-        room.seasonalRates?.length > 0
-          ? room.seasonalRates
-          : initialFormData.seasonalRates,
-    });
-
-    setShowEditModal(true);
-  };
 
   // Edit Room
   const handleUpdateRoom = async (e) => {
@@ -336,6 +336,48 @@ const Admin_Room_List = () => {
             <FaPlus className="me-2" /> Add Room
           </button>
         </div>
+        <div className="d-flex gap-3 mb-3 filter-bar-small">
+          <div>
+            <label className="form-label fw-bold">Start Date</label>
+            <input
+              type="date"
+              className="form-control form-control-sm"
+              value={checkIn}
+              onChange={(e) => setCheckIn(e.target.value)}
+              onClick={(e) => e.target.showPicker && e.target.showPicker()} // opens native calendar
+            />
+          </div>
+
+          <div>
+            <label className="form-label fw-bold">End Date</label>
+            <input
+              type="date"
+              className="form-control form-control-sm"
+              value={checkOut}
+              onChange={(e) => setCheckOut(e.target.value)}
+              onClick={(e) => e.target.showPicker && e.target.showPicker()} // opens native calendar
+            />
+          </div>
+
+          <div className="align-self-end">
+            <button className="primary-button" onClick={fetchRooms}>
+              Filter
+            </button>
+          </div>
+
+          <div className="d-flex align-items-end">
+            <button
+              className="secondary-button"
+              onClick={() => {
+                setCheckIn("");
+                setCheckOut("");
+                fetchRooms();
+              }}
+            >
+              Reset
+            </button>
+          </div>
+        </div>
         <ToastContainer position="top-right" autoClose={2000} />
         {loading ? (
           <div className="text-center my-4">
@@ -389,10 +431,10 @@ const Admin_Room_List = () => {
                     {/* ✅ Availability */}
                     <td>
                       <span
-                        className={`badge ${room.isAvailable ? "bg-success" : "bg-danger"
+                        className={`badge ${room.isAvailable ? "bg-success" : "bg-success"
                           }`}
                       >
-                        {room.isAvailable ? "Available" : "Not Available"}
+                        {room.isAvailable ? "Available" : "Available"}
                       </span>
                     </td>
 
@@ -965,50 +1007,40 @@ const Admin_Room_List = () => {
               </small>
             </Form.Group>
             {/* Image Preview */}
-            {formData.images.length > 0 && (
-              <Row className="mt-3">
-                {formData.images.map((file, index) => (
-                  <Col md={2} key={index} className="mb-2 position-relative">
-                    <img
-                      src={URL.createObjectURL(file)}
-                      alt="preview"
-                      style={{
-                        width: "100%",
-                        height: "100px",
-                        objectFit: "cover",
-                        borderRadius: "6px",
-                        border: "1px solid #ddd",
-                      }}
-                    />
+            {formData.images.map((file, index) => {
+  const imageSrc =
+    file instanceof File
+      ? URL.createObjectURL(file)
+      : `${process.env.REACT_APP_IMAGE_URL}/${file}`;
 
-                    {/* Remove button */}
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          images: prev.images.filter((_, i) => i !== index),
-                        }))
-                      }
-                      style={{
-                        position: "absolute",
-                        top: "4px",
-                        right: "8px",
-                        background: "rgba(0,0,0,0.6)",
-                        color: "#fff",
-                        border: "none",
-                        borderRadius: "50%",
-                        width: "22px",
-                        height: "22px",
-                        cursor: "pointer",
-                      }}
-                    >
-                      ×
-                    </button>
-                  </Col>
-                ))}
-              </Row>
-            )}
+  return (
+    <Col md={2} key={index} className="mb-2 position-relative">
+      <img
+        src={imageSrc}
+        alt="preview"
+        style={{
+          width: "100%",
+          height: "100px",
+          objectFit: "cover",
+          borderRadius: "6px",
+          border: "1px solid #ddd",
+        }}
+      />
+
+      <button
+        type="button"
+        onClick={() =>
+          setFormData((prev) => ({
+            ...prev,
+            images: prev.images.filter((_, i) => i !== index),
+          }))
+        }
+      >
+        ×
+      </button>
+    </Col>
+  );
+})}
 
             {/* ----------------- Description ----------------- */}
             <Form.Group className="mb-3">

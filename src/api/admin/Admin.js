@@ -197,6 +197,54 @@ export const Admin_Get_Role_List = async (page, limit) => {
   }
 };
 
+// <----------------  Get User List ----------------->
+export const Admin_Get_User_List = async (page, limit) => {
+    try {
+      const token = getToken();
+      const response = await axios.get(`${API_BASE_URL}/user-list?page=${page}&limit=${limit}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return response;
+    } catch (error) {
+      throw error.response || error;
+    }
+  };
+
+  // <---------------- Admin Delete User ----------------->
+export const Admin_User_Delete = async (userId) => {
+    try {
+      const token = getToken();
+      const response = await axios.delete(
+        `${API_BASE_URL}/user-delete/${userId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      return response;
+    } catch (error) {
+      throw error.response || error;
+    }
+  };
+
+// <----------------  Block / Unblock User ----------------->
+export const Admin_Toggle_User_Block = async (id, reason = "") => {
+    try {
+      const token = getToken();
+  
+      const response = await axios.put(
+        `${API_BASE_URL}/block-user/${id}`, // ✅ id in params
+        { reason }, // ✅ send reason in body (optional)
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+  
+      return response;
+    } catch (error) {
+      throw error.response || error;
+    }
+  };
+
 // <---------------- Admin Delete Role ----------------->
 export const Admin_Role_Delete = async (roleId) => {
   try {
@@ -330,12 +378,27 @@ export const Admin_Post_Categories = async (userData) => {
 };
 
 // <----------------  Admin Get Room  ----------------->
-export const Admin_Get_Rooms = async (page, limit, search = "") => {
+export const Admin_Get_Rooms = async (
+  page,
+  limit,
+  search = "",
+  checkIn = "",
+  checkOut = ""
+) => {
   try {
     const token = getToken();
-    const response = await axios.get(`${API_BASE_URL}/get-rooms?page=${page}&limit=${limit}&search=${search}`, {
+
+    let url = `${API_BASE_URL}/get-rooms?page=${page}&limit=${limit}&search=${search}`;
+
+    // ✅ Add date filters if selected
+    if (checkIn && checkOut) {
+      url += `&checkIn=${checkIn}&checkOut=${checkOut}`;
+    }
+
+    const response = await axios.get(url, {
       headers: { Authorization: `Bearer ${token}` },
     });
+
     return response;
   } catch (error) {
     throw error.response || error;

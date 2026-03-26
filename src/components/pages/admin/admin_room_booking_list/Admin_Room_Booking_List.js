@@ -20,6 +20,8 @@ import {
     TbPlayerTrackNextFilled,
     TbPlayerTrackPrevFilled,
 } from "react-icons/tb";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 const Admin_Room_Booking_List = () => {
     const [bookings, setBookings] = useState([]);
@@ -128,11 +130,17 @@ const Admin_Room_Booking_List = () => {
     // <-------- Add Booking ------------->
     const handleAddBooking = async () => {
         try {
-            await Admin_Post_Room_Booking(formData);
+            const submitBooking = await Admin_Post_Room_Booking(formData);
+            console.log("Booking Success Response:", submitBooking);
+
             setShowAddModal(false);
             loadBookings();
         } catch (err) {
+            // This will log the API error message if available
             console.error("Add Booking Error:", err);
+            if (err.status == 400) {
+                toast.error(err?.message)
+            }
         }
     };
 
@@ -205,6 +213,22 @@ const Admin_Room_Booking_List = () => {
             toast.error("❌ Failed to filter bookings");
         }
     };
+
+    const handleDownloadPDF = () => {
+        const input = document.getElementById("booking-details-pdf"); // Wrap modal content in a div with this ID
+        if (!input) return;
+      
+        html2canvas(input, { scale: 2 }).then((canvas) => {
+          const imgData = canvas.toDataURL("image/png");
+          const pdf = new jsPDF("p", "mm", "a4");
+          const imgProps = pdf.getImageProperties(imgData);
+          const pdfWidth = pdf.internal.pageSize.getWidth();
+          const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      
+          pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+          pdf.save(`Booking_${selectedBooking.bookingNumber}.pdf`);
+        });
+      };
 
     // <------------ Render the Booking List ------------->
     useEffect(() => {
@@ -500,7 +524,7 @@ const Admin_Room_Booking_List = () => {
                                         }}
                                     >
                                         <option value="">-- Select Room --</option>
-                                        {roomList?.filter((room) => room.isAvailable === true)?.map((room) => (
+                                        {roomList?.map((room) => (
                                             <option key={room._id} value={room._id}>
                                                 {room.roomNumber} - {room.roomType}
                                             </option>
@@ -664,7 +688,7 @@ const Admin_Room_Booking_List = () => {
 
                 <Modal.Body className="small-view-modal">
                     {selectedBooking && (
-                        <div className="p-3">
+                        <div id="booking-details-pdf" className="p-3">
 
                             {/* ===================== BOOKING SUMMARY ===================== */}
                             <h5 className="primary-color mb-3">Booking Summary</h5>
@@ -796,8 +820,18 @@ const Admin_Room_Booking_List = () => {
                 </Modal.Body>
 
                 <Modal.Footer className="small-view-modal-footer">
-                    <button className="secondary-button btn-sm small-add-button" onClick={() => setShowViewModal(false)}>
+                    <button
+                        className="secondary-button btn-sm small-add-button"
+                        onClick={() => setShowViewModal(false)}
+                    >
                         Close
+                    </button>
+
+                    <button
+                        className="primary-button btn-sm small-add-button"
+                        onClick={() => handleDownloadPDF()}
+                    >
+                        Download PDF
                     </button>
                 </Modal.Footer>
             </Modal>

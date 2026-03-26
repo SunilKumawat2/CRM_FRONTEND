@@ -17,9 +17,9 @@ import { ToastContainer, toast } from "react-toastify";
 const Admin_Role_List = () => {
   const [roles, setRoles] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [showPermModal, setShowPermModal] = useState(false);
   const [formData, setFormData] = useState({ name: "", description: "" });
   const [loading, setLoading] = useState(false);
-  const [showPermModal, setShowPermModal] = useState(false);
   const [selectedRole, setSelectedRole] = useState(null);
   const modules = [
     "Dashboard",

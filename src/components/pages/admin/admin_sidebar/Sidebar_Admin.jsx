@@ -76,6 +76,18 @@ const Sidebar_Admin = ({ isCollapsed, setIsCollapsed }) => {
           </NavLink>
         )}
 
+        {hasPermission("user_view") && (
+          <NavLink
+            to="/admin-user-list"
+            className={({ isActive }) =>
+              isActive ? "menu-link active" : "menu-link"
+            }
+          >
+            <FaUserShield className="menu-icon" />
+            {!isCollapsed && <span>Users</span>}
+          </NavLink>
+        )}
+
         {/* Inquiries */}
         {/* {hasPermission("inquiries_view") && (
           <NavLink

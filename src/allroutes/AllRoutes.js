@@ -22,6 +22,7 @@ import Admin_Guest_Feedback from "../components/pages/admin/admin_guest_request/
 import Admin_Guest_Request from "../components/pages/admin/admin_guest_request/Admin_Guest_Request";
 import Admin_User_Feedback from "../components/pages/admin/admin_user_feedback/Admin_User_Feedback";
 import AdminNotifications from "../components/pages/admin/admin_notification/AdminNotifications";
+import Admin_User_List from "../components/pages/admin/admin_user_list/Admin_User_List";
 
 const AllRoutes = () => {
   return (
@@ -183,6 +184,14 @@ const AllRoutes = () => {
         element={
           <ProtectedRoute requiredPermission="notification_view">
             <AdminNotifications />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin-user-list"
+        element={
+          <ProtectedRoute requiredPermission="user_view">
+            <Admin_User_List />
           </ProtectedRoute>
         }
       />
