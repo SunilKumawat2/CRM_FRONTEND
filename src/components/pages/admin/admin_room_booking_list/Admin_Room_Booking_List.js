@@ -1328,6 +1328,7 @@ const Admin_Room_Booking_List = () => {
                                 <th>Check-In</th>
                                 <th>Check-Out</th>
                                 <th>Status</th>
+                                <th>Source</th>
                                 <th>Payment</th>
                                 <th>Total</th>
                                 <th>Deposit</th>
@@ -1371,11 +1372,19 @@ const Admin_Room_Booking_List = () => {
                                         </td>
 
                                         {/* Payment */}
+                                        <td className="text-capitalize">{booking_result.source}</td>
                                         <td className="text-capitalize">{booking_result.paymentStatus}</td>
 
                                         {/* Price */}
                                         <td>₹{booking_result.totalAmount}</td>
-                                        <td>₹{booking_result.depositAmount}</td>
+                                        {
+                                            booking_result?.source == "online" ? (
+                                                <td>₹{booking_result.totalAmount}</td>
+                                            ):(
+                                                
+                                                <td>₹{booking_result.depositAmount}</td>
+                                            )
+                                        }
 
                                         {/* Actions */}
                                         <td>

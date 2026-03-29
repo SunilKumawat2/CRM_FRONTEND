@@ -464,7 +464,7 @@ export const Admin_Room_Booking_Delete = async (roleId) => {
   try {
     const token = getToken();
     const response = await axios.delete(
-      `${API_BASE_URL}/delete-room/${roleId}`,
+      `${API_BASE_URL}/delete-booking/${roleId}`,
       {
         headers: { Authorization: `Bearer ${token}` },
       }
