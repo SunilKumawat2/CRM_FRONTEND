@@ -563,6 +563,36 @@ export const Admin_Get_Rooms_Guest_list = async (page, limit) => {
     throw error.response || error;
   }
 };
+// ✅ Get Guest List with Pagination
+export const Admin_Get_Repeat_Guests = async (page, limit) => {
+  try {
+    const token = getToken();
+    const response = await axios.get(
+      `${API_BASE_URL}/get-repeat-guest?page=${page}&limit=${limit}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+// ✅ Get Guest List with Pagination
+export const Admin_Get_VIP_Guests = async (page, limit) => {
+  try {
+    const token = getToken();
+    const response = await axios.get(
+      `${API_BASE_URL}/get-vip-guest?page=${page}&limit=${limit}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
 
 
 
@@ -1093,6 +1123,124 @@ export const Admin_Get_Notifications_Marked_All_Read = async () => {
       `${API_BASE_URL}/notifications/mark-all-read`,
       {},
       { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <----------- get room booking Details ------------>
+export const Admin_Get_Home_Banner = async () => {
+  try {
+    const token = getToken();
+    const response = await axios.get(`${API_BASE_URL}/get-banner`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <---------- Admin Create the Room Booking ------------>
+export const Admin_Post_Home_Banner = async (userData) => {
+  try {
+    const token = getToken();
+    const response = await axios.post(`${API_BASE_URL}/create-banner`, userData, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <---------------- Admin Delete Room Booking  ----------------->
+export const Admin_Home_Banner_Delete = async (bannerId) => {
+  try {
+    const token = getToken();
+    const response = await axios.delete(
+      `${API_BASE_URL}/delete-banner/${bannerId}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <----------------  Update Admin Room Booking ----------------->
+export const Admin_Home_Booking_Update = async (bannerId, formData) => {
+  try {
+    const token = getToken();
+    const response = await axios.put(
+      `${API_BASE_URL}/update-banner/${bannerId}`,
+      formData,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <---------------- Admin Create Role ----------------->
+export const Admin_Create_Room_Type = async (data) => {
+  try {
+    const token = getToken();
+    const response = await axios.post(`${API_BASE_URL}/create-room-type`, data, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <----------------  Get Role List ----------------->
+export const Admin_Get_Room_Type = async (page, limit) => {
+  try {
+    const token = getToken();
+    const response = await axios.get(`${API_BASE_URL}/get-room-type?page=${page}&limit=${limit}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <---------------- Admin Delete Role ----------------->
+export const Admin_Room_Type_Delete = async (roleId) => {
+  try {
+    const token = getToken();
+    const response = await axios.delete(
+      `${API_BASE_URL}/delete-room-type/${roleId}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <----------------  Update Role ----------------->
+export const Admin_Room_Type_Update = async (roleId, formData) => {
+  try {
+    const token = getToken();
+    const response = await axios.put(
+      `${API_BASE_URL}/update-room-type/${roleId}`,
+      formData,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
     );
     return response;
   } catch (error) {

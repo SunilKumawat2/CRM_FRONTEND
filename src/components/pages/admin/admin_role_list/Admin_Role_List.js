@@ -13,7 +13,6 @@ import {
 } from "react-icons/tb";
 import { ToastContainer, toast } from "react-toastify";
 
-
 const Admin_Role_List = () => {
   const [roles, setRoles] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -121,7 +120,9 @@ const Admin_Role_List = () => {
       fetchRoles(); // Refresh role list
     } catch (err) {
       console.error("Error updating permissions:", err);
-      toast.error(err.response?.data?.message || "Failed to update permissions");
+      toast.error(
+        err.response?.data?.message || "Failed to update permissions",
+      );
     }
   };
 
@@ -143,58 +144,61 @@ const Admin_Role_List = () => {
         </div>
 
         <ToastContainer position="top-right" autoClose={2000} />
-     {
-      loading ? (
- <div className="text-center my-4">
+        {loading ? (
+          <div className="text-center my-4">
             <Spinner animation="border" /> <p>Loading...</p>
           </div>
-      ):(
- <Table striped bordered hover responsive className="table-smaller custom-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Role Name</th>
-              <th>Description</th>
-              <th>Created Date</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {roles?.length > 0 ? (
-              roles?.map((role, index) => (
-                <tr key={role?._id}>
-                  <td>{index + 1}</td>
-                  <td>{role?.name}</td>
-                  <td>{role?.description || "-"}</td>
-                  <td>{new Date(role?.createdAt).toLocaleString()}</td>
-                  <td className="d-flex p-3 gap-2">
-                    <button
-                      className="primary-button btn-sm small-add-button"
-                      onClick={() => handleOpenPermissions(role)}
-                    >
-                      Permissions
-                    </button>
-                    <button
-                      className="secondary-button btn-sm small-add-button"
-                      onClick={() => handleDeleteRole(role._id)}
-                    >
-                      Delete
-                    </button>
+        ) : (
+          <Table
+            striped
+            bordered
+            hover
+            responsive
+            className="table-smaller custom-table"
+          >
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Role Name</th>
+                <th>Description</th>
+                <th>Created Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {roles?.length > 0 ? (
+                roles?.map((role, index) => (
+                  <tr key={role?._id}>
+                    <td>{index + 1}</td>
+                    <td>{role?.name}</td>
+                    <td>{role?.description || "-"}</td>
+                    <td>{new Date(role?.createdAt).toLocaleString()}</td>
+                    <td className="d-flex p-3 gap-2">
+                      <button
+                        className="primary-button btn-sm small-add-button"
+                        onClick={() => handleOpenPermissions(role)}
+                      >
+                        Permissions
+                      </button>
+                      <button
+                        className="secondary-button btn-sm small-add-button"
+                        onClick={() => handleDeleteRole(role._id)}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5" className="text-center">
+                    {loading ? "Loading roles..." : "No roles found"}
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="5" className="text-center">
-                  {loading ? "Loading roles..." : "No roles found"}
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </Table>
-      )
-     }
-       
+              )}
+            </tbody>
+          </Table>
+        )}
 
         <div className="pagination-container d-flex justify-content-center mt-3">
           <button
@@ -217,7 +221,6 @@ const Admin_Role_List = () => {
             <TbPlayerTrackNextFilled size={20} />
           </button>
         </div>
-
       </div>
 
       {/* ✅ Create Role Modal */}
@@ -279,7 +282,9 @@ const Admin_Role_List = () => {
         size="lg"
       >
         <Modal.Header closeButton>
-          <Modal.Title className="small-form-title">Manage Permissions: {selectedRole?.name}</Modal.Title>
+          <Modal.Title className="small-form-title">
+            Manage Permissions: {selectedRole?.name}
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body className="small-view-modal">
           {modules.map((mod) => (

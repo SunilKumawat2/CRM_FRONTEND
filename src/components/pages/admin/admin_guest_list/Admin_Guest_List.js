@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Table, Modal, Form, Button, Spinner } from "react-bootstrap";
 import {
   Admin_Get_Rooms_Guest_list,
+  Admin_Get_Repeat_Guests,
+  Admin_Get_VIP_Guests,
   Admin_Get_Rooms_Guest_Details,
   Admin_Post_Room_Guest,
   Admin_Room_Guest_Delete,
@@ -18,6 +20,7 @@ import {
 const Admin_Guest_List = () => {
   const [showMoreHistory, setShowMoreHistory] = useState(false);
   const [guests, setGuests] = useState([]);
+  console.log("setGuests_setGuests",guests[0]?.totalStays)
   const [total, setTotal] = useState(0);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -36,22 +39,32 @@ const Admin_Guest_List = () => {
     idDocument: null, // ✅ file object
   });
   const [showViewModal, setShowViewModal] = useState(false);
-  const [isloading, setIsloading] = useState(false)
+  const [filterType, setFilterType] = useState("all");
+  const [isloading, setIsloading] = useState(false);
   const [page, setPage] = useState(1);
-  const limit = 1;
+  const limit = 10;
   const totalPages = Math.ceil(total / limit);
   // ✅ Load Guests
   const loadGuests = async () => {
-    setIsloading(true)
+    setIsloading(true);
     try {
-      const res = await Admin_Get_Rooms_Guest_list(page, limit);
+      let res;
+
+      if (filterType == "repeat") {
+        res = await Admin_Get_Repeat_Guests(page, limit);
+      } else if (filterType == "vip") {
+        res = await Admin_Get_VIP_Guests(page, limit);
+      } else {
+        res = await Admin_Get_Rooms_Guest_list(page, limit);
+      }
+
       setGuests(res.data.data);
       setTotal(res.data.total);
-      setIsloading(false)
     } catch (err) {
-      setIsloading(false)
       console.error("Guest Fetch Error:", err);
       toast.error("Failed to load guests");
+    } finally {
+      setIsloading(false);
     }
   };
 
@@ -67,7 +80,7 @@ const Admin_Guest_List = () => {
 
   useEffect(() => {
     loadGuests();
-  }, [page]);
+  }, [page, filterType]);
 
   const updateField = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -202,63 +215,100 @@ const Admin_Guest_List = () => {
     <AdminLayout>
       <div className="container">
         {/* =============== Add Button =============== */}
-        <div className="d-flex justify-content-between mb-3">
+        <div className="d-flex justify-content-between align-items-center mb-3">
           <h4>Guest List</h4>
-          <button
-            className="primary-button btn-sm small-add-button"
-            onClick={openAdd}
-          >
-            <FiPlus /> Add Guest
-          </button>
+
+          <div className="d-flex gap-2">
+            <button
+              className={`btn-sm small-add-button ${filterType === "all" ? 
+                "primary-button" : "secondary-button"}`}
+              onClick={() => {
+                setPage(1);
+                setFilterType("all");
+              }}
+            >
+              All Guests
+            </button>
+
+            <button
+              className={`btn-sm small-add-button ${filterType === "repeat" ? "primary-button" :
+                 "secondary-button"}`}
+              onClick={() => {
+                setPage(1);
+                setFilterType("repeat");
+              }}
+            >
+              Repeat Guests
+            </button>
+
+            <button
+              className={`btn-sm small-add-button ${filterType === "vip" ? 
+                "primary-button" : "secondary-button"}`}
+              onClick={() => {
+                setPage(1);
+                setFilterType("vip");
+              }}
+            >
+              VIP Guests
+            </button>
+
+            <button
+              className="primary-button btn-sm small-add-button"
+              onClick={openAdd}
+            >
+              <FiPlus /> Add Guest
+            </button>
+          </div>
         </div>
-        {
-          isloading ? (
-            <div className="text-center my-4">
-              <Spinner animation="border" /> <p>Loading...</p>
-            </div>
-          ) : (
-            <Table striped bordered hover responsive className="table-smaller">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Full Name</th>
-                  <th>Email</th>
-                  <th>Phone</th>
-                  <th>Address</th>
-                  <th>Membership</th>
-                  <th>Loyalty</th>
-                  <th>ID Type</th>
-                  <th>ID Number</th>
-                  <th>Preferences</th>
-                  <th>Created At</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
+        {isloading ? (
+          <div className="text-center my-4">
+            <Spinner animation="border" /> <p>Loading...</p>
+          </div>
+        ) : (
+          <Table striped bordered hover responsive className="table-smaller">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Address</th>
+                <th>Membership</th>
+                <th>Loyalty</th>
+                <th>ID Type</th>
+                <th>ID Number</th>
+                <th>Total Stays</th>
+                <th>Preferences</th>
+                <th>Created At</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
 
-              <tbody>
-                {guests?.map((g, i) => (
-                  <tr key={g._id}>
-                    <td>{(page - 1) * limit + i + 1}</td>
+            <tbody>
+              {guests?.map((g, i) => (
+                <tr key={g._id}>
+                  <td>{(page - 1) * limit + i + 1}</td>
 
-                    <td>{g.fullName}</td>
-                    <td>{g.email || "—"}</td>
-                    <td>{g.phone || "—"}</td>
-                    <td>{g.address || "—"}</td>
+                  <td>{g.fullName}</td>
+                  <td>{g.email || "—"}</td>
+                  <td>{g.phone || "—"}</td>
+                  <td>{g.address || "—"}</td>
 
-                    {/* Membership Tier + Points */}
-                    <td>{g.membershipTier || "—"}</td>
+                  {/* Membership Tier + Points */}
+                  <td>{g.membershipTier || "—"}</td>
 
-                    <td>{g.loyaltyPoints ?? "—"}</td>
+                  <td>{g.loyaltyPoints ?? "—"}</td>
 
-                    {/* ID Details */}
-                    <td>{g.idType || "—"}</td>
-                    <td>{g.idNumber || "—"}</td>
+                  {/* ID Details */}
+                  <td>{g.idType || "—"}</td>
+                  <td>{g.idNumber || "—"}</td>
+                  <td>{g.totalStays || "—"}</td>
 
-                    {/* Preferences */}
-                    {/* ✅ Preferences (Array Format) */}
-                    <td style={{ whiteSpace: "nowrap" }}>
-                      {Array.isArray(g.preferences) && g.preferences.length > 0
-                        ? g.preferences.map((p, idx) => (
+                  {/* Preferences */}
+                  {/* ✅ Preferences (Array Format) */}
+                  <td style={{ whiteSpace: "nowrap" }}>
+                    {Array.isArray(g.preferences) && g.preferences.length > 0
+                      ? g.preferences.map((p, idx) => (
                           <span
                             key={idx}
                             className="badge bg-info text-dark me-1"
@@ -266,47 +316,45 @@ const Admin_Guest_List = () => {
                             {p}
                           </span>
                         ))
-                        : "—"}
-                    </td>
+                      : "—"}
+                  </td>
 
-                    {/* Created At */}
-                    <td>{g.createdAt?.slice(0, 10)}</td>
+                  {/* Created At */}
+                  <td>{g.createdAt?.slice(0, 10)}</td>
 
-                    {/* Actions */}
-                    <td>
-                      <div className="d-flex gap-2">
-                        {/* ✅ View Guest Details */}
-                        <FiEye
-                          className="text-success"
-                          size={17}
-                          role="button"
-                          onClick={() => openViewModal(g._id)}
-                        />
+                  {/* Actions */}
+                  <td>
+                    <div className="d-flex gap-2">
+                      {/* ✅ View Guest Details */}
+                      <FiEye
+                        className="text-success"
+                        size={17}
+                        role="button"
+                        onClick={() => openViewModal(g._id)}
+                      />
 
-                        {/* ✅ Edit Guest */}
-                        <FiEdit
-                          className="text-warning"
-                          size={17}
-                          role="button"
-                          onClick={() => openEditModal(g._id)}
-                        />
+                      {/* ✅ Edit Guest */}
+                      <FiEdit
+                        className="text-warning"
+                        size={17}
+                        role="button"
+                        onClick={() => openEditModal(g._id)}
+                      />
 
-                        {/* ✅ Delete Guest */}
-                        <FiTrash
-                          className="text-danger"
-                          size={17}
-                          role="button"
-                          onClick={() => handleDeleteGuest(g._id)}
-                        />
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
-          )
-        }
-
+                      {/* ✅ Delete Guest */}
+                      <FiTrash
+                        className="text-danger"
+                        size={17}
+                        role="button"
+                        onClick={() => handleDeleteGuest(g._id)}
+                      />
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        )}
 
         {/* =============== Pagination =============== */}
         <div className="d-flex justify-content-between align-items-center mt-3">
@@ -723,7 +771,11 @@ const Admin_Guest_List = () => {
               Cancel
             </button>
 
-            <button className="primary-button btn-sm small-add-button" size="sm" onClick={handleUpdateGuest}>
+            <button
+              className="primary-button btn-sm small-add-button"
+              size="sm"
+              onClick={handleUpdateGuest}
+            >
               Update Guest
             </button>
           </Modal.Footer>

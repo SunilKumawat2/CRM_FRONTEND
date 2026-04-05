@@ -22,6 +22,8 @@ import Admin_Guest_Feedback from "../components/pages/admin/admin_guest_request/
 import Admin_Guest_Request from "../components/pages/admin/admin_guest_request/Admin_Guest_Request";
 import Admin_User_Feedback from "../components/pages/admin/admin_user_feedback/Admin_User_Feedback";
 import AdminNotifications from "../components/pages/admin/admin_notification/AdminNotifications";
+import Admin_Home_Banner from "../components/pages/admin/admin_home_banner/Admin_Home_Banner";
+import Admin_Room_Type from "../components/pages/admin/admin_room_type/Admin_Room_Type";
 
 const AllRoutes = () => {
   return (
@@ -183,6 +185,22 @@ const AllRoutes = () => {
         element={
           <ProtectedRoute requiredPermission="notification_view">
             <AdminNotifications />
+          </ProtectedRoute>
+        }
+      />
+       <Route
+        path="/admin-home-banner"
+        element={
+          <ProtectedRoute requiredPermission="banner_view">
+            <Admin_Home_Banner />
+          </ProtectedRoute>
+        }
+      />
+        <Route
+        path="/admin-room-type"
+        element={
+          <ProtectedRoute requiredPermission="banner_view">
+            <Admin_Room_Type />
           </ProtectedRoute>
         }
       />

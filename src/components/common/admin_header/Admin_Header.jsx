@@ -125,7 +125,7 @@ const Header_Admin = ({ theme, toggleTheme }) => {
               <Dropdown.Item>No notifications</Dropdown.Item>
             )}
 
-            {notifications.map((notif) => (
+            {notifications?.slice(0,8)?.map((notif) => (
               <Dropdown.Item key={notif._id} className={notif.read ? "" : "fw-bold"}>
                 {notif.message}
                 <div style={{ fontSize: "0.7rem", color: "#888" }}>

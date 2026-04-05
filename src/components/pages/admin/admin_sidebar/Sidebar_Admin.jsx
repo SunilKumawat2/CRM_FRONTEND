@@ -1,33 +1,15 @@
-// components/pages/admin/admin_sidebar/Sidebar_Admin.js
-
-import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import {
   FaTachometerAlt,
   FaUserShield,
-  FaCog,
   FaSignOutAlt,
-  FaEnvelopeOpenText,
   FaBars,
-  FaPhoneAlt
 } from "react-icons/fa";
 import { hasPermission } from "../../../../utils/auth";
 import { MdOutlineBedroomParent } from "react-icons/md";
 
 const Sidebar_Admin = ({ isCollapsed, setIsCollapsed }) => {
   const toggleSidebar = () => setIsCollapsed(!isCollapsed);
-  const [isOpen, setIsOpen] = useState(false);
-
-  const toggleDropdown = () => setIsOpen(!isOpen);
-
-  // State for status dropdown
-  const [status, setStatus] = useState("All Status");
-
-  const handleStatusChange = (e) => {
-    setStatus(e.target.value);
-    console.log("Selected Status:", e.target.value);
-    // You can call a filter function here if needed
-  };
 
   return (
     <aside className={`admin-sidebar ${isCollapsed ? "collapsed" : ""}`}>
@@ -49,7 +31,6 @@ const Sidebar_Admin = ({ isCollapsed, setIsCollapsed }) => {
             {!isCollapsed && <span>Dashboard</span>}
           </NavLink>
         )}
-
         {/* Roles */}
         {hasPermission("roles_view") && (
           <NavLink
@@ -62,7 +43,17 @@ const Sidebar_Admin = ({ isCollapsed, setIsCollapsed }) => {
             {!isCollapsed && <span>Roles</span>}
           </NavLink>
         )}
-
+         {hasPermission("room_type_view") && (
+          <NavLink
+            to="/admin-room-type"
+            className={({ isActive }) =>
+              isActive ? "menu-link active" : "menu-link"
+            }
+          >
+            <MdOutlineBedroomParent className="menu-icon" /> {/* you can change to a bed icon */}
+            {!isCollapsed && <span>Room Type</span>}
+          </NavLink>
+        )}
         {/* Admins */}
         {hasPermission("admins_view") && (
           <NavLink
@@ -75,33 +66,6 @@ const Sidebar_Admin = ({ isCollapsed, setIsCollapsed }) => {
             {!isCollapsed && <span>Admins</span>}
           </NavLink>
         )}
-
-        {/* Inquiries */}
-        {/* {hasPermission("inquiries_view") && (
-          <NavLink
-            to="/admin-inquiry"
-            className={({ isActive }) =>
-              isActive ? "menu-link active" : "menu-link"
-            }
-          >
-            <FaEnvelopeOpenText className="menu-icon" />
-            {!isCollapsed && <span>Inquiries</span>}
-          </NavLink>
-        )}  */}
-
-        {/* Inquiries */}
-        {/* {hasPermission("inquiries_view") && (
-          <NavLink
-            to="/admin-lead-list"
-            className={({ isActive }) =>
-              isActive ? "menu-link active" : "menu-link"
-            }
-          >
-            <FaPhoneAlt  className="menu-icon" />
-            {!isCollapsed && <span>Lead</span>}
-          </NavLink>
-        )}  */}
-
         {/* Rooms Management */}
         {hasPermission("rooms_view") && (
           <NavLink
@@ -114,7 +78,6 @@ const Sidebar_Admin = ({ isCollapsed, setIsCollapsed }) => {
             {!isCollapsed && <span>Rooms</span>}
           </NavLink>
         )}
-
         {/* Rooms booking Management */}
         {hasPermission("booking_view") && (
           <NavLink
@@ -227,6 +190,18 @@ const Sidebar_Admin = ({ isCollapsed, setIsCollapsed }) => {
             {!isCollapsed && <span>User Feedback</span>}
           </NavLink>
         )}
+        {hasPermission("banner_view") && (
+          <NavLink
+            to="/admin-home-banner"
+            className={({ isActive }) =>
+              isActive ? "menu-link active" : "menu-link"
+            }
+          >
+            <MdOutlineBedroomParent className="menu-icon" /> {/* you can change to a bed icon */}
+            {!isCollapsed && <span>Banner View</span>}
+          </NavLink>
+        )}
+        
         {/* Settings */}
         {/* {hasPermission("settings_view") && (
           <NavLink
