@@ -33,6 +33,7 @@ const Admin_Housekeeping = () => {
     notes: "",
     amenitiesReplaced: [{ item: "", quantity: "" }],
     laundryStatus: "in_progress",
+    roomCondition:"needs_maintenance",
   });
 
   const openVerifyModal = (item) => {
@@ -211,7 +212,7 @@ const Admin_Housekeeping = () => {
                   <td>{i + 1}</td>
 
                   <td>{item.room?.roomNumber || "—"}</td>
-                  <td>{item.room?.roomType || "—"}</td>
+                  <td>{item.room?.roomType?.name || "—"}</td>
 
                   <td>{item.assignedTo?.name || "—"}</td>
 
@@ -362,6 +363,20 @@ const Admin_Housekeeping = () => {
                   <option value="pending">Pending</option>
                 </Form.Select>
               </Col>
+              <Col>
+                <Form.Group>
+                  <Form.Label>Room Condition Status</Form.Label>
+                  <Form.Select
+                    name="roomCondition"
+                    value={formData.roomCondition}
+                    onChange={handleChange}
+                  >
+                    <option value="needs_maintenance">In maintenance</option>
+                    <option value="dirty">dirty</option>
+                    <option value="clean">Completed</option>
+                  </Form.Select>
+                </Form.Group>
+              </Col>
             </Row>
 
             {/* NOTES */}
@@ -418,9 +433,9 @@ const Admin_Housekeeping = () => {
                     onChange={handleChange}
                   >
                     <option value="">Select Room</option>
-                    {rooms.map((r) => (
+                    {rooms?.map((r) => (
                       <option key={r._id} value={r._id}>
-                        {r.roomNumber} - {r.roomType}
+                        {r?.roomNumber} - {r.roomType?.name}
                       </option>
                     ))}
                   </Form.Select>
@@ -488,6 +503,20 @@ const Admin_Housekeeping = () => {
                     <option value="in_progress">In Progress</option>
                     <option value="completed">Completed</option>
                     <option value="pending">Pending</option>
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+              <Col>
+                <Form.Group>
+                  <Form.Label>Room Condition Status</Form.Label>
+                  <Form.Select
+                    name="roomCondition"
+                    value={formData.roomCondition}
+                    onChange={handleChange}
+                  >
+                    <option value="needs_maintenance">In maintenance</option>
+                    <option value="dirty">dirty</option>
+                    <option value="clean">Completed</option>
                   </Form.Select>
                 </Form.Group>
               </Col>

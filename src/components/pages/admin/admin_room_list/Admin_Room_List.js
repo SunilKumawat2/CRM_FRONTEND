@@ -433,7 +433,7 @@ const Admin_Room_List = () => {
               <tr>
                 <th>#</th>
                 <th>Room No</th>
-                <th>Type</th>
+                <th>Room Type</th>
                 <th>Base Rate ($)</th>
                 <th>Seasonal Rates</th>
                 <th>Available</th>
@@ -451,7 +451,7 @@ const Admin_Room_List = () => {
                   <tr key={room._id}>
                     <td>{index + 1}</td>
                     <td>{room.roomNumber}</td>
-                    <td>{room.roomType}</td>
+                    <td>{room?.roomType?.name}</td>
                     <td>{room.baseRate}</td>
 
                     {/* ✅ Seasonal Rates */}
