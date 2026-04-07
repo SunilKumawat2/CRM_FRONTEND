@@ -342,8 +342,11 @@ const Admin_Housekeeping = () => {
                     value={formData.shift}
                     onChange={handleChange}
                   >
+                     <option value="">Select Shift</option>
                     <option value="morning">Morning</option>
+                    <option value="afternoon">Afternoon</option>
                     <option value="evening">Evening</option>
+                    <option value="night">Night</option>
                   </Form.Select>
                 </Form.Group>
               </Col>
@@ -358,9 +361,12 @@ const Admin_Housekeeping = () => {
                   value={formData.laundryStatus}
                   onChange={handleChange}
                 >
+                    <option value="">Select Laundry Status</option>
+                   <option value="not_collected">Not Collected</option>
                   <option value="in_progress">In Progress</option>
                   <option value="completed">Completed</option>
                   <option value="pending">Pending</option>
+                  <option value="returned">Returned</option>
                 </Form.Select>
               </Col>
               <Col>
