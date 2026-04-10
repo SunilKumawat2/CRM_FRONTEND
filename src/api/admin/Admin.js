@@ -912,12 +912,55 @@ export const Admin_create_event_package = async (formData) => {
     throw error.response || error;
   }
 };
+
 // <----------------  Admin get event package (pagination)  ----------------->
 export const Admin_Get_event_package = async (page = 1, limit = 1) => {
   try {
     const token = getToken();
     const response = await axios.get(
       `${API_BASE_URL}/get-event-package?page=${page}&limit=${limit}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <----------------  Admin get event package (pagination)  ----------------->
+export const Admin_Get_daily_revenue = async (date) => {
+  try {
+    const token = getToken();
+    const response = await axios.get(
+      `${API_BASE_URL}/daily-revenue?date=${date}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <----------------  Admin Get Monthly Revenue  ----------------->
+export const Admin_Get_monthly_revenue = async (year) => {
+  try {
+    const token = getToken();
+    const response = await axios.get(
+      `${API_BASE_URL}/monthly-revenue?year=${year}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <----------------  Admin Get Monthly Revenue  ----------------->
+export const Admin_Get_occupancy = async () => {
+  try {
+    const token = getToken();
+    const response = await axios.get(
+      `${API_BASE_URL}/occupancy`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
     return response;

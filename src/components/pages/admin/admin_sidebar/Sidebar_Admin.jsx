@@ -201,7 +201,28 @@ const Sidebar_Admin = ({ isCollapsed, setIsCollapsed }) => {
             {!isCollapsed && <span>Banner View</span>}
           </NavLink>
         )}
-        
+         {hasPermission("daily_report_view") && (
+          <NavLink
+            to="/admin-daily-reports"
+            className={({ isActive }) =>
+              isActive ? "menu-link active" : "menu-link"
+            }
+          >
+            <MdOutlineBedroomParent className="menu-icon" /> {/* you can change to a bed icon */}
+            {!isCollapsed && <span>daily Reports</span>}
+          </NavLink>
+        )}
+          {hasPermission("monthly_report_view") && (
+          <NavLink
+            to="/admin-monthly-reports"
+            className={({ isActive }) =>
+              isActive ? "menu-link active" : "menu-link"
+            }
+          >
+            <MdOutlineBedroomParent className="menu-icon" /> {/* you can change to a bed icon */}
+            {!isCollapsed && <span>Monthly Reports</span>}
+          </NavLink>
+        )}
         {/* Settings */}
         {/* {hasPermission("settings_view") && (
           <NavLink

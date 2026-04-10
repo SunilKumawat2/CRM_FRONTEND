@@ -1907,3 +1907,250 @@
   color: #ffffff !important;
   border: none !important;
 }
+/* Main Container */
+.report-container {
+  padding: 24px;
+  background-color: #f5f7fb;
+  min-height: 100vh;
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* Header */
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+}
+
+.report-header h1 {
+  font-size: 26px;
+  color: #222;
+}
+
+/* Controls */
+.report-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.report-controls input {
+  padding: 4px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+}
+
+
+
+/* Cards */
+.report-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-bottom: 30px;
+}
+
+.card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+}
+
+.card p {
+  color: #777;
+  font-size: 14px;
+}
+
+.card h2 {
+  margin-top: 8px;
+  font-size: 28px;
+  color: #2563eb;
+}
+
+/* Progress Section */
+.progress-section {
+  /* background: white; */
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.progress-section h3 {
+  margin-bottom: 15px;
+  color: #333;
+}
+
+/* Progress Bar */
+.progress-bar {
+  width: 100%;
+  height: 14px;
+  background-color: #e5e7eb;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: #22c55e;
+  width: 0%;
+  transition: width 0.5s ease;
+}
+/* DEFAULT (LIGHT MODE) */
+.report-container {
+  padding: 24px;
+  background: #f4f6fb;
+  min-height: 100vh;
+  font-family: "Segoe UI", sans-serif;
+  color: #1e293b;
+}
+
+/* DARK MODE ROOT */
+.report-container.dark {
+  background: #0f172a;
+  color: #e2e8f0;
+}
+
+/* HEADER */
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+}
+
+.report-header h1 {
+  font-size: 26px;
+}
+
+/* CONTROLS */
+.report-controls {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.report-controls input {
+  padding: 4px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+/* TOGGLE BUTTON */
+.toggle-btn {
+  background: #111827;
+}
+
+.report-container.dark .toggle-btn {
+  background: #facc15;
+  color: black;
+}
+
+/* CARDS */
+.report-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+  transition: 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+/* DARK CARD */
+.report-container.dark .card {
+  background: #1e293b;
+  box-shadow: none;
+}
+
+/* TEXT */
+.card p {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.report-container.dark .card p {
+  color: #94a3b8;
+}
+
+.card h2 {
+  margin-top: 10px;
+  font-size: 28px;
+  color: #2563eb;
+}
+
+.card .revenue {
+  color: #16a34a;
+}
+
+.card .date {
+  color: inherit;
+  font-size: 18px;
+}
+
+/* PROGRESS */
+.progress-section {
+  margin-top: 30px;
+  /* background: white; */
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05)
+}
+
+
+
+/* BAR */
+.progress-bar {
+  width: 100%;
+  height: 14px;
+  background: #e5e7eb;
+  border-radius: 20px;
+}
+
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(to right, #22c55e, #16a34a);
+}
+
+/* TEXT STATES */
+.loading-text,
+.no-data,
+.progress-text {
+  text-align: center;
+  color: #6b7280;
+}
+
+.report-container.dark .loading-text,
+.report-container.dark .no-data,
+.report-container.dark .progress-text {
+  color: #94a3b8;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .report-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .report-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

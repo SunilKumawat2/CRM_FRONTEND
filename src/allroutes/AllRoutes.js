@@ -24,6 +24,8 @@ import Admin_User_Feedback from "../components/pages/admin/admin_user_feedback/A
 import AdminNotifications from "../components/pages/admin/admin_notification/AdminNotifications";
 import Admin_Home_Banner from "../components/pages/admin/admin_home_banner/Admin_Home_Banner";
 import Admin_Room_Type from "../components/pages/admin/admin_room_type/Admin_Room_Type";
+import Admin_Daily_Reports from "../components/pages/admin/admin_daily_reports/Admin_Daily_Reports";
+import Admin_Monthly_Reports from "../components/pages/admin/admin_monthly_reports/Admin_Monthly_Reports";
 
 const AllRoutes = () => {
   return (
@@ -201,6 +203,22 @@ const AllRoutes = () => {
         element={
           <ProtectedRoute requiredPermission="banner_view">
             <Admin_Room_Type />
+          </ProtectedRoute>
+        }
+      />
+       <Route
+        path="/admin-daily-reports"
+        element={
+          <ProtectedRoute requiredPermission="daily_report_view">
+            <Admin_Daily_Reports />
+          </ProtectedRoute>
+        }
+      />
+        <Route
+        path="/admin-monthly-reports"
+        element={
+          <ProtectedRoute requiredPermission="monthly_report_view">
+            <Admin_Monthly_Reports />
           </ProtectedRoute>
         }
       />
