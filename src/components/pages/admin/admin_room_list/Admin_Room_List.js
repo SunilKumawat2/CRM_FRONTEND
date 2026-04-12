@@ -16,7 +16,10 @@ import {
   TbPlayerTrackPrevFilled,
 } from "react-icons/tb";
 import { IMG_BASE_URL } from "../../../../config/Config";
-
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 const Admin_Room_List = () => {
   const [rooms, setRooms] = useState([]);
   const [roomTypes, setRoomTypes] = useState([]);
@@ -367,18 +370,237 @@ const Admin_Room_List = () => {
       ))}
     </>
   );
+  // <--------------- Export To Excel ---------------->
+  const exportToExcel = () => {
+    const data = rooms.map((room, index) => ({
+      "Sr No": index + 1,
+      "Room Number": room.roomNumber,
+      "Room Type": room?.roomType?.name,
+      "Base Rate": room.baseRate,
+      Housekeeping: room.housekeepingStatus,
+      Availability: room.isAvailable,
+      Amenities: room.amenities?.join(", "),
+      "Created By": room.createdBy?.name,
+      "Created At": new Date(room.createdAt).toLocaleDateString(),
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Rooms");
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    const file = new Blob([excelBuffer], {
+      type: "application/octet-stream",
+    });
+
+    saveAs(file, "Rooms_Report.xlsx");
+  };
+  // <----------- Export to PDF -------------->
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+
+    doc.text("Room Management Report", 14, 15);
+
+    const tableColumn = [
+      "Sr No",
+      "Room No",
+      "Type",
+      "Base Rate",
+      "Housekeeping",
+      "Availability",
+      "Amenities",
+      "Created By",
+      "Date",
+    ];
+
+    const tableRows = [];
+
+    rooms.forEach((room, index) => {
+      tableRows.push([
+        index + 1,
+        room.roomNumber,
+        room?.roomType?.name,
+        room.baseRate,
+        room.housekeepingStatus,
+        room.isAvailable,
+        room.amenities?.join(", "),
+        room.createdBy?.name,
+        new Date(room.createdAt).toLocaleDateString(),
+      ]);
+    });
+
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      startY: 20,
+    });
+
+    doc.save("Rooms_Report.pdf");
+  };
+  // <-------------- Room Details Export PDF -------------->
+  const exportRoomDetailsPDF = (room) => {
+    if (!room) return;
+
+    const doc = new jsPDF();
+
+    // ================= HEADER =================
+    doc.setFontSize(16);
+    doc.text("Room Details Report", 14, 15);
+
+    doc.setFontSize(10);
+    doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 22);
+
+    let y = 30;
+
+    // ================= SECTION FUNCTION =================
+    const addSection = (title, data) => {
+      doc.setFontSize(13);
+      doc.text(title, 14, y);
+      y += 5;
+
+      const rows = Object.entries(data).map(([key, value]) => [
+        key,
+        String(value ?? "N/A"),
+      ]);
+
+      autoTable(doc, {
+        startY: y,
+        head: [["Field", "Value"]],
+        body: rows,
+        theme: "grid",
+        styles: { fontSize: 9 },
+      });
+
+      y = doc.lastAutoTable.finalY + 10;
+    };
+
+    // ================= BASIC =================
+    addSection("Basic Information", {
+      "Room Number": room.roomNumber,
+      "Room Type": room.roomType?.name || room.roomType,
+      "Room View": room.roomView,
+      "Floor Level": room.floorLevel,
+      "Near Elevator": room.nearElevator ? "Yes" : "No",
+    });
+
+    // ================= PRICING =================
+    addSection("Pricing", {
+      "Base Rate": `${room.baseRate}`,
+      "Discounted Price": `${room.discountedPrice}`,
+      "Pay at Hotel": room.payAtHotel ? "Yes" : "No",
+      "Free Cancellation": room.freeCancellation ? "Yes" : "No",
+      Refundable: room.refundable ? "Yes" : "No",
+    });
+
+    // ================= OCCUPANCY =================
+    addSection("Occupancy", {
+      "Max Adults": room.maxAdults,
+      "Max Children": room.maxChildren,
+      "Max Occupancy": room.maxOccupancy,
+      "Extra Bed Allowed": room.extraBedAllowed ? "Yes" : "No",
+    });
+
+    // ================= FEATURES =================
+    addSection("Room Features", {
+      "Living Area": room.hasLivingArea ? "Yes" : "No",
+      Balcony: room.hasBalcony ? "Yes" : "No",
+      Bathtub: room.bathtub ? "Yes" : "No",
+      Jacuzzi: room.jacuzzi ? "Yes" : "No",
+    });
+
+    // ================= STATUS =================
+    addSection("Status", {
+      Availability: room.isAvailable ? "Available" : "Unavailable",
+      "Housekeeping Status": room.housekeepingStatus,
+      Rating: room.rating,
+    });
+
+    // ================= AMENITIES =================
+    doc.setFontSize(13);
+    doc.text("Amenities", 14, y);
+    y += 5;
+
+    doc.setFontSize(10);
+    doc.text(
+      room.amenities?.length ? room.amenities.join(", ") : "No amenities",
+      14,
+      y,
+    );
+
+    y += 10;
+
+    // ================= DESCRIPTION =================
+    doc.setFontSize(13);
+    doc.text("Description", 14, y);
+    y += 5;
+
+    doc.setFontSize(10);
+    doc.text(room.description || "No description", 14, y, {
+      maxWidth: 180,
+    });
+
+    y += 15;
+
+    // ================= SEASONAL RATES =================
+    if (room.seasonalRates?.length) {
+      doc.text("Seasonal Rates", 14, y);
+
+      const seasonalRows = room.seasonalRates.map((s) => [
+        s.seasonName,
+        new Date(s.startDate).toLocaleDateString(),
+        new Date(s.endDate).toLocaleDateString(),
+        `₹${s.price}`,
+      ]);
+
+      autoTable(doc, {
+        startY: y + 5,
+        head: [["Season", "Start", "End", "Price"]],
+        body: seasonalRows,
+      });
+
+      y = doc.lastAutoTable.finalY + 10;
+    }
+
+    // ================= FOOTER =================
+    doc.setFontSize(10);
+    doc.text(`Created By: ${room.createdBy?.name || "N/A"}`, 14, y);
+    y += 5;
+
+    doc.text(`Created At: ${new Date(room.createdAt).toLocaleString()}`, 14, y);
+
+    // ================= SAVE =================
+    doc.save(`Room_${room.roomNumber}_Details.pdf`);
+  };
 
   return (
     <AdminLayout>
       <div className="container mt-4">
         <div className="d-flex justify-content-between align-items-center mb-3">
           <h5>Room Management</h5>
-          <button
-            className="primary-button btn-sm small-add-button"
-            onClick={() => setShowAddModal(true)}
-          >
-            <FaPlus className="me-2" /> Add Room
-          </button>
+          <div className="d-flex gap-2">
+            <button
+              className="primary-button btn-sm small-add-button"
+              onClick={() => setShowAddModal(true)}
+            >
+              <FaPlus className="me-2" /> Add Room
+            </button>
+            <button
+              className="green-button btn-sm small-add-button"
+              onClick={exportToExcel}
+            >
+              Export Excel
+            </button>
+            <button
+              className="red-button btn-sm small-add-button"
+              onClick={exportToPDF}
+            >
+              Export PDF
+            </button>
+          </div>
         </div>
         <div className="d-flex gap-3 mb-3 filter-bar-small">
           <div>
@@ -1165,7 +1387,7 @@ const Admin_Room_List = () => {
                     required
                   >
                     <option value="">Select Room Type</option>
-                      {roomTypes?.map((item) => (
+                    {roomTypes?.map((item) => (
                       <option key={item._id} value={item._id}>
                         {item.name}
                       </option>
@@ -1910,6 +2132,12 @@ const Admin_Room_List = () => {
             onClick={() => setShowViewModal(false)}
           >
             Close
+          </button>
+          <button
+            className="red-button btn-sm small-add-button"
+            onClick={() => exportRoomDetailsPDF(selectedRoom)}
+          >
+            Export PDF
           </button>
         </Modal.Footer>
       </Modal>

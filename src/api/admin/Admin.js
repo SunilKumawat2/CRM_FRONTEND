@@ -667,6 +667,38 @@ export const Admin_Get_Housekeeping = async () => {
   }
 };
 
+// ✅ Get Admin Dashboard ----------------->
+export const Admin_Get_Dashboard = async () => {
+  try {
+    const token = getToken();
+    const response = await axios.get(
+      `${API_BASE_URL}/get-dashboard`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// ✅ Get Admin occupancy ----------------->
+export const Admin_Get_Occupancy = async () => {
+  try {
+    const token = getToken();
+    const response = await axios.get(
+      `${API_BASE_URL}/occupancy`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
 // <----------------  Create House Keeping List ----------------->
 export const Admin_Create_Housekeeping = async (formData) => {
   try {

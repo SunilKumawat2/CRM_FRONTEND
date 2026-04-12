@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Modal, Form, Button, Spinner } from "react-bootstrap";
+import { Table, Modal, Form, Spinner } from "react-bootstrap";
 import {
   Admin_Get_Rooms_Guest_list,
   Admin_Get_Repeat_Guests,
@@ -16,11 +16,15 @@ import {
   TbPlayerTrackNextFilled,
   TbPlayerTrackPrevFilled,
 } from "react-icons/tb";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 const Admin_Guest_List = () => {
   const [showMoreHistory, setShowMoreHistory] = useState(false);
   const [guests, setGuests] = useState([]);
-  console.log("setGuests_setGuests",guests[0]?.totalStays)
+  console.log("setGuests_setGuests", guests[0]?.totalStays);
   const [total, setTotal] = useState(0);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -211,6 +215,86 @@ const Admin_Guest_List = () => {
     }
   };
 
+  const exportGuestsToExcel = () => {
+    const data = guests.map((g, i) => ({
+      "#": i + 1,
+      "Full Name": g.fullName,
+      Email: g.email || "-",
+      Phone: g.phone || "-",
+      Address: g.address || "-",
+      Membership: g.membershipTier || "-",
+      "Loyalty Points": g.loyaltyPoints || "-",
+      "ID Type": g.idType || "-",
+      "ID Number": g.idNumber || "-",
+      "Total Stays": g.totalStays || 0,
+      Preferences: Array.isArray(g.preferences)
+        ? g.preferences.join(", ")
+        : "-",
+      "Created At": g.createdAt?.slice(0, 10),
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Guests");
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    const file = new Blob([excelBuffer], {
+      type: "application/octet-stream",
+    });
+
+    saveAs(file, "Guest_List.xlsx");
+  };
+
+  const exportGuestsToPDF = () => {
+    const doc = new jsPDF();
+
+    const tableColumn = [
+      "#",
+      "Name",
+      "Phone",
+      "Address",
+      "Membership",
+      "ID Type",
+      "ID Number",
+      "Loyalty",
+      "Stays",
+      "Created",
+    ];
+
+    const tableRows = [];
+
+    guests.forEach((g, i) => {
+      tableRows.push([
+        i + 1,
+        g.fullName,
+        g.phone || "-",
+        g.address,
+        g.membershipTier || "-",
+        g.idType || "-",
+        g.idNumber || "-",
+        g.loyaltyPoints || "-",
+        g.totalStays || 0,
+        g.createdAt?.slice(0, 10),
+      ]);
+    });
+
+    // ✅ IMPORTANT (correct way)
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      startY: 20,
+    });
+
+    doc.setFontSize(14);
+    doc.text("Guest Report", 14, 15);
+
+    doc.save("Guest_List.pdf");
+  };
+
   return (
     <AdminLayout>
       <div className="container">
@@ -220,8 +304,9 @@ const Admin_Guest_List = () => {
 
           <div className="d-flex gap-2">
             <button
-              className={`btn-sm small-add-button ${filterType === "all" ? 
-                "primary-button" : "secondary-button"}`}
+              className={`btn-sm small-add-button ${
+                filterType === "all" ? "primary-button" : "secondary-button"
+              }`}
               onClick={() => {
                 setPage(1);
                 setFilterType("all");
@@ -231,8 +316,9 @@ const Admin_Guest_List = () => {
             </button>
 
             <button
-              className={`btn-sm small-add-button ${filterType === "repeat" ? "primary-button" :
-                 "secondary-button"}`}
+              className={`btn-sm small-add-button ${
+                filterType === "repeat" ? "primary-button" : "secondary-button"
+              }`}
               onClick={() => {
                 setPage(1);
                 setFilterType("repeat");
@@ -242,8 +328,9 @@ const Admin_Guest_List = () => {
             </button>
 
             <button
-              className={`btn-sm small-add-button ${filterType === "vip" ? 
-                "primary-button" : "secondary-button"}`}
+              className={`btn-sm small-add-button ${
+                filterType === "vip" ? "primary-button" : "secondary-button"
+              }`}
               onClick={() => {
                 setPage(1);
                 setFilterType("vip");
@@ -257,6 +344,19 @@ const Admin_Guest_List = () => {
               onClick={openAdd}
             >
               <FiPlus /> Add Guest
+            </button>
+            <button
+              className="green-button btn-sm small-add-button"
+              onClick={exportGuestsToExcel}
+            >
+              Export Excel
+            </button>
+
+            <button
+              className="red-button btn-sm small-add-button"
+              onClick={exportGuestsToPDF}
+            >
+              Export PDF
             </button>
           </div>
         </div>

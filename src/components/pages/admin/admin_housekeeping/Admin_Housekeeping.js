@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Table, Modal, Form, Row, Col, Spinner } from "react-bootstrap";
 import { FiEye, FiEdit, FiTrash } from "react-icons/fi";
 import AdminLayout from "../admin_layout/Admin_Layout";
-
 import {
   Admin_Get_Housekeeping,
   Admin_Create_Housekeeping,
@@ -13,6 +12,10 @@ import {
   Admin_Verify_Clean_Housekeeping,
 } from "../../../../api/admin/Admin";
 import { FiCheckCircle } from "react-icons/fi";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable"; // ✅ THIS FIXES autoTable error
 
 const Admin_Housekeeping = () => {
   const [housekeepingList, setHousekeepingList] = useState([]);
@@ -24,7 +27,7 @@ const Admin_Housekeeping = () => {
   const [showViewModal, setShowViewModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
-  const [isloading, setIsloading] = useState(false)
+  const [isloading, setIsloading] = useState(false);
   const [formData, setFormData] = useState({
     room: "",
     assignedTo: "",
@@ -33,7 +36,7 @@ const Admin_Housekeeping = () => {
     notes: "",
     amenitiesReplaced: [{ item: "", quantity: "" }],
     laundryStatus: "in_progress",
-    roomCondition:"needs_maintenance",
+    roomCondition: "needs_maintenance",
   });
 
   const openVerifyModal = (item) => {
@@ -51,7 +54,6 @@ const Admin_Housekeeping = () => {
     }
   };
 
-
   // Load all data
   useEffect(() => {
     loadData();
@@ -64,13 +66,13 @@ const Admin_Housekeeping = () => {
   };
 
   const loadHousekeeping = async () => {
-    setIsloading(true)
+    setIsloading(true);
     try {
       const res = await Admin_Get_Housekeeping();
       setHousekeepingList(res.data.data || []);
-      setIsloading(false)
+      setIsloading(false);
     } catch (error) {
-      setIsloading(false)
+      setIsloading(false);
       console.log(error);
     }
   };
@@ -156,7 +158,7 @@ const Admin_Housekeeping = () => {
   const handleDelete = async (id) => {
     if (
       !window.confirm(
-        "Are you sure you want to delete this housekeeping record?"
+        "Are you sure you want to delete this housekeeping record?",
       )
     )
       return;
@@ -168,113 +170,200 @@ const Admin_Housekeeping = () => {
     }
   };
 
+  const exportToExcel = () => {
+    const data = housekeepingList.map((item, i) => ({
+      "#": i + 1,
+      Room: item.room?.roomNumber,
+      "Room Type": item.room?.roomType?.name,
+      Assigned: item.assignedTo?.name,
+      Shift: item.shift,
+      Cleaning: item.cleaningStatus,
+      Laundry: item.laundryStatus,
+      Condition: item.roomCondition,
+      Date: item.scheduleDate?.slice(0, 10),
+      Amenities: item.amenitiesReplaced
+        ?.map((a) => `${a.item} x ${a.quantity}`)
+        .join(", "),
+      Notes: item.notes,
+      "Verified By": item.verifiedBy?.name,
+      "Verified At": item.verifiedAt?.slice(0, 10),
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Housekeeping");
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    const file = new Blob([excelBuffer], { type: "application/octet-stream" });
+    saveAs(file, "Housekeeping_List.xlsx");
+  };
+
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+
+    const tableColumn = [
+      "#",
+      "Room",
+      "Type",
+      "Assigned",
+      "Shift",
+      "Cleaning",
+      "Laundry",
+      "Condition",
+      "Date",
+      "Amenities",
+      "Verified",
+    ];
+
+    const tableRows = housekeepingList.map((item, i) => [
+      i + 1,
+      item.room?.roomNumber,
+      item.room?.roomType?.name,
+      item.assignedTo?.name,
+      item.shift,
+      item.cleaningStatus,
+      item.laundryStatus,
+      item.roomCondition,
+      item.scheduleDate?.slice(0, 10),
+      item.amenitiesReplaced
+        ?.map((a) => `${a.item} x ${a.quantity}`)
+        .join(", "),
+      item.verifiedBy?.name || "—",
+    ]);
+
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      startY: 20,
+    });
+
+    doc.text("Housekeeping Report", 14, 15);
+
+    doc.save("Housekeeping_List.pdf");
+  };
   return (
     <AdminLayout>
       {/* HEADER */}
       <div className="d-flex justify-content-between align-items-center my-3">
         <h4>Housekeeping List</h4>
-        <button
-          className="primary-button btn-sm small-add-button"
-          onClick={() => setShowAddModal(true)}
-        >
-          + Add Housekeeping
-        </button>
+        <div className="d-flex gap-2">
+          <button
+            className="primary-button btn-sm small-add-button"
+            onClick={() => setShowAddModal(true)}
+          >
+            + Add Housekeeping
+          </button>
+          <button
+            className="green-button btn-sm small-add-button"
+            onClick={exportToExcel}
+          >
+            Export Excel
+          </button>
+
+          <button
+            className="red-button btn-sm small-add-button"
+            onClick={exportToPDF}
+          >
+            Export PDF
+          </button>
+        </div>
       </div>
-      {
-        isloading ? (
-          <div className="text-center my-4">
-            <Spinner animation="border" /> <p>Loading...</p>
-          </div>
-        ) : (
-          <Table striped bordered hover responsive className="table-smaller">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Room</th>
-                <th>Type</th>
-                <th>Assigned</th>
-                <th>Shift</th>
-                <th>Cleaning</th>
-                <th>Laundry</th>
-                <th>Condition</th>
-                <th>Date</th>
-                <th>Amenities</th>
-                <th>Notes</th>
-                <th>Verified By</th>
-                <th>Verified At</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
+      {isloading ? (
+        <div className="text-center my-4">
+          <Spinner animation="border" /> <p>Loading...</p>
+        </div>
+      ) : (
+        <Table striped bordered hover responsive className="table-smaller">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Room</th>
+              <th>Type</th>
+              <th>Assigned</th>
+              <th>Shift</th>
+              <th>Cleaning</th>
+              <th>Laundry</th>
+              <th>Condition</th>
+              <th>Date</th>
+              <th>Amenities</th>
+              <th>Notes</th>
+              <th>Verified By</th>
+              <th>Verified At</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
 
-            <tbody>
-              {housekeepingList.map((item, i) => (
-                <tr key={item._id}>
-                  <td>{i + 1}</td>
+          <tbody>
+            {housekeepingList.map((item, i) => (
+              <tr key={item._id}>
+                <td>{i + 1}</td>
 
-                  <td>{item.room?.roomNumber || "—"}</td>
-                  <td>{item.room?.roomType?.name || "—"}</td>
+                <td>{item.room?.roomNumber || "—"}</td>
+                <td>{item.room?.roomType?.name || "—"}</td>
 
-                  <td>{item.assignedTo?.name || "—"}</td>
+                <td>{item.assignedTo?.name || "—"}</td>
 
-                  <td className="text-capitalize">{item.shift}</td>
-                  <td className="text-capitalize">{item.cleaningStatus}</td>
-                  <td className="text-capitalize">{item.laundryStatus}</td>
+                <td className="text-capitalize">{item.shift}</td>
+                <td className="text-capitalize">{item.cleaningStatus}</td>
+                <td className="text-capitalize">{item.laundryStatus}</td>
 
-                  <td className="text-capitalize">{item.roomCondition || "—"}</td>
+                <td className="text-capitalize">{item.roomCondition || "—"}</td>
 
-                  <td>{item.scheduleDate?.slice(0, 10)}</td>
+                <td>{item.scheduleDate?.slice(0, 10)}</td>
 
-                  <td>
-                    {item.amenitiesReplaced?.length > 0
-                      ? item.amenitiesReplaced.map((am) => (
+                <td>
+                  {item.amenitiesReplaced?.length > 0
+                    ? item.amenitiesReplaced.map((am) => (
                         <span key={am._id} className="badge bg-info me-1">
                           {am.item} × {am.quantity}
                         </span>
                       ))
-                      : "—"}
-                  </td>
+                    : "—"}
+                </td>
 
-                  <td>{item.notes || "—"}</td>
+                <td>{item.notes || "—"}</td>
 
-                  <td>{item.verifiedBy?.name || "—"}</td>
+                <td>{item.verifiedBy?.name || "—"}</td>
 
-                  <td>{item.verifiedAt?.slice(0, 10) || "—"}</td>
+                <td>{item.verifiedAt?.slice(0, 10) || "—"}</td>
 
-                  {/* ACTION BUTTONS */}
-                  <td>
-                    <div className="d-flex gap-2">
-                      {/* VERIFY */}
-                      <FiCheckCircle
-                        size={18}
-                        className="text-primary"
-                        role="button"
-                        onClick={() => openVerifyModal(item)}
-                      />
+                {/* ACTION BUTTONS */}
+                <td>
+                  <div className="d-flex gap-2">
+                    {/* VERIFY */}
+                    <FiCheckCircle
+                      size={18}
+                      className="text-primary"
+                      role="button"
+                      onClick={() => openVerifyModal(item)}
+                    />
 
-                      {/* EDIT */}
-                      <FiEdit
-                        size={18}
-                        className="text-warning"
-                        role="button"
-                        onClick={() => openEditModal(item)}
-                      />
+                    {/* EDIT */}
+                    <FiEdit
+                      size={18}
+                      className="text-warning"
+                      role="button"
+                      onClick={() => openEditModal(item)}
+                    />
 
-                      {/* DELETE */}
-                      <FiTrash
-                        size={18}
-                        className="text-danger"
-                        role="button"
-                        onClick={() => handleDelete(item._id)}
-                      />
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        )
-      }
-
+                    {/* DELETE */}
+                    <FiTrash
+                      size={18}
+                      className="text-danger"
+                      role="button"
+                      onClick={() => handleDelete(item._id)}
+                    />
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      )}
 
       {/* ---------------------------------------------------- */}
       {/* EDIT HouseKeeping MODAL */}
@@ -285,7 +374,9 @@ const Admin_Housekeeping = () => {
         size="lg"
       >
         <Modal.Header closeButton>
-          <Modal.Title className="small-form-title">Edit Housekeeping</Modal.Title>
+          <Modal.Title className="small-form-title">
+            Edit Housekeeping
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body className="small-form">
           <Form>
@@ -342,7 +433,7 @@ const Admin_Housekeeping = () => {
                     value={formData.shift}
                     onChange={handleChange}
                   >
-                     <option value="">Select Shift</option>
+                    <option value="">Select Shift</option>
                     <option value="morning">Morning</option>
                     <option value="afternoon">Afternoon</option>
                     <option value="evening">Evening</option>
@@ -361,8 +452,8 @@ const Admin_Housekeeping = () => {
                   value={formData.laundryStatus}
                   onChange={handleChange}
                 >
-                    <option value="">Select Laundry Status</option>
-                   <option value="not_collected">Not Collected</option>
+                  <option value="">Select Laundry Status</option>
+                  <option value="not_collected">Not Collected</option>
                   <option value="in_progress">In Progress</option>
                   <option value="completed">Completed</option>
                   <option value="pending">Pending</option>
@@ -414,7 +505,6 @@ const Admin_Housekeeping = () => {
             Update
           </button>
         </Modal.Footer>
-
       </Modal>
       {/* <---------- Add HouseKeeping ---------------> */}
       <Modal
@@ -423,7 +513,9 @@ const Admin_Housekeeping = () => {
         size="lg"
       >
         <Modal.Header closeButton>
-          <Modal.Title className="small-form-title">Add Housekeeping</Modal.Title>
+          <Modal.Title className="small-form-title">
+            Add Housekeeping
+          </Modal.Title>
         </Modal.Header>
 
         <Modal.Body className="small-form">
@@ -586,14 +678,21 @@ const Admin_Housekeeping = () => {
             Cancel
           </button>
 
-          <button className="primary-button btn-sm small-add-button" onClick={handleAdd}>
+          <button
+            className="primary-button btn-sm small-add-button"
+            onClick={handleAdd}
+          >
             Save
           </button>
         </Modal.Footer>
       </Modal>
 
       {/* <----------- Verify Cleaning ------------> */}
-      <Modal show={showVerifyModal} onHide={() => setShowVerifyModal(false)} size="md">
+      <Modal
+        show={showVerifyModal}
+        onHide={() => setShowVerifyModal(false)}
+        size="md"
+      >
         <Modal.Header closeButton>
           <Modal.Title>Verify Cleaning</Modal.Title>
         </Modal.Header>
@@ -601,10 +700,11 @@ const Admin_Housekeeping = () => {
         <Modal.Body>
           {verifyItem && (
             <div className="px-1">
-
               <div className="d-flex justify-content-between">
                 <strong>Room:</strong>
-                <span>{verifyItem.room?.roomNumber} ({verifyItem.room?.roomType})</span>
+                <span>
+                  {verifyItem.room?.roomNumber} ({verifyItem.room?.roomType})
+                </span>
               </div>
               <hr />
 
@@ -620,17 +720,23 @@ const Admin_Housekeeping = () => {
 
               <div className="d-flex justify-content-between mt-2">
                 <strong>Cleaning Status:</strong>
-                <span className="badge bg-success">{verifyItem.cleaningStatus}</span>
+                <span className="badge bg-success">
+                  {verifyItem.cleaningStatus}
+                </span>
               </div>
 
               <div className="d-flex justify-content-between mt-2">
                 <strong>Laundry Status:</strong>
-                <span className="badge bg-warning text-dark">{verifyItem.laundryStatus}</span>
+                <span className="badge bg-warning text-dark">
+                  {verifyItem.laundryStatus}
+                </span>
               </div>
 
               <div className="d-flex justify-content-between mt-2">
                 <strong>Room Condition:</strong>
-                <span className="text-capitalize">{verifyItem.roomCondition}</span>
+                <span className="text-capitalize">
+                  {verifyItem.roomCondition}
+                </span>
               </div>
 
               <div className="d-flex justify-content-between mt-2">
@@ -655,22 +761,25 @@ const Admin_Housekeeping = () => {
                   <p>No amenities replaced</p>
                 )}
               </div>
-
             </div>
           )}
         </Modal.Body>
 
         <Modal.Footer>
-          <button className="secondary-button btn-sm small-add-button text-center" onClick={() => setShowVerifyModal(false)}>
+          <button
+            className="secondary-button btn-sm small-add-button text-center"
+            onClick={() => setShowVerifyModal(false)}
+          >
             Close
           </button>
-          <button className="primary-button btn-sm small-add-button text-center" onClick={handleVerify}>
+          <button
+            className="primary-button btn-sm small-add-button text-center"
+            onClick={handleVerify}
+          >
             ✔ Verify Cleaning
           </button>
         </Modal.Footer>
       </Modal>
-
-
     </AdminLayout>
   );
 };

@@ -12,6 +12,10 @@ import {
   TbPlayerTrackNextFilled,
   TbPlayerTrackPrevFilled,
 } from "react-icons/tb";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 const Admin_Room_Type = () => {
   const [roomTypes, setRoomTypes] = useState([]);
@@ -52,13 +56,16 @@ const Admin_Room_Type = () => {
   // ✅ Create
   const handleCreate = async (e) => {
     e.preventDefault();
+    setLoading(true)
     try {
       const res = await Admin_Create_Room_Type(formData);
       toast.success(res.data.message);
+      setLoading(false)
       setShowModal(false);
       setFormData({ name: "", description: "", basePrice: "" });
       fetchRoomTypes();
     } catch (err) {
+      setLoading(false)
       toast.error(err.response?.data?.message);
     }
   };
@@ -103,18 +110,86 @@ const Admin_Room_Type = () => {
       toast.error(err.response?.data?.message);
     }
   };
+  // <--------- Export To Excel -------------->
+  const exportToExcel = () => {
+    if (!roomTypes.length) return;
+
+    const data = roomTypes.map((item, index) => ({
+      "#": index + 1,
+      Name: item.name,
+      Description: item.description || "-",
+      "Created Date": new Date(item.createdAt).toLocaleString(),
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Room Types");
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    const file = new Blob([excelBuffer], {
+      type: "application/octet-stream",
+    });
+
+    saveAs(file, "Room_Types_Report.xlsx");
+  };
+  // <----------- Export to PDF ---------------->
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+
+    const tableColumn = ["#", "Name", "Description", "Created Date"];
+
+    const tableRows = roomTypes.map((item, index) => [
+      index + 1,
+      item.name,
+      item.description || "-",
+      new Date(item.createdAt).toLocaleString(),
+    ]);
+
+    doc.text("Room Types Report", 14, 15);
+
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      startY: 20,
+    });
+
+    doc.save("Room_Types_Report.pdf");
+  };
 
   return (
     <AdminLayout>
       <div className="container mt-4">
         <div className="d-flex justify-content-between mb-3">
           <h5>Room Type Management</h5>
-          <button
-            className="primary-button btn-sm small-add-button"
-            onClick={() => setShowModal(true)}
-          >
-            + Add Room Type
-          </button>
+          <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <h5>Room Type Management</h5>
+              <button
+                className="primary-button btn-sm small-add-button"
+                onClick={() => setShowModal(true)}
+              >
+                + Add Room Type
+              </button>
+
+              <button
+                className="green-button btn-sm small-add-button"
+                onClick={exportToExcel}
+              >
+                Export Excel
+              </button>
+
+              <button
+                className="red-button btn-sm small-add-button"
+                onClick={exportToPDF}
+              >
+                Export PDF
+              </button>
+        
+          </div>
         </div>
 
         <ToastContainer />
@@ -124,7 +199,13 @@ const Admin_Room_Type = () => {
             <Spinner />
           </div>
         ) : (
-          <Table striped bordered hover responsive className="table-smaller custom-table">
+          <Table
+            striped
+            bordered
+            hover
+            responsive
+            className="table-smaller custom-table"
+          >
             <thead>
               <tr>
                 <th>#</th>
@@ -225,7 +306,10 @@ const Admin_Room_Type = () => {
               >
                 Cancel
               </button>
-              <button type="submit" className="primary-button btn-sm small-add-button">
+              <button
+                type="submit"
+                className="primary-button btn-sm small-add-button"
+              >
                 Save
               </button>
             </div>
@@ -261,8 +345,6 @@ const Admin_Room_Type = () => {
                   />
                 </Form.Group>
               </div>
-
-             
             </div>
 
             {/* ✅ Description */}

@@ -26,6 +26,7 @@ import Admin_Home_Banner from "../components/pages/admin/admin_home_banner/Admin
 import Admin_Room_Type from "../components/pages/admin/admin_room_type/Admin_Room_Type";
 import Admin_Daily_Reports from "../components/pages/admin/admin_daily_reports/Admin_Daily_Reports";
 import Admin_Monthly_Reports from "../components/pages/admin/admin_monthly_reports/Admin_Monthly_Reports";
+import Admin_Occupancy from "../components/pages/admin/admin_occupancy/Admin_Occupancy";
 
 const AllRoutes = () => {
   return (
@@ -97,7 +98,7 @@ const AllRoutes = () => {
       <Route
         path="/admin-room-list"
         element={
-          <ProtectedRoute requiredPermission="profile_view">
+          <ProtectedRoute requiredPermission="rooms_view">
             <Admin_Room_List />
           </ProtectedRoute>
         }
@@ -105,7 +106,7 @@ const AllRoutes = () => {
       <Route
         path="/admin-room-booking-list"
         element={
-          <ProtectedRoute requiredPermission="profile_view">
+          <ProtectedRoute requiredPermission="bookings_view">
             <Admin_Room_Booking_List />
           </ProtectedRoute>
         }
@@ -219,6 +220,14 @@ const AllRoutes = () => {
         element={
           <ProtectedRoute requiredPermission="monthly_report_view">
             <Admin_Monthly_Reports />
+          </ProtectedRoute>
+        }
+      />
+        <Route
+        path="/admin-occupancy-report"
+        element={
+          <ProtectedRoute requiredPermission="occupancy_report_view">
+            <Admin_Occupancy />
           </ProtectedRoute>
         }
       />

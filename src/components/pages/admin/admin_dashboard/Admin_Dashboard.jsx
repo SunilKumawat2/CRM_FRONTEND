@@ -3,7 +3,7 @@ import AdminLayout from "../admin_layout/Admin_Layout";
 import { Card, Row, Col, Form, Spinner } from "react-bootstrap";
 import {
   FaUsers,
-  FaRupeeSign,
+  FaHotel,
   FaMoneyBillWave,
   FaClock,
 } from "react-icons/fa";
@@ -19,10 +19,12 @@ import {
   ArcElement,
 } from "chart.js";
 import {
+  Admin_Get_Dashboard,
   Admin_Get_Dashboard_Summary,
   Admin_Get_Loan_Amount,
   Admin_Get_Open_Close_Account,
 } from "../../../../api/admin/Admin"; // ✅ Adjust path if needed
+import { RiHotelFill,RiHotelBedFill  } from "react-icons/ri";
 
 ChartJS.register(
   CategoryScale,
@@ -44,8 +46,26 @@ const Admin_Dashboard = () => {
   const [year, setYear] = useState(currentYear);
   const [filter, setFilter] = useState("All");
   const [loading, setLoading] = useState(false);
-
+  const [dashboard,setDashboard] = useState({});
+  console.log("dashboard",dashboard)
   const formatNumber = (num) => (num ? num.toLocaleString("en-IN") : "0");
+
+   // ✅ Fetch all roles
+    const fetchDashboard = async () => {
+      try {
+        setLoading(true);
+        const res = await Admin_Get_Dashboard();
+        setDashboard(res?.data?.stats)
+      } catch (err) {
+        console.error("Error fetching roles:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    useEffect(()=>{
+      fetchDashboard();
+    },[]);
 
   // ---------------- Fetch Dashboard Data ----------------
   const fetchDashboardData = async (selectedYear) => {
@@ -192,18 +212,18 @@ const pieChartData = {
             <Col md={3} sm={6}>
               <Card className="shadow-sm border-0 text-center bg-primary text-white">
                 <Card.Body>
-                  <FaUsers size={40} className="mb-2" />
-                  <Card.Title>Total Users</Card.Title>
-                  <h3>{formatNumber(summary?.totalUsers)}</h3>
+                  <RiHotelFill size={40} className="mb-2" />
+                  <Card.Title>Total Rooms</Card.Title>
+                  <h3>{formatNumber(dashboard?.totalRooms)}</h3>
                 </Card.Body>
               </Card>
             </Col>
             <Col md={3} sm={6}>
               <Card className="shadow-sm border-0 text-center bg-success text-white">
                 <Card.Body>
-                  <FaRupeeSign size={40} className="mb-2" />
-                  <Card.Title>Total Inquiry</Card.Title>
-                  <h3>{formatNumber(summary?.totalAmount)}</h3>
+                  <FaHotel size={40} className="mb-2" />
+                  <Card.Title>Available Rooms</Card.Title>
+                  <h3>{formatNumber(summary?.availableRooms)}</h3>
                 </Card.Body>
               </Card>
             </Col>
@@ -211,8 +231,8 @@ const pieChartData = {
               <Card className="shadow-sm border-0 text-center bg-warning text-white">
                 <Card.Body>
                   <FaMoneyBillWave size={40} className="mb-2" />
-                  <Card.Title>Total Role</Card.Title>
-                  <h3>{formatNumber(summary?.totalPending)}</h3>
+                  <Card.Title>Daily Revenue</Card.Title>
+                  <h3>{formatNumber(summary?.dailyRevenue)}</h3>
                 </Card.Body>
               </Card>
             </Col>
@@ -220,9 +240,9 @@ const pieChartData = {
             <Col md={3} sm={6}>
               <Card className="shadow-sm border-0 text-center bg-danger text-white">
                 <Card.Body>
-                  <FaClock size={40} className="mb-2" />
-                  <Card.Title>Total Lead</Card.Title>
-                  <h3>{formatNumber(summary?.dueInstallments)}</h3>
+                  <RiHotelBedFill size={40} className="mb-2" />
+                  <Card.Title>Occupied Rooms</Card.Title>
+                  <h3>{formatNumber(summary?.occupiedRooms)}</h3>
                 </Card.Body>
               </Card>
             </Col>

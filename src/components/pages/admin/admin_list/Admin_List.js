@@ -10,12 +10,17 @@ import {
 import { FaTrash } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 const Admin_List = () => {
   const [loading, setLoading] = useState(false);
   const [roles, setRoles] = useState([]);
   const [admins, setAdmins] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -83,13 +88,104 @@ const Admin_List = () => {
       toast.error(err.response?.data?.message || "Create failed");
     }
   };
+  // <------------ Export To Excel ----------->
+  const exportToExcel = () => {
+    if (!admins.length) return;
 
+    const data = admins.map((admin, index) => ({
+      "#": index + 1,
+      Name: admin.name || "-",
+      Email: admin.email,
+      Role: admin.role?.name || "-",
+      Description: admin.role?.description || "-",
+      Permissions:
+        admin.role?.permissions?.length > 0
+          ? admin.role.permissions
+              .map((perm) => `${perm.module} (${perm.actions.join(", ")})`)
+              .join("; ")
+          : "-",
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Admins");
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    const file = new Blob([excelBuffer], {
+      type: "application/octet-stream",
+    });
+
+    saveAs(file, "Admin_List.xlsx");
+  };
+  // <------------- Export To PDF -------------->
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+
+    const tableColumn = [
+      "#",
+      "Name",
+      "Email",
+      "Role",
+      "Description",
+      "Permissions",
+    ];
+
+    const tableRows = admins.map((admin, index) => [
+      index + 1,
+      admin.name || "-",
+      admin.email,
+      admin.role?.name || "-",
+      admin.role?.description || "-",
+      admin.role?.permissions?.length > 0
+        ? admin.role.permissions
+            .map((perm) => `${perm.module} (${perm.actions.join(", ")})`)
+            .join("; ")
+        : "-",
+    ]);
+
+    doc.text("Admin List Report", 14, 15);
+
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      startY: 20,
+      styles: { fontSize: 8 }, // 👈 important (long permissions text)
+    });
+
+    doc.save("Admin_List.pdf");
+  };
   return (
     <AdminLayout>
       <div className="container mt-4">
         <div className="d-flex justify-content-between align-items-center mb-3">
           <h5>Admin List</h5>
-          <button  className="primary-button btn-sm small-add-button" onClick={() => setShowModal(true)}>+ Create Admin</button>
+          <div className="d-flex gap-2">
+            <button
+              className="primary-button btn-sm small-add-button"
+              onClick={() => setShowModal(true)}
+            >
+              + Create Admin
+            </button>
+
+            <button
+              className="green-button btn-sm small-add-button"
+              onClick={exportToExcel}
+            >
+              Export Excel
+            </button>
+
+            <button
+              className="red-button btn-sm small-add-button"
+              onClick={exportToPDF}
+            >
+              Export PDF
+            </button>
+          </div>
         </div>
         <ToastContainer position="top-right" autoClose={2000} />
         {loading ? (
@@ -123,15 +219,17 @@ const Admin_List = () => {
                         ? admin.role.permissions
                             .map(
                               (perm) =>
-                                `${perm.module} (${perm.actions.join(", ")})`
+                                `${perm.module} (${perm.actions.join(", ")})`,
                             )
                             .join("; ")
                         : "-"}
                     </td>
                     <td>
                       {admin.role?.name !== "super_admin" && (
-                        
-                        <FaTrash className="btn-primary"  onClick={() => handleDelete(admin._id)}/>
+                        <FaTrash
+                          className="btn-primary"
+                          onClick={() => handleDelete(admin._id)}
+                        />
                       )}
                     </td>
                   </tr>
@@ -151,8 +249,16 @@ const Admin_List = () => {
       {/* ✅ Create Admin Modal */}
       <Modal show={showModal} onHide={() => setShowModal(false)} centered>
         <Modal.Header closeButton>
-          <Modal.Title className="small-form-title">Create New Admin</Modal.Title>
+          <Modal.Title className="small-form-title">
+            Create New Admin
+          </Modal.Title>
         </Modal.Header>
+        {
+          loading ? (
+ <div className="text-center my-4">
+            <Spinner animation="border" /> <p>Loading...</p>
+          </div>
+          ):(
         <Modal.Body className="small-form">
           <Form onSubmit={handleCreate}>
             {/* Name */}
@@ -182,16 +288,35 @@ const Admin_List = () => {
             </Form.Group>
 
             {/* Password */}
+            {/* Password */}
             <Form.Group className="mb-3">
               <Form.Label>Password</Form.Label>
-              <Form.Control
-                type="password"
-                value={formData.password}
-                onChange={(e) =>
-                  setFormData({ ...formData, password: e.target.value })
-                }
-                required
-              />
+
+              <div style={{ position: "relative" }}>
+                <Form.Control
+                  type={showPassword ? "text" : "password"} // ✅ toggle type
+                  value={formData.password}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
+                  required
+                />
+
+                {/* Eye Icon */}
+                <span
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{
+                    position: "absolute",
+                    right: "10px",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    cursor: "pointer",
+                    fontSize: "18px",
+                  }}
+                >
+                  {showPassword ? "🙈" : "👁️"}
+                </span>
+              </div>
             </Form.Group>
 
             {/* ✅ Role Field (Dynamic Dropdown) */}
@@ -217,18 +342,25 @@ const Admin_List = () => {
               </Form.Select>
             </Form.Group>
 
-            
-              <Modal.Footer>
-              <button className="secondary-button btn-sm small-add-button" onClick={() => setShowModal(false)}>
+            <Modal.Footer>
+              <button
+                className="secondary-button btn-sm small-add-button"
+                onClick={() => setShowModal(false)}
+              >
                 Cancel
               </button>{" "}
-              <button className="primary-button btn-sm small-add-button" type="submit">
+              <button
+                className="primary-button btn-sm small-add-button"
+                type="submit"
+              >
                 Create
               </button>
-              </Modal.Footer>
-          
+            </Modal.Footer>
           </Form>
         </Modal.Body>
+
+          )
+        }
       </Modal>
     </AdminLayout>
   );

@@ -10,7 +10,7 @@ import { MdOutlineBedroomParent } from "react-icons/md";
 
 const Sidebar_Admin = ({ isCollapsed, setIsCollapsed }) => {
   const toggleSidebar = () => setIsCollapsed(!isCollapsed);
-
+console.log("hasPermission_hasPermission",hasPermission())
   return (
     <aside className={`admin-sidebar ${isCollapsed ? "collapsed" : ""}`}>
       <div className="sidebar-header">
@@ -43,7 +43,7 @@ const Sidebar_Admin = ({ isCollapsed, setIsCollapsed }) => {
             {!isCollapsed && <span>Roles</span>}
           </NavLink>
         )}
-         {hasPermission("room_type_view") && (
+         {hasPermission("room_types_view") && (
           <NavLink
             to="/admin-room-type"
             className={({ isActive }) =>
@@ -79,7 +79,7 @@ const Sidebar_Admin = ({ isCollapsed, setIsCollapsed }) => {
           </NavLink>
         )}
         {/* Rooms booking Management */}
-        {hasPermission("booking_view") && (
+        {hasPermission("bookings_view") && (
           <NavLink
             to="/admin-room-booking-list"
             className={({ isActive }) =>
@@ -221,6 +221,17 @@ const Sidebar_Admin = ({ isCollapsed, setIsCollapsed }) => {
           >
             <MdOutlineBedroomParent className="menu-icon" /> {/* you can change to a bed icon */}
             {!isCollapsed && <span>Monthly Reports</span>}
+          </NavLink>
+        )}
+          {hasPermission("occupancy_report_view") && (
+          <NavLink
+            to="/admin-occupancy-report"
+            className={({ isActive }) =>
+              isActive ? "menu-link active" : "menu-link"
+            }
+          >
+            <MdOutlineBedroomParent className="menu-icon" /> {/* you can change to a bed icon */}
+            {!isCollapsed && <span>Occupancy Reports</span>}
           </NavLink>
         )}
         {/* Settings */}

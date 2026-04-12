@@ -653,6 +653,20 @@
   font-size: 12px !important;
   height: 32px !important;
 }
+.green-button{
+background-color: #1a6e10;
+    color: white;
+    border-radius: 10px;
+    padding: 10px;
+    border: none;
+}
+.red-button{
+background-color: #c71200;
+    color: white;
+    border-radius: 10px;
+    padding: 10px;
+    border: none;
+}
 /* ✅ Smaller label */
 .small-switch-group .form-label {
   font-size: 12px !important;
@@ -2152,5 +2166,159 @@
   .report-header {
     flex-direction: column;
     align-items: flex-start;
+  }
+}
+/* MAIN */
+.occupancy-container {
+  padding: 24px;
+  background: #f4f6fb;
+  min-height: 100vh;
+  font-family: "Segoe UI", sans-serif;
+  color: #1e293b;
+}
+
+.occupancy-container.dark {
+  background: #0f172a;
+  color: #e2e8f0;
+}
+
+/* HEADER */
+.occupancy-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.occupancy-header h1 {
+  font-size: 26px;
+}
+
+/* TOGGLE */
+.toggle-btn {
+  background: #111827;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.dark .toggle-btn {
+  background: #facc15;
+  color: black;
+}
+
+/* CARDS */
+.occupancy-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+/* CARD */
+.occ-card {
+  padding: 20px;
+  border-radius: 16px;
+  background: white;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+  transition: 0.3s;
+}
+
+.occ-card:hover {
+  transform: translateY(-5px);
+}
+
+.dark .occ-card {
+  background: #1e293b;
+}
+
+/* COLORS */
+.occ-card.total h2 {
+  color: #2563eb;
+}
+
+.occ-card.occupied h2 {
+  color: #dc2626;
+}
+
+.occ-card.rate h2 {
+  color: #16a34a;
+}
+
+.occ-card p {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* PROGRESS */
+.progress-section {
+  margin-top: 30px;
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+}
+
+.dark .progress-section {
+  background: #1e293b;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 16px;
+  background: #e5e7eb;
+  border-radius: 20px;
+  margin-top: 10px;
+}
+
+.dark .progress-bar {
+  background: #334155;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(to right, #22c55e, #16a34a);
+  border-radius: 20px;
+}
+
+/* STATUS */
+.status-box {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.status-box p {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.high {
+  color: #16a34a;
+}
+
+.medium {
+  color: #f59e0b;
+}
+
+.low {
+  color: #dc2626;
+}
+
+/* STATES */
+.loading-text,
+.no-data {
+  text-align: center;
+  color: #6b7280;
+}
+
+.dark .loading-text,
+.dark .no-data {
+  color: #94a3b8;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .occupancy-cards {
+    grid-template-columns: 1fr;
   }
 }

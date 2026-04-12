@@ -12,6 +12,10 @@ import {
   TbPlayerTrackPrevFilled,
 } from "react-icons/tb";
 import { ToastContainer, toast } from "react-toastify";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 const Admin_Role_List = () => {
   const [roles, setRoles] = useState([]);
@@ -21,12 +25,25 @@ const Admin_Role_List = () => {
   const [showPermModal, setShowPermModal] = useState(false);
   const [selectedRole, setSelectedRole] = useState(null);
   const modules = [
-    "Dashboard",
-    "Inquiries",
-    "Roles",
-    "Admins",
-    "Rooms",
-    "Settings",
+    { name: "Dashboard", slug: "dashboard" },
+    { name: "Inquiries", slug: "inquiries" },
+    { name: "Roles", slug: "roles" },
+    { name: "Admins", slug: "admins" },
+    { name: "Rooms", slug: "rooms" },
+    { name: "Room Types", slug: "room_types" },
+    { name: "Guests", slug: "guests" },
+    { name: "HouseKeeping", slug: "housekeeping" },
+    { name: "Staff Attendance", slug: "staff_attendance" },
+    { name: "Invoice", slug: "invoice" },
+    { name: "Valet Parking", slug: "valet_parking" },
+    { name: "Event Package", slug: "event_package" },
+    { name: "Catering", slug: "catering" },
+    { name: "User Feedback", slug: "user_feedback" },
+    { name: "Daily Reports", slug: "daily_reports" },
+    { name: "Monthly Reports", slug: "monthly_reports" },
+    { name: "Occupancy Reports", slug: "occupancy_reports" },
+    { name: "Bookings", slug: "bookings" },
+    { name: "Settings", slug: "settings" },
   ];
   const actions = ["view", "create", "edit", "delete"];
   const [permissions, setPermissions] = useState({});
@@ -81,26 +98,30 @@ const Admin_Role_List = () => {
       toast.error(err.response?.data?.message || "Failed to delete role");
     }
   };
-
+  const normalize = (str) => str.toLowerCase().replace(/\s+/g, "_");
   // ✅ Open permissions modal
   const handleOpenPermissions = (role) => {
     setSelectedRole(role);
     const permsObj = {};
     modules.forEach((mod) => {
-      permsObj[mod] =
-        role.permissions?.find((p) => p.module === mod)?.actions || [];
+      permsObj[mod.name] =
+        role.permissions?.find((p) => normalize(p.module) === mod.slug)
+          ?.actions || [];
     });
     setPermissions(permsObj);
     setShowPermModal(true);
   };
 
   // ✅ Toggle permission checkbox
-  const togglePermission = (module, action) => {
+  const togglePermission = (moduleName, action) => {
     setPermissions((prev) => {
-      const newActions = prev[module].includes(action)
-        ? prev[module].filter((a) => a !== action)
-        : [...prev[module], action];
-      return { ...prev, [module]: newActions };
+      const current = prev[moduleName] || [];
+
+      const newActions = current.includes(action)
+        ? current.filter((a) => a !== action)
+        : [...current, action];
+
+      return { ...prev, [moduleName]: newActions };
     });
   };
 
@@ -108,9 +129,9 @@ const Admin_Role_List = () => {
   const handleSavePermissions = async () => {
     try {
       if (!selectedRole) return;
-      const payload = Object.keys(permissions).map((mod) => ({
-        module: mod,
-        actions: permissions[mod],
+      const payload = modules.map((mod) => ({
+        module: mod.slug,
+        actions: permissions[mod.name] || [],
       }));
       const res = await Admin_Role_Update(selectedRole._id, {
         permissions: payload,
@@ -130,17 +151,84 @@ const Admin_Role_List = () => {
     fetchRoles();
   }, [page]);
 
+  // <---------- Export To Excel -------------->
+  const exportToExcel = () => {
+    if (!roles.length) return;
+
+    const data = roles.map((role, index) => ({
+      "#": index + 1,
+      "Role Name": role.name,
+      Description: role.description || "-",
+      "Created Date": new Date(role.createdAt).toLocaleString(),
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Roles");
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    const file = new Blob([excelBuffer], {
+      type: "application/octet-stream",
+    });
+
+    saveAs(file, "Roles_Report.xlsx");
+  };
+  // <----------- Export to PDF ---------------->
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+
+    const tableColumn = ["#", "Role Name", "Description", "Created Date"];
+
+    const tableRows = roles.map((role, index) => [
+      index + 1,
+      role.name,
+      role.description || "-",
+      new Date(role.createdAt).toLocaleString(),
+    ]);
+
+    doc.text("Roles Report", 14, 15);
+
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      startY: 20,
+    });
+
+    doc.save("Roles_Report.pdf");
+  };
+
   return (
     <AdminLayout>
       <div className="container mt-4">
         <div className="d-flex justify-content-between align-items-center mb-3">
           <h5>Role Management</h5>
-          <button
-            className="primary-button btn-sm small-add-button"
-            onClick={() => setShowModal(true)}
-          >
-            + Create Role
-          </button>
+          <div className="d-flex gap-2">
+            <button
+              className="primary-button btn-sm small-add-button"
+              onClick={() => setShowModal(true)}
+            >
+              + Create Role
+            </button>
+
+            <button
+              className="green-button btn-sm small-add-button"
+              onClick={exportToExcel}
+            >
+              Export Excel
+            </button>
+
+            <button
+              className="red-button btn-sm small-add-button"
+              onClick={exportToPDF}
+            >
+              Export PDF
+            </button>
+          </div>
         </div>
 
         <ToastContainer position="top-right" autoClose={2000} />
@@ -288,16 +376,16 @@ const Admin_Role_List = () => {
         </Modal.Header>
         <Modal.Body className="small-view-modal">
           {modules.map((mod) => (
-            <div key={mod} className="mb-2">
-              <strong>{mod}</strong>
+            <div key={mod.slug}>
+              <strong>{mod.name}</strong>
               <div className="d-flex flex-wrap gap-2 mt-1">
                 {actions.map((act) => (
                   <Form.Check
                     key={act}
                     type="checkbox"
                     label={act}
-                    checked={permissions[mod]?.includes(act) || false}
-                    onChange={() => togglePermission(mod, act)}
+                    checked={permissions[mod.name]?.includes(act) || false}
+                    onChange={() => togglePermission(mod.name, act)}
                   />
                 ))}
               </div>
