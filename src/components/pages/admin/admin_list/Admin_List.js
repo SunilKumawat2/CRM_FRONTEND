@@ -253,114 +253,111 @@ const Admin_List = () => {
             Create New Admin
           </Modal.Title>
         </Modal.Header>
-        {
-          loading ? (
- <div className="text-center my-4">
+        {loading ? (
+          <div className="text-center my-4">
             <Spinner animation="border" /> <p>Loading...</p>
           </div>
-          ):(
-        <Modal.Body className="small-form">
-          <Form onSubmit={handleCreate}>
-            {/* Name */}
-            <Form.Group className="mb-3">
-              <Form.Label>Name</Form.Label>
-              <Form.Control
-                type="text"
-                value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
-                required
-              />
-            </Form.Group>
-
-            {/* Email */}
-            <Form.Group className="mb-3">
-              <Form.Label>Email</Form.Label>
-              <Form.Control
-                type="email"
-                value={formData.email}
-                onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
-                }
-                required
-              />
-            </Form.Group>
-
-            {/* Password */}
-            {/* Password */}
-            <Form.Group className="mb-3">
-              <Form.Label>Password</Form.Label>
-
-              <div style={{ position: "relative" }}>
+        ) : (
+          <Modal.Body className="small-form">
+            <Form onSubmit={handleCreate}>
+              {/* Name */}
+              <Form.Group className="mb-3">
+                <Form.Label>Name</Form.Label>
                 <Form.Control
-                  type={showPassword ? "text" : "password"} // ✅ toggle type
-                  value={formData.password}
+                  type="text"
+                  value={formData.name}
                   onChange={(e) =>
-                    setFormData({ ...formData, password: e.target.value })
+                    setFormData({ ...formData, name: e.target.value })
                   }
                   required
                 />
+              </Form.Group>
 
-                {/* Eye Icon */}
-                <span
-                  onClick={() => setShowPassword(!showPassword)}
-                  style={{
-                    position: "absolute",
-                    right: "10px",
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    cursor: "pointer",
-                    fontSize: "18px",
-                  }}
+              {/* Email */}
+              <Form.Group className="mb-3">
+                <Form.Label>Email</Form.Label>
+                <Form.Control
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
+                  required
+                />
+              </Form.Group>
+
+              {/* Password */}
+              {/* Password */}
+              <Form.Group className="mb-3">
+                <Form.Label>Password</Form.Label>
+
+                <div style={{ position: "relative" }}>
+                  <Form.Control
+                    type={showPassword ? "text" : "password"} // ✅ toggle type
+                    value={formData.password}
+                    onChange={(e) =>
+                      setFormData({ ...formData, password: e.target.value })
+                    }
+                    required
+                  />
+
+                  {/* Eye Icon */}
+                  <span
+                    onClick={() => setShowPassword(!showPassword)}
+                    style={{
+                      position: "absolute",
+                      right: "10px",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      cursor: "pointer",
+                      fontSize: "18px",
+                    }}
+                  >
+                    {showPassword ? "🙈" : "👁️"}
+                  </span>
+                </div>
+              </Form.Group>
+
+              {/* ✅ Role Field (Dynamic Dropdown) */}
+              <Form.Group className="mb-3">
+                <Form.Label>Role</Form.Label>
+                <Form.Select
+                  value={formData.role}
+                  onChange={(e) =>
+                    setFormData({ ...formData, role: e.target.value })
+                  }
+                  required
                 >
-                  {showPassword ? "🙈" : "👁️"}
-                </span>
-              </div>
-            </Form.Group>
+                  <option value="">-- Select Role --</option>
+                  {roles.length > 0 ? (
+                    roles.map((role) => (
+                      <option key={role._id} value={role._id}>
+                        {role.name}
+                      </option>
+                    ))
+                  ) : (
+                    <option disabled>Loading roles...</option>
+                  )}
+                </Form.Select>
+              </Form.Group>
 
-            {/* ✅ Role Field (Dynamic Dropdown) */}
-            <Form.Group className="mb-3">
-              <Form.Label>Role</Form.Label>
-              <Form.Select
-                value={formData.role}
-                onChange={(e) =>
-                  setFormData({ ...formData, role: e.target.value })
-                }
-                required
-              >
-                <option value="">-- Select Role --</option>
-                {roles.length > 0 ? (
-                  roles.map((role) => (
-                    <option key={role._id} value={role._id}>
-                      {role.name}
-                    </option>
-                  ))
-                ) : (
-                  <option disabled>Loading roles...</option>
-                )}
-              </Form.Select>
-            </Form.Group>
-
-            <Modal.Footer>
-              <button
-                className="secondary-button btn-sm small-add-button"
-                onClick={() => setShowModal(false)}
-              >
-                Cancel
-              </button>{" "}
-              <button
-                className="primary-button btn-sm small-add-button"
-                type="submit"
-              >
-                Create
-              </button>
-            </Modal.Footer>
-          </Form>
-        </Modal.Body>
-
-          )
-        }
+              <Modal.Footer>
+                <button
+                  className="secondary-button btn-sm small-add-button"
+                  onClick={() => setShowModal(false)}
+                >
+                  Cancel
+                </button>{" "}
+                <button
+                  className="primary-button btn-sm small-add-button"
+                  type="submit"
+                >
+                  Create
+                </button>
+              </Modal.Footer>
+            </Form>
+          </Modal.Body>
+        )}
       </Modal>
     </AdminLayout>
   );

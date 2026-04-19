@@ -1322,3 +1322,59 @@ export const Admin_Room_Type_Update = async (roleId, formData) => {
     throw error.response || error;
   }
 };
+
+// <----------------  Get Staff Attendance with Pagination ----------------->
+export const Admin_Get_Staff = async (page = 1, limit = 10) => {
+  try {
+    const token = getToken();
+    const response = await axios.get(
+      `${API_BASE_URL}/staff-list`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+
+// <----------------  Create Staff Attendance  ----------------->
+export const Admin_Create_Staff = async (formData) => {
+  try {
+    const token = getToken();
+    const response = await axios.post(`${API_BASE_URL}/staff-create`, formData, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <----------------  Update Staff Attendance  ----------------->
+export const Admin_Update_Staff = async (staffId, formData) => {
+  try {
+    const token = getToken();
+    const response = await axios.put(`${API_BASE_URL}/staff-update/${staffId}`, formData, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <----------------  Delete Staff Attendance  ----------------->
+export const Admin_Delete_Staff = async (staffId) => {
+  try {
+    const token = getToken();
+    const response = await axios.delete(`${API_BASE_URL}/staff-delete/${staffId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};

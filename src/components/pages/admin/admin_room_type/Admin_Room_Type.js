@@ -16,6 +16,7 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { FaEdit, FaTrash } from "react-icons/fa";
 
 const Admin_Room_Type = () => {
   const [roomTypes, setRoomTypes] = useState([]);
@@ -56,16 +57,16 @@ const Admin_Room_Type = () => {
   // ✅ Create
   const handleCreate = async (e) => {
     e.preventDefault();
-    setLoading(true)
+    setLoading(true);
     try {
       const res = await Admin_Create_Room_Type(formData);
       toast.success(res.data.message);
-      setLoading(false)
+      setLoading(false);
       setShowModal(false);
       setFormData({ name: "", description: "", basePrice: "" });
       fetchRoomTypes();
     } catch (err) {
-      setLoading(false)
+      setLoading(false);
       toast.error(err.response?.data?.message);
     }
   };
@@ -168,27 +169,26 @@ const Admin_Room_Type = () => {
           <h5>Room Type Management</h5>
           <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
             <h5>Room Type Management</h5>
-              <button
-                className="primary-button btn-sm small-add-button"
-                onClick={() => setShowModal(true)}
-              >
-                + Add Room Type
-              </button>
+            <button
+              className="primary-button btn-sm small-add-button"
+              onClick={() => setShowModal(true)}
+            >
+              + Add Room Type
+            </button>
 
-              <button
-                className="green-button btn-sm small-add-button"
-                onClick={exportToExcel}
-              >
-                Export Excel
-              </button>
+            <button
+              className="green-button btn-sm small-add-button"
+              onClick={exportToExcel}
+            >
+              Export Excel
+            </button>
 
-              <button
-                className="red-button btn-sm small-add-button"
-                onClick={exportToPDF}
-              >
-                Export PDF
-              </button>
-        
+            <button
+              className="red-button btn-sm small-add-button"
+              onClick={exportToPDF}
+            >
+              Export PDF
+            </button>
           </div>
         </div>
 
@@ -216,26 +216,26 @@ const Admin_Room_Type = () => {
               </tr>
             </thead>
             <tbody>
-              {roomTypes.length > 0 ? (
-                roomTypes.map((item, index) => (
+              {roomTypes?.length > 0 ? (
+                roomTypes?.map((item, index) => (
                   <tr key={item._id}>
                     <td>{index + 1}</td>
-                    <td>{item.name}</td>
-                    <td>{item.description || "-"}</td>
-                    <td>{new Date(item.createdAt).toLocaleString()}</td>
+                    <td>{item?.name}</td>
+                    <td>{item?.description || "-"}</td>
+                    <td>{new Date(item?.createdAt).toLocaleString()}</td>
                     <td className="d-flex p-3 gap-2">
-                      <button
-                        className="secondary-button btn-sm small-add-button"
-                        onClick={() => handleDelete(item._id)}
-                      >
-                        Delete
-                      </button>
-                      <button
-                        className="primary-button btn-sm small-add-button"
-                        onClick={() => handleEdit(item)}
-                      >
-                        Edit
-                      </button>
+                      <FaTrash
+                        className="text-danger"
+                        size={17}
+                        role="button"
+                         onClick={() => handleDelete(item?._id)}
+                      />
+                        <FaEdit
+                          className="text-warning"
+                          size={17}
+                          role="button"
+                          onClick={() => handleEdit(item)}
+                        />
                     </td>
                   </tr>
                 ))

@@ -30,10 +30,10 @@ const Admin_Role_List = () => {
     { name: "Roles", slug: "roles" },
     { name: "Admins", slug: "admins" },
     { name: "Rooms", slug: "rooms" },
-    { name: "Room Types", slug: "room_types" },
+    { name: "Room Types", slug: "typerooms" },
     { name: "Guests", slug: "guests" },
     { name: "HouseKeeping", slug: "housekeeping" },
-    { name: "Staff Attendance", slug: "staff_attendance" },
+    { name: "Staff Attendance", slug: "staffattendances" },
     { name: "Invoice", slug: "invoice" },
     { name: "Valet Parking", slug: "valet_parking" },
     { name: "Event Package", slug: "event_package" },
@@ -44,6 +44,7 @@ const Admin_Role_List = () => {
     { name: "Occupancy Reports", slug: "occupancy_reports" },
     { name: "Bookings", slug: "bookings" },
     { name: "Settings", slug: "settings" },
+    { name: "Staffs", slug: "staffs" },
   ];
   const actions = ["view", "create", "edit", "delete"];
   const [permissions, setPermissions] = useState({});

@@ -17,7 +17,7 @@ export const hasPermission = (requiredPermission) => {
   const permissions = getUserPermissions();
 
   if (!requiredPermission) return true;
-  if (role === "super_admin") return true;
+  if (role == "super_admin") return true;
 
   const [moduleName, actionName] = requiredPermission.split("_");
 

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import {
-  Admin_Get_List,
   Admin_Get_Staff_Attendance,
   Admin_Create_Staff_Attendance,
   Admin_Update_Staff_Attendance,
   Admin_Delete_Staff_Attendance,
   Admin_Verify_Staff_Attendance,
   Admin_Get_Staff_Summary,
+  Admin_Get_Staff,
 } from "../../../../api/admin/Admin";
 import { FiPlus, FiEye, FiEdit, FiTrash } from "react-icons/fi";
 import {
@@ -20,6 +20,8 @@ import {
   Spinner,
 } from "react-bootstrap";
 import AdminLayout from "../admin_layout/Admin_Layout";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Admin_Staff_Attendance = () => {
   const [attendanceList, setAttendanceList] = useState([]);
@@ -48,46 +50,49 @@ const Admin_Staff_Attendance = () => {
   const [attendancePage, setAttendancePage] = useState(1);
   const [attendanceLimit] = useState(10); // You can change this or make dropdown
   const [attendanceTotalPages, setAttendanceTotalPages] = useState(1);
-  const [isloading,setIsloading] = useState(false)
+  const [isloading, setIsloading] = useState(false);
 
   // -------------------- Load Staff List --------------------
   const loadStaffList = async (p = page) => {
-    setIsloading(true)
+    setIsloading(true);
     try {
-      const res = await Admin_Get_List(p, limit);
+      const res = await Admin_Get_Staff(p, limit);
       const { data, totalPages } = res.data;
-      
-      setIsloading(false)
+
+      setIsloading(false);
       setStaffList(data || []);
       setTotalPages(totalPages);
       setPage(p);
-      
+
       if (data.length > 0) {
-        setIsloading(false)
+        setIsloading(false);
         setSelectedStaff(data[0]);
         loadAttendance(data[0]._id);
       }
     } catch (err) {
-      setIsloading(false)
+      setIsloading(false);
       console.error(err);
     }
   };
 
   // -------------------- Load Attendance for Selected Staff --------------------
   const loadAttendance = async (staffId, page = 1) => {
-    setIsloading(true)
+    setIsloading(true);
     if (!staffId) return;
     try {
-      const res = await Admin_Get_Staff_Attendance(staffId, page, attendanceLimit);
-      setIsloading(false)
+      const res = await Admin_Get_Staff_Attendance(
+        staffId,
+        page,
+        attendanceLimit,
+      );
+      setIsloading(false);
       setAttendanceList(res.data.data || []);
       setAttendanceTotalPages(res.data.totalPages || 1);
     } catch (err) {
-      setIsloading(false)
+      setIsloading(false);
       console.error(err);
     }
   };
-
 
   useEffect(() => {
     loadStaffList();
@@ -110,9 +115,8 @@ const Admin_Staff_Attendance = () => {
       const payload = {
         staff: selectedStaff._id,
         date: formData.date,
-        status: formData.status,
-        checkInTime: formData.checkInTime,
-        checkOutTime: formData.checkOutTime,
+        status: "present",
+        checkInTime: new Date().toISOString(), // auto current time
         notes: formData.notes,
       };
 
@@ -120,23 +124,46 @@ const Admin_Staff_Attendance = () => {
       setShowCreateModal(false);
       loadAttendance(selectedStaff._id);
     } catch (err) {
+      toast.error(err?.data?.message);
       console.error(err);
     }
   };
 
-  // -------------------- UPDATE Attendance --------------------
-  const handleUpdateAttendance = async () => {
+  const handleCheckIn = async () => {
+    const confirm = window.confirm("Are you sure you want to Check-In?");
+    if (!confirm) return;
+
     try {
       const payload = {
-        status: formData.status,
-        notes: formData.notes,
+        staff: selectedStaff._id,
+        date: new Date().toISOString().split("T")[0],
+        status: "present",
+        checkInTime: new Date().toISOString(),
       };
 
-      await Admin_Update_Staff_Attendance(selectedAttendanceId, payload);
-      setShowUpdateModal(false);
+      await Admin_Create_Staff_Attendance(payload);
       loadAttendance(selectedStaff._id);
+
+      toast.success("Checked In Successfully");
     } catch (err) {
-      console.error(err);
+      toast.error(err?.data?.message);
+    }
+  };
+
+  // -------------------- UPDATE Attendance --------------------
+  const handleCheckout = async (attendanceId) => {
+    const confirm = window.confirm("Are you sure you want to Check-Out?");
+    if (!confirm) return;
+
+    try {
+      await Admin_Update_Staff_Attendance(attendanceId, {
+        checkOutTime: new Date().toISOString(),
+      });
+
+      loadAttendance(selectedStaff._id);
+      toast.success("Checked Out Successfully");
+    } catch (err) {
+      toast.error(err?.data?.message);
     }
   };
 
@@ -147,6 +174,7 @@ const Admin_Staff_Attendance = () => {
       await Admin_Delete_Staff_Attendance(id);
       loadAttendance(selectedStaff._id);
     } catch (err) {
+      toast.error(err?.data?.message);
       console.error(err);
     }
   };
@@ -189,7 +217,43 @@ const Admin_Staff_Attendance = () => {
     }
   };
 
+  const getTodayDateTimeRange = () => {
+    const now = new Date();
 
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+
+    const end = new Date();
+    end.setHours(23, 59, 0, 0);
+
+    const format = (d) => d.toISOString().slice(0, 16);
+
+    return {
+      min: format(start),
+      max: format(end),
+    };
+  };
+
+  const { min, max } = getTodayDateTimeRange();
+
+  const formatDate = (date) => {
+    return new Date(date).toISOString().split("T")[0];
+  };
+
+  const today = new Date().toISOString().split("T")[0];
+
+  const todayAttendance = attendanceList.some(
+  (a) => new Date(a.date).toISOString().split("T")[0] === today
+);
+
+  const formatWorkTime = (minutes) => {
+    if (!minutes) return "-";
+
+    const hrs = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+
+    return `${hrs}h ${mins}m`;
+  };
 
   return (
     <AdminLayout>
@@ -203,46 +267,44 @@ const Admin_Staff_Attendance = () => {
             <h6 className="mb-3 fw-bold border-bottom pb-2 staff-panel-title">
               Staff Members
             </h6>
-            {
-              isloading ? (
-  <div className="text-center my-4">
-            <Spinner animation="border" /> <p>Loading...</p>
-          </div>
-              ):(
-                 <ListGroup variant="flush" className="staff-list">
-              {staffList.length === 0 && (
-                <p className="text-muted text-center small">No staff found</p>
-              )}
+            <ToastContainer position="top-right" autoClose={2000} />
+            {isloading ? (
+              <div className="text-center my-4">
+                <Spinner animation="border" /> <p>Loading...</p>
+              </div>
+            ) : (
+              <ListGroup variant="flush" className="staff-list">
+                {staffList.length == 0 && (
+                  <p className="text-muted text-center small">No staff found</p>
+                )}
 
-              {staffList?.map((staff) => (
-                <ListGroup.Item
-                  key={staff._id}
-                  action
-                  onClick={() => {
-                    setSelectedStaff(staff);
-                    setAttendancePage(1);
-                    loadAttendance(staff._id, 1);
-                  }}
-                  className={`d-flex align-items-center py-2 rounded mb-1 staff-list-item ${selectedStaff?._id === staff._id ? "selected" : ""
+                {staffList?.map((staff) => (
+                  <ListGroup.Item
+                    key={staff._id}
+                    action
+                    onClick={() => {
+                      setSelectedStaff(staff);
+                      setAttendancePage(1);
+                      loadAttendance(staff._id, 1);
+                    }}
+                    className={`d-flex align-items-center py-2 rounded mb-1 staff-list-item ${
+                      selectedStaff?._id === staff._id ? "selected" : ""
                     }`}
-                >
+                  >
+                    <div className="rounded-circle text-white d-flex align-items-center justify-content-center me-2 staff-avatar">
+                      {staff.name?.charAt(0).toUpperCase()}
+                    </div>
 
-                  <div className="rounded-circle text-white d-flex align-items-center justify-content-center me-2 staff-avatar">
-                    {staff.name?.charAt(0).toUpperCase()}
-                  </div>
-
-                  <div>
-                    <div className="fw-semibold staff-name">{staff.name}</div>
-                    <small className="text-muted staff-email">
-                      {staff.email || "Staff Member"}
-                    </small>
-                  </div>
-                </ListGroup.Item>
-              ))}
-            </ListGroup>
-              )
-            }
-           
+                    <div>
+                      <div className="fw-semibold staff-name">{staff.name}</div>
+                      <small className="text-muted staff-email">
+                        {staff.email || "Staff Member"}
+                      </small>
+                    </div>
+                  </ListGroup.Item>
+                ))}
+              </ListGroup>
+            )}
 
             {/* Pagination Controls */}
             <div className="d-flex justify-content-between mt-2 staff-pagination">
@@ -267,7 +329,6 @@ const Admin_Staff_Attendance = () => {
               </button>
             </div>
           </div>
-
         </Col>
 
         {/* ------------------- RIGHT ATTENDANCE TABLE ------------------- */}
@@ -276,7 +337,7 @@ const Admin_Staff_Attendance = () => {
             <h5>Attendance {selectedStaff ? `: ${selectedStaff.name}` : ""}</h5>
 
             <div className="d-flex gap-2">
-              <button
+              {/* <button
                 variant="success"
                 className="primary-button btn-sm small-add-button"
                 disabled={!selectedStaff}
@@ -293,8 +354,28 @@ const Admin_Staff_Attendance = () => {
                 }}
               >
                 + Add Attendance
-              </button>
+              </button> */}
 
+           {!todayAttendance ? (
+  <button
+    className="primary-button btn-sm"
+    disabled={!selectedStaff}
+    onClick={handleCheckIn}
+  >
+    Check-In
+  </button>
+) : !todayAttendance.checkOutTime ? (
+  <button
+    className="btn btn-success btn-sm"
+    onClick={() => handleCheckout(todayAttendance._id)}
+  >
+    Check-Out
+  </button>
+) : (
+  <button className="btn btn-secondary btn-sm" disabled>
+    Completed
+  </button>
+)}
               <button
                 className="secondary-button btn-sm small-add-button"
                 variant="primary"
@@ -305,108 +386,101 @@ const Admin_Staff_Attendance = () => {
             </div>
           </div>
 
-          {attendanceList.length > 0 ? (
-            <>
-              <Table striped bordered hover responsive className="table-smaller">
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Status</th>
-                    <th>Check-In</th>
-                    <th>Check-Out</th>
-                    <th>Notes</th>
-                    <th>Verified</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
+         <>
+  <Table striped bordered hover responsive className="table-smaller">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Status</th>
+        <th>Check-In</th>
+        <th>Check-Out</th>
+        <th>Work Time</th>
+        <th>Notes</th>
+        <th>Verified</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+<tbody>
+  {/* 👉 Agar aaj ka attendance nahi hai to ek dummy row dikhao */}
+  {!todayAttendance && (
+    <tr>
+      <td>{today}</td>
+      <td>Present</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>-</td>
+      <td>No</td>
+      <td>
+        <button
+          className="primary-button btn-sm"
+          onClick={handleCheckIn}
+        >
+          Check-In
+        </button>
+      </td>
+    </tr>
+  )}
 
-                <tbody>
-                  {attendanceList &&
-                    attendanceList?.map((a) => (
-                      <tr key={a._id}>
-                        <td>{a.date?.slice(0, 10)}</td>
-                        <td>{a.status}</td>
-                        <td>{a.checkInTime}</td>
-                        <td>{a.checkOutTime}</td>
-                        <td>{a.notes}</td>
-                        <td>{a.verifiedBy ? "Yes" : "No"}</td>
+  {/* 👉 Agar koi data hi nahi hai (old records bhi nahi) */}
+  {attendanceList.length === 0 && todayAttendance && (
+    <tr>
+      <td colSpan="8" className="text-center">
+        No attendance data found
+      </td>
+    </tr>
+  )}
 
-                        <td>
-                          <div className="d-flex align-items-center gap-2">
-                            {/* View */}
-                            <FiEye
-                              className="text-success"
-                              size={17}
-                              role="button"
-                              onClick={() => {
-                                setSelectedAttendanceId(a._id);
-                                setShowVerifyModal(true);
-                              }}
-                            />
+  {/* 👉 Existing attendance list */}
+  {attendanceList.map((a) => (
+    <tr key={a._id}>
+      <td>{new Date(a.date).toLocaleDateString("en-CA")}</td>
+      <td>{a.status}</td>
 
-                            {/* Edit */}
-                            <FiEdit
-                              className="text-warning"
-                              size={17}
-                              role="button"
-                              onClick={() => {
-                                setSelectedAttendanceId(a._id);
-                                setFormData({
-                                  status: a.status,
-                                  notes: a.notes,
-                                });
-                                setShowUpdateModal(true);
-                              }}
-                            />
+      <td>
+        {a.checkInTime
+          ? new Date(a.checkInTime).toLocaleString()
+          : "-"}
+      </td>
 
-                            <FiTrash
-                              className="text-danger"
-                              size={17}
-                              role="button"
-                              onClick={() => handleDelete(a._id)}
-                            />
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </Table>
-              <div className="d-flex justify-content-between align-items-center mt-2">
-                <button
-                  className="btn btn-sm btn-outline-primary"
-                  disabled={attendancePage === 1}
-                  onClick={() => {
-                    setAttendancePage(attendancePage - 1);
-                    loadAttendance(selectedStaff._id, attendancePage - 1);
-                  }}
-                >
-                  Previous
-                </button>
+      <td>
+        {a.checkOutTime
+          ? new Date(a.checkOutTime).toLocaleString()
+          : "-"}
+      </td>
 
-                <span style={{ fontSize: "13px" }}>
-                  Page {attendancePage} of {attendanceTotalPages}
-                </span>
+      <td>{formatWorkTime(a.totalWorkMinutes)}</td>
+      <td>{a.notes}</td>
+      <td>{a.verifiedBy ? "Yes" : "No"}</td>
 
-                <button
-                  className="btn btn-sm btn-outline-primary"
-                  disabled={attendancePage === attendanceTotalPages}
-                  onClick={() => {
-                    setAttendancePage(attendancePage + 1);
-                    loadAttendance(selectedStaff._id, attendancePage + 1);
-                  }}
-                >
-                  Next
-                </button>
-              </div>
-            </>
-          ) : (
-            <p
-              className="text-muted"
-              style={{ fontSize: "14px", fontWeight: 500 }}
+      <td>
+        <div className="d-flex gap-2">
+          {!a.checkInTime ? (
+            <button
+              className="primary-button btn-sm"
+              onClick={handleCheckIn}
             >
-              No attendance data found for this staff member.
-            </p>
+              Check-In
+            </button>
+          ) : !a.checkOutTime ? (
+            <button
+              className="btn btn-success btn-sm"
+              onClick={() => handleCheckout(a._id)}
+            >
+              Check-Out
+            </button>
+          ) : (
+            <button className="btn btn-secondary btn-sm" disabled>
+              Completed
+            </button>
           )}
+        </div>
+      </td>
+    </tr>
+  ))}
+</tbody>
+  </Table>
+</>
         </Col>
       </Row>
 
@@ -420,10 +494,17 @@ const Admin_Staff_Attendance = () => {
 
         <Modal.Body className="small-form">
           <Form>
-            <Form.Group className="mb-2">
+            {/* <Form.Group className="mb-2">
               <Form.Label>Date</Form.Label>
-              <Form.Control type="date" name="date" onChange={handleChange} />
-            </Form.Group>
+              <Form.Control
+                type="date"
+                name="date"
+                value={formData.date}
+                min={new Date().toISOString().split("T")[0]}
+                max={new Date().toISOString().split("T")[0]}
+                onChange={handleChange}
+              />
+            </Form.Group> */}
 
             <Form.Group className="mb-2">
               <Form.Label>Status</Form.Label>
@@ -434,23 +515,16 @@ const Admin_Staff_Attendance = () => {
               </Form.Select>
             </Form.Group>
 
-            <Form.Group className="mb-2">
+            {/* <Form.Group className="mb-2">
               <Form.Label>Check-In</Form.Label>
               <Form.Control
                 type="datetime-local"
                 name="checkInTime"
+                min={min}
+                max={max}
                 onChange={handleChange}
               />
-            </Form.Group>
-
-            <Form.Group className="mb-2">
-              <Form.Label>Check-Out</Form.Label>
-              <Form.Control
-                type="datetime-local"
-                name="checkOutTime"
-                onChange={handleChange}
-              />
-            </Form.Group>
+            </Form.Group> */}
 
             <Form.Group>
               <Form.Label>Notes</Form.Label>
@@ -515,12 +589,12 @@ const Admin_Staff_Attendance = () => {
           >
             Close
           </button>
-          <button
+          {/* <button
             className="primary-button btn-sm small-add-button"
             onClick={handleUpdateAttendance}
           >
             Update
-          </button>
+          </button> */}
         </Modal.Footer>
       </Modal>
 
@@ -535,10 +609,16 @@ const Admin_Staff_Attendance = () => {
         </Modal.Body>
 
         <Modal.Footer>
-          <button className="secondary-button btn-sm small-add-button" onClick={() => setShowVerifyModal(false)}>
+          <button
+            className="secondary-button btn-sm small-add-button"
+            onClick={() => setShowVerifyModal(false)}
+          >
             Cancel
           </button>
-          <button className="primary-button btn-sm small-add-button" onClick={handleVerify}>
+          <button
+            className="primary-button btn-sm small-add-button"
+            onClick={handleVerify}
+          >
             Verify
           </button>
         </Modal.Footer>
@@ -561,9 +641,7 @@ const Admin_Staff_Attendance = () => {
             <Row>
               <Col md={6}>
                 <Form.Group>
-                  <Form.Label className="summary-label">
-                    Month
-                  </Form.Label>
+                  <Form.Label className="summary-label">Month</Form.Label>
 
                   <Form.Select
                     value={filterMonth}
@@ -584,9 +662,7 @@ const Admin_Staff_Attendance = () => {
 
               <Col md={6}>
                 <Form.Group>
-                  <Form.Label className="summary-label">
-                    Year
-                  </Form.Label>
+                  <Form.Label className="summary-label">Year</Form.Label>
 
                   <Form.Select
                     value={filterYear}
@@ -663,7 +739,6 @@ const Admin_Staff_Attendance = () => {
           </button>
         </Modal.Footer>
       </Modal>
-
     </AdminLayout>
   );
 };

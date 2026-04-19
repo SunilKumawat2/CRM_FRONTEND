@@ -10,19 +10,22 @@ import {
   Admin_Get_Rooms,
   Admin_Get_List,
   Admin_Verify_Clean_Housekeeping,
+  Admin_Get_Staff,
 } from "../../../../api/admin/Admin";
 import { FiCheckCircle } from "react-icons/fi";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable"; // ✅ THIS FIXES autoTable error
+import autoTable from "jspdf-autotable"; 
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Admin_Housekeeping = () => {
   const [housekeepingList, setHousekeepingList] = useState([]);
   const [showVerifyModal, setShowVerifyModal] = useState(false);
   const [verifyItem, setVerifyItem] = useState(null);
   const [rooms, setRooms] = useState([]);
-  const [adminList, setAdminList] = useState([]);
+  const [staffList, setStaffList] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -62,7 +65,7 @@ const Admin_Housekeeping = () => {
   const loadData = async () => {
     await loadHousekeeping();
     await loadRooms();
-    await loadAdminList();
+    await LoadStaffList();
   };
 
   const loadHousekeeping = async () => {
@@ -73,7 +76,7 @@ const Admin_Housekeeping = () => {
       setIsloading(false);
     } catch (error) {
       setIsloading(false);
-      console.log(error);
+      console.log(error?.response?.data || error.message || error);
     }
   };
 
@@ -82,9 +85,9 @@ const Admin_Housekeeping = () => {
     setRooms(res.data.data || []);
   };
 
-  const loadAdminList = async () => {
-    const res = await Admin_Get_List();
-    setAdminList(res.data.data || []);
+  const LoadStaffList = async () => {
+    const res = await Admin_Get_Staff();
+    setStaffList(res.data.data || []);
   };
 
   // FORM HANDLERS
@@ -115,7 +118,8 @@ const Admin_Housekeeping = () => {
       setShowAddModal(false);
       loadHousekeeping();
     } catch (error) {
-      console.log(error);
+      toast.error(error?.data?.message)
+      console.log(error?.response?.data || error.message || error);
     }
   };
 
@@ -150,7 +154,8 @@ const Admin_Housekeeping = () => {
       setShowEditModal(false);
       loadHousekeeping();
     } catch (error) {
-      console.log(error);
+      toast.error(error?.data?.message)
+      console.log(error?.response?.data || error.message || error);
     }
   };
 
@@ -166,12 +171,13 @@ const Admin_Housekeeping = () => {
       await Admin_Delete_Housekeeping(id);
       loadHousekeeping();
     } catch (error) {
-      console.log(error);
+      toast.error(error?.data?.message)
+      console.log(error?.response?.data || error.message || error);
     }
   };
 
   const exportToExcel = () => {
-    const data = housekeepingList.map((item, i) => ({
+    const data = housekeepingList?.map((item, i) => ({
       "#": i + 1,
       Room: item.room?.roomNumber,
       "Room Type": item.room?.roomType?.name,
@@ -219,7 +225,7 @@ const Admin_Housekeeping = () => {
       "Verified",
     ];
 
-    const tableRows = housekeepingList.map((item, i) => [
+    const tableRows = housekeepingList?.map((item, i) => [
       i + 1,
       item.room?.roomNumber,
       item.room?.roomType?.name,
@@ -271,6 +277,7 @@ const Admin_Housekeeping = () => {
             Export PDF
           </button>
         </div>
+        <ToastContainer position="top-right" autoClose={2000} />
       </div>
       {isloading ? (
         <div className="text-center my-4">
@@ -298,7 +305,7 @@ const Admin_Housekeeping = () => {
           </thead>
 
           <tbody>
-            {housekeepingList.map((item, i) => (
+            {housekeepingList?.map((item, i) => (
               <tr key={item._id}>
                 <td>{i + 1}</td>
 
@@ -317,7 +324,7 @@ const Admin_Housekeeping = () => {
 
                 <td>
                   {item.amenitiesReplaced?.length > 0
-                    ? item.amenitiesReplaced.map((am) => (
+                    ? item.amenitiesReplaced?.map((am) => (
                         <span key={am._id} className="badge bg-info me-1">
                           {am.item} × {am.quantity}
                         </span>
@@ -389,9 +396,12 @@ const Admin_Housekeeping = () => {
                     value={formData.room}
                     onChange={handleChange}
                   >
-                    {rooms.map((r) => (
-                      <option value={r._id}>{r.roomNumber}</option>
-                    ))}
+                    {Array.isArray(rooms) &&
+                      rooms.map((r) => (
+                        <option key={r._id} value={r._id}>
+                          {r.roomNumber}
+                        </option>
+                      ))}
                   </Form.Select>
                 </Form.Group>
               </Col>
@@ -404,7 +414,7 @@ const Admin_Housekeeping = () => {
                     value={formData.assignedTo}
                     onChange={handleChange}
                   >
-                    {adminList.map((a) => (
+                    {staffList?.map((a) => (
                       <option value={a._id}>{a.name}</option>
                     ))}
                   </Form.Select>
@@ -531,11 +541,12 @@ const Admin_Housekeeping = () => {
                     onChange={handleChange}
                   >
                     <option value="">Select Room</option>
-                    {rooms?.map((r) => (
-                      <option key={r._id} value={r._id}>
-                        {r?.roomNumber} - {r.roomType?.name}
-                      </option>
-                    ))}
+                    {Array.isArray(rooms) &&
+                      rooms?.map((r) => (
+                        <option key={r?._id} value={r?._id}>
+                          {r?.roomNumber}
+                        </option>
+                      ))}
                   </Form.Select>
                 </Form.Group>
               </Col>
@@ -549,9 +560,9 @@ const Admin_Housekeeping = () => {
                     onChange={handleChange}
                   >
                     <option value="">Select Staff</option>
-                    {adminList.map((a) => (
+                    {staffList?.map((a) => (
                       <option key={a._id} value={a._id}>
-                        {a.name}
+                        {a?.name}
                       </option>
                     ))}
                   </Form.Select>
@@ -582,7 +593,9 @@ const Admin_Housekeeping = () => {
                     onChange={handleChange}
                   >
                     <option value="morning">Morning</option>
+                    <option value="afternoon">Afternoon</option>
                     <option value="evening">Evening</option>
+                    <option value="night">Night</option>
                   </Form.Select>
                 </Form.Group>
               </Col>
@@ -601,6 +614,7 @@ const Admin_Housekeeping = () => {
                     <option value="in_progress">In Progress</option>
                     <option value="completed">Completed</option>
                     <option value="pending">Pending</option>
+                    <option value="not_collected">Not Collected</option>
                   </Form.Select>
                 </Form.Group>
               </Col>
@@ -635,7 +649,7 @@ const Admin_Housekeeping = () => {
             {/* AMENITIES LIST */}
             <h5 className="mt-4 mb-2">Amenities Replaced</h5>
 
-            {formData.amenitiesReplaced.map((am, index) => (
+            {formData?.amenitiesReplaced?.map((am, index) => (
               <Row key={index} className="mb-2">
                 <Col>
                   <Form.Control
@@ -751,8 +765,8 @@ const Admin_Housekeeping = () => {
 
               <strong>Amenities Replaced:</strong>
               <div className="mt-2">
-                {verifyItem.amenitiesReplaced?.length > 0 ? (
-                  verifyItem.amenitiesReplaced.map((am) => (
+                {verifyItem?.amenitiesReplaced?.length > 0 ? (
+                  verifyItem?.amenitiesReplaced?.map((am) => (
                     <span key={am._id} className="badge bg-info text-dark me-2">
                       {am.item} × {am.quantity}
                     </span>

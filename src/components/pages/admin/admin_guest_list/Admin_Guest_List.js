@@ -10,7 +10,8 @@ import {
   Admin_Room_Guest_Update,
 } from "../../../../api/admin/Admin";
 import { FiPlus, FiEdit, FiTrash, FiEye } from "react-icons/fi";
-import { toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import AdminLayout from "../admin_layout/Admin_Layout";
 import {
   TbPlayerTrackNextFilled,
@@ -359,6 +360,7 @@ const Admin_Guest_List = () => {
               Export PDF
             </button>
           </div>
+           <ToastContainer position="top-right" autoClose={2000} />
         </div>
         {isloading ? (
           <div className="text-center my-4">

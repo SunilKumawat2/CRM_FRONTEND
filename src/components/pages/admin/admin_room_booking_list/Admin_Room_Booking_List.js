@@ -159,6 +159,7 @@ const Admin_Room_Booking_List = () => {
       setShowEditModal(false);
       loadBookings();
     } catch (err) {
+      toast.error(err?.data?.message)
       console.error("Update Error:", err);
     }
   };
@@ -171,6 +172,7 @@ const Admin_Room_Booking_List = () => {
       await Admin_Room_Booking_Delete(id);
       loadBookings();
     } catch (err) {
+      toast.error(err?.data?.message)
       console.error("Delete Error:", err);
     }
   };
@@ -283,45 +285,45 @@ const Admin_Room_Booking_List = () => {
   };
   // <----------- Export To PDF ----------------->
   const exportToPDF = () => {
-  const doc = new jsPDF();
+    const doc = new jsPDF();
 
-  const tableColumn = [
-    "#",
-    "Booking No",
-    "Guest",
-    "Room",
-    "Check-In",
-    "Check-Out",
-    "Status",
-    "Total",
-  ];
+    const tableColumn = [
+      "#",
+      "Booking No",
+      "Guest",
+      "Room",
+      "Check-In",
+      "Check-Out",
+      "Status",
+      "Total",
+    ];
 
-  const tableRows = [];
+    const tableRows = [];
 
-  bookings.forEach((b, i) => {
-    tableRows.push([
-      i + 1,
-      b.bookingNumber,
-      b.guestName,
-      b.rooms?.[0]?.room?.roomNumber || "-",
-      b.checkIn?.slice(0, 10),
-      b.checkOut?.slice(0, 10),
-      b.status,
-      `Rs.${b.totalAmount}`,
-    ]);
-  });
+    bookings.forEach((b, i) => {
+      tableRows.push([
+        i + 1,
+        b.bookingNumber,
+        b.guestName,
+        b.rooms?.[0]?.room?.roomNumber || "-",
+        b.checkIn?.slice(0, 10),
+        b.checkOut?.slice(0, 10),
+        b.status,
+        `Rs.${b.totalAmount}`,
+      ]);
+    });
 
-  // ✅ Correct usage
-  autoTable(doc, {
-    head: [tableColumn],
-    body: tableRows,
-    startY: 20,
-  });
+    // ✅ Correct usage
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      startY: 20,
+    });
 
-  doc.text("Room Booking Report", 14, 15);
+    doc.text("Room Booking Report", 14, 15);
 
-  doc.save("Booking_List.pdf");
-};
+    doc.save("Booking_List.pdf");
+  };
 
   return (
     <AdminLayout>
@@ -648,7 +650,7 @@ const Admin_Room_Booking_List = () => {
                     <option value="">-- Select Room --</option>
                     {roomList?.map((room) => (
                       <option key={room._id} value={room._id}>
-                       {room?.roomNumber} - {room.roomType?.name}
+                        {room?.roomNumber} - {room.roomType?.name}
                       </option>
                     ))}
                   </Form.Select>
@@ -698,6 +700,7 @@ const Admin_Room_Booking_List = () => {
                     type="date"
                     name="checkIn"
                     value={formData.checkIn}
+                    min={new Date().toISOString().split("T")[0]}
                     onChange={updateField}
                   />
                 </Form.Group>
@@ -709,7 +712,10 @@ const Admin_Room_Booking_List = () => {
                   <Form.Control
                     type="date"
                     name="checkOut"
-                    value={formData.checkOut}
+                    value={formData?.checkOut}
+                    min={
+                      formData?.checkIn || new Date().toISOString().split("T")[0]
+                    }
                     onChange={updateField}
                   />
                 </Form.Group>

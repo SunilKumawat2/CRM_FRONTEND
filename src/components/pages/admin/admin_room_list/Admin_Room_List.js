@@ -222,7 +222,8 @@ const Admin_Room_List = () => {
       setFormData(initialFormData);
       fetchRooms();
     } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to create room");
+      console.log("Failed to create room",err)
+      toast.error(err?.data?.message || "Failed to create room");
     } finally {
       setLoading(false);
     }

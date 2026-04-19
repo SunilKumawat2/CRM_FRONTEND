@@ -43,7 +43,7 @@ console.log("hasPermission_hasPermission",hasPermission())
             {!isCollapsed && <span>Roles</span>}
           </NavLink>
         )}
-         {hasPermission("room_types_view") && (
+         {hasPermission("typerooms_view") && (
           <NavLink
             to="/admin-room-type"
             className={({ isActive }) =>
@@ -51,7 +51,7 @@ console.log("hasPermission_hasPermission",hasPermission())
             }
           >
             <MdOutlineBedroomParent className="menu-icon" /> {/* you can change to a bed icon */}
-            {!isCollapsed && <span>Room Type</span>}
+            {!isCollapsed && <span>Room Types</span>}
           </NavLink>
         )}
         {/* Admins */}
@@ -91,7 +91,7 @@ console.log("hasPermission_hasPermission",hasPermission())
           </NavLink>
         )}
         {/* Rooms booking Management */}
-        {hasPermission("booking_view") && (
+        {hasPermission("guests_view") && (
           <NavLink
             to="/admin-guest-list"
             className={({ isActive }) =>
@@ -102,7 +102,7 @@ console.log("hasPermission_hasPermission",hasPermission())
             {!isCollapsed && <span>Guests</span>}
           </NavLink>
         )}
-        {hasPermission("booking_view") && (
+        {hasPermission("housekeeping_view") && (
           <NavLink
             to="/admin-housekeeping-list"
             className={({ isActive }) =>
@@ -113,7 +113,18 @@ console.log("hasPermission_hasPermission",hasPermission())
             {!isCollapsed && <span>Housekeeping</span>}
           </NavLink>
         )}
-        {hasPermission("attendance_view") && (
+         {hasPermission("staffs_view") && (
+          <NavLink
+            to="/admin-staff"
+            className={({ isActive }) =>
+              isActive ? "menu-link active" : "menu-link"
+            }
+          >
+            <MdOutlineBedroomParent className="menu-icon" /> {/* you can change to a bed icon */}
+            {!isCollapsed && <span>Staff</span>}
+          </NavLink>
+        )}
+        {hasPermission("staffattendances_view") && (
           <NavLink
             to="/admin-staff-attendance"
             className={({ isActive }) =>

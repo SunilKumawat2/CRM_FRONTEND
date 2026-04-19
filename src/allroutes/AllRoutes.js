@@ -27,6 +27,7 @@ import Admin_Room_Type from "../components/pages/admin/admin_room_type/Admin_Roo
 import Admin_Daily_Reports from "../components/pages/admin/admin_daily_reports/Admin_Daily_Reports";
 import Admin_Monthly_Reports from "../components/pages/admin/admin_monthly_reports/Admin_Monthly_Reports";
 import Admin_Occupancy from "../components/pages/admin/admin_occupancy/Admin_Occupancy";
+import Admin_Staff from "../components/pages/admin/admin_staff/Admin_Staff";
 
 const AllRoutes = () => {
   return (
@@ -114,7 +115,7 @@ const AllRoutes = () => {
       <Route
         path="/admin-guest-list"
         element={
-          <ProtectedRoute requiredPermission="guest_view">
+          <ProtectedRoute requiredPermission="guests_view">
             <Admin_Guest_List />
           </ProtectedRoute>
         }
@@ -122,15 +123,23 @@ const AllRoutes = () => {
       <Route
         path="/admin-housekeeping-list"
         element={
-          <ProtectedRoute requiredPermission="guest_view">
+          <ProtectedRoute requiredPermission="housekeeping_view">
             <Admin_Housekeeping />
+          </ProtectedRoute>
+        }
+      />
+       <Route
+        path="/admin-staff"
+        element={
+          <ProtectedRoute requiredPermission="staffs_view">
+            <Admin_Staff />
           </ProtectedRoute>
         }
       />
       <Route
         path="/admin-staff-attendance"
         element={
-          <ProtectedRoute requiredPermission="guest_view">
+          <ProtectedRoute requiredPermission="staffattendances_view">
             <Admin_Staff_Attendance />
           </ProtectedRoute>
         }
@@ -202,7 +211,7 @@ const AllRoutes = () => {
         <Route
         path="/admin-room-type"
         element={
-          <ProtectedRoute requiredPermission="banner_view">
+          <ProtectedRoute requiredPermission="typerooms_view">
             <Admin_Room_Type />
           </ProtectedRoute>
         }
