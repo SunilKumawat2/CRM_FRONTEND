@@ -670,7 +670,7 @@ const Admin_Room_List = () => {
             </thead>
             <tbody>
               {rooms?.length > 0 ? (
-                rooms.map((room, index) => (
+                rooms?.map((room, index) => (
                   <tr key={room._id}>
                     <td>{index + 1}</td>
                     <td>{room.roomNumber}</td>
