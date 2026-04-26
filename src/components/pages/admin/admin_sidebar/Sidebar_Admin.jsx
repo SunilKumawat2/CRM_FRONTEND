@@ -135,6 +135,17 @@ console.log("hasPermission_hasPermission",hasPermission())
             {!isCollapsed && <span>Staff Attendance</span>}
           </NavLink>
         )}
+        {hasPermission("staffattendances_view") && (
+          <NavLink
+            to="/admin-staff-attendance-summary"
+            className={({ isActive }) =>
+              isActive ? "menu-link active" : "menu-link"
+            }
+          >
+            <MdOutlineBedroomParent className="menu-icon" /> {/* you can change to a bed icon */}
+            {!isCollapsed && <span>Staff Attendance Summary</span>}
+          </NavLink>
+        )}
         {hasPermission("invoice_view") && (
           <NavLink
             to="/admin-invoice"

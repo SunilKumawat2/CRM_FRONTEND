@@ -820,13 +820,20 @@ export const Admin_Verify_Staff_Attendance = async (staffId) => {
   }
 };
 
-// <----------------  Delete Staff Attendance  ----------------->
-export const Admin_Get_Staff_Summary = async (month, year) => {
+// <----------------   Staff Attendance Summary ----------------->
+export const Admin_Get_Staff_Summary = async (params) => {
   try {
     const token = getToken();
-    const response = await axios.get(`${API_BASE_URL}/staff-attendance-summary?month=${month}&year=${year}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+
+    const query = new URLSearchParams(params).toString();
+
+    const response = await axios.get(
+      `${API_BASE_URL}/staff-attendance-summary?${query}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
     return response;
   } catch (error) {
     throw error.response || error;
@@ -1339,6 +1346,45 @@ export const Admin_Get_Staff = async (page = 1, limit = 10) => {
   }
 };
 
+// <---------------- GET SHIFTS ----------------->
+export const Admin_Get_Shifts = async () => {
+  try {
+    const token = getToken();
+
+    const response = await axios.get(
+      `${API_BASE_URL}/shifts`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+export const Admin_Create_Shift = async (data) => {
+  try {
+    const token = getToken();
+
+    const res = await axios.post(
+      `${API_BASE_URL}/shifts`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return res;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
 
 // <----------------  Create Staff Attendance  ----------------->
 export const Admin_Create_Staff = async (formData) => {

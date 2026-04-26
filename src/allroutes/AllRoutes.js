@@ -28,6 +28,7 @@ import Admin_Daily_Reports from "../components/pages/admin/admin_daily_reports/A
 import Admin_Monthly_Reports from "../components/pages/admin/admin_monthly_reports/Admin_Monthly_Reports";
 import Admin_Occupancy from "../components/pages/admin/admin_occupancy/Admin_Occupancy";
 import Admin_Staff from "../components/pages/admin/admin_staff/Admin_Staff";
+import Admin_Staff_Attendance_Summary from "../components/pages/admin/admin_staff_attendance_summary/Admin_Staff_Attendance_Summary";
 
 const AllRoutes = () => {
   return (
@@ -141,6 +142,14 @@ const AllRoutes = () => {
         element={
           <ProtectedRoute requiredPermission="staffattendances_view">
             <Admin_Staff_Attendance />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin-staff-attendance-summary"
+        element={
+          <ProtectedRoute requiredPermission="staffattendances_view">
+            <Admin_Staff_Attendance_Summary />
           </ProtectedRoute>
         }
       />
