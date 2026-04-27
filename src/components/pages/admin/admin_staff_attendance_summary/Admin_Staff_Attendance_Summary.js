@@ -73,19 +73,7 @@ const Admin_Staff_Attendance_Summary = () => {
     ? ((data.present / totalDays) * 100).toFixed(1)
     : 0;
 
-  // ================= SALARY LOGIC =================
-  const baseSalary = selectedStaff?.salary || 0;
-  const perDaySalary = baseSalary / 30;
-
-  const salaryEarned =
-    (data.present || 0) * perDaySalary +
-    (data.halfDay || 0) * (perDaySalary / 2);
-
-  const absentDeduction = (data.absent || 0) * perDaySalary;
-
-  const pf = baseSalary * 0.12;
-  const netSalary = salaryEarned - pf - absentDeduction;
-
+  const salary = data.salary || {};
   return (
     <AdminLayout>
       <Row>
@@ -106,9 +94,8 @@ const Admin_Staff_Attendance_Summary = () => {
                     //     ? "bg-primary text-white"
                     //     : ""
                     // }`}
-                    className={`d-flex align-items-center py-2 rounded mb-1 staff-list-item ${
-                      selectedStaff?._id === s._id ? "selected" : ""
-                    }`}
+                    className={`d-flex align-items-center py-2 rounded mb-1 staff-list-item ${selectedStaff?._id === s._id ? "selected" : ""
+                      }`}
                   >
                     <div className="fw-semibold">
                       {s?.name} ({s?.role})
@@ -129,11 +116,10 @@ const Admin_Staff_Attendance_Summary = () => {
             <div className="d-flex gap-3">
               <div>
                 <button
-                  className={`btn-sm small-add-button ${
-                    type === "monthly"
+                  className={`btn-sm small-add-button ${type === "monthly"
                       ? "primary-button"
                       : "btn-outline-primary"
-                  }`}
+                    }`}
                   onClick={() => setType("monthly")}
                 >
                   Monthly
@@ -141,9 +127,8 @@ const Admin_Staff_Attendance_Summary = () => {
               </div>
               <div>
                 <button
-                  className={`btn-sm small-add-button ${
-                    type === "yearly" ? "primary-button" : "btn-outline-primary"
-                  }`}
+                  className={`btn-sm small-add-button ${type === "yearly" ? "primary-button" : "btn-outline-primary"
+                    }`}
                   onClick={() => setType("yearly")}
                 >
                   Yearly
@@ -210,15 +195,19 @@ const Admin_Staff_Attendance_Summary = () => {
 
                   <Row>
                     <Col md={6}>
-                      <p>Base Salary: ₹{baseSalary}</p>
-                      <p>Earned Salary: ₹{salaryEarned.toFixed(0)}</p>
-                      <p>PF (12%): ₹{pf.toFixed(0)}</p>
+                      <p>Per Day Salary: ₹{salary?.perDaySalary || 0}</p>
+                      <p>Base Salary: ₹{salary?.baseSalary || 0}</p>
+                      <p>Overtime: ₹{salary?.overtimePay || 0}</p>
+                      <p>Bonus: ₹{salary?.bonus || 0}</p>
                     </Col>
 
                     <Col md={6}>
-                      <p>Absent Deduction: ₹{absentDeduction.toFixed(0)}</p>
+                      <p>PF ({salary?.pfPercent || 0}%): ₹{salary?.pfDeduction || 0}</p>
+                      <p>ESI ({salary?.esiPercent || 0}%): ₹{salary?.esiDeduction || 0}</p>
+                      <p>Absent Deduction: ₹{salary?.absentDeduction || 0}</p>
+
                       <h5 className="text-success">
-                        Net Salary: ₹{netSalary.toFixed(0)}
+                        Net Salary: ₹{salary?.finalSalary || 0}
                       </h5>
                     </Col>
                   </Row>

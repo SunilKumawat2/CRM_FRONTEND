@@ -29,6 +29,9 @@ import Admin_Monthly_Reports from "../components/pages/admin/admin_monthly_repor
 import Admin_Occupancy from "../components/pages/admin/admin_occupancy/Admin_Occupancy";
 import Admin_Staff from "../components/pages/admin/admin_staff/Admin_Staff";
 import Admin_Staff_Attendance_Summary from "../components/pages/admin/admin_staff_attendance_summary/Admin_Staff_Attendance_Summary";
+import Admin_Shift from "../components/pages/admin/admin_shift/Admin_Shift";
+import Admin_WeeklyOff from "../components/pages/admin/admin_weeklyoff/Admin_WeeklyOff";
+import Admin_Holiday from "../components/pages/admin/admin_holiday/Admin_Holiday";
 
 const AllRoutes = () => {
   return (
@@ -246,6 +249,30 @@ const AllRoutes = () => {
         element={
           <ProtectedRoute requiredPermission="occupancy_report_view">
             <Admin_Occupancy />
+          </ProtectedRoute>
+        }
+      />
+       <Route
+        path="/admin-shift"
+        element={
+          <ProtectedRoute requiredPermission="shifts_view">
+            <Admin_Shift />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin-weekly-off"
+        element={
+          <ProtectedRoute requiredPermission="weeklyoffs_view">
+            <Admin_WeeklyOff />
+          </ProtectedRoute>
+        }
+      />
+       <Route
+        path="/admin-holiday"
+        element={
+          <ProtectedRoute requiredPermission="holidaies_view">
+            <Admin_Holiday />
           </ProtectedRoute>
         }
       />

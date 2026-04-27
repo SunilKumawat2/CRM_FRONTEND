@@ -10,7 +10,7 @@ import { MdOutlineBedroomParent } from "react-icons/md";
 
 const Sidebar_Admin = ({ isCollapsed, setIsCollapsed }) => {
   const toggleSidebar = () => setIsCollapsed(!isCollapsed);
-console.log("hasPermission_hasPermission",hasPermission())
+  console.log("hasPermission_hasPermission", hasPermission())
   return (
     <aside className={`admin-sidebar ${isCollapsed ? "collapsed" : ""}`}>
       <div className="sidebar-header">
@@ -43,7 +43,7 @@ console.log("hasPermission_hasPermission",hasPermission())
             {!isCollapsed && <span>Roles</span>}
           </NavLink>
         )}
-         {hasPermission("typerooms_view") && (
+        {hasPermission("typerooms_view") && (
           <NavLink
             to="/admin-room-type"
             className={({ isActive }) =>
@@ -113,7 +113,8 @@ console.log("hasPermission_hasPermission",hasPermission())
             {!isCollapsed && <span>Housekeeping</span>}
           </NavLink>
         )}
-         {hasPermission("staffs_view") && (
+
+        {hasPermission("staffs_view") && (
           <NavLink
             to="/admin-staff"
             className={({ isActive }) =>
@@ -122,6 +123,17 @@ console.log("hasPermission_hasPermission",hasPermission())
           >
             <MdOutlineBedroomParent className="menu-icon" /> {/* you can change to a bed icon */}
             {!isCollapsed && <span>Staff</span>}
+          </NavLink>
+        )}
+        {hasPermission("shifts_view") && (
+          <NavLink
+            to="/admin-shift"
+            className={({ isActive }) =>
+              isActive ? "menu-link active" : "menu-link"
+            }
+          >
+            <MdOutlineBedroomParent className="menu-icon" /> {/* you can change to a bed icon */}
+            {!isCollapsed && <span>Staff Shift</span>}
           </NavLink>
         )}
         {hasPermission("staffattendances_view") && (
@@ -223,7 +235,7 @@ console.log("hasPermission_hasPermission",hasPermission())
             {!isCollapsed && <span>Banner View</span>}
           </NavLink>
         )}
-         {hasPermission("daily_report_view") && (
+        {hasPermission("daily_report_view") && (
           <NavLink
             to="/admin-daily-reports"
             className={({ isActive }) =>
@@ -234,7 +246,7 @@ console.log("hasPermission_hasPermission",hasPermission())
             {!isCollapsed && <span>daily Reports</span>}
           </NavLink>
         )}
-          {hasPermission("monthly_report_view") && (
+        {hasPermission("monthly_report_view") && (
           <NavLink
             to="/admin-monthly-reports"
             className={({ isActive }) =>
@@ -245,7 +257,7 @@ console.log("hasPermission_hasPermission",hasPermission())
             {!isCollapsed && <span>Monthly Reports</span>}
           </NavLink>
         )}
-          {hasPermission("occupancy_report_view") && (
+        {hasPermission("occupancy_report_view") && (
           <NavLink
             to="/admin-occupancy-report"
             className={({ isActive }) =>
@@ -254,6 +266,28 @@ console.log("hasPermission_hasPermission",hasPermission())
           >
             <MdOutlineBedroomParent className="menu-icon" /> {/* you can change to a bed icon */}
             {!isCollapsed && <span>Occupancy Reports</span>}
+          </NavLink>
+        )}
+        {hasPermission("weeklyoffs_view") && (
+          <NavLink
+            to="/admin-weekly-off"
+            className={({ isActive }) =>
+              isActive ? "menu-link active" : "menu-link"
+            }
+          >
+            <MdOutlineBedroomParent className="menu-icon" /> {/* you can change to a bed icon */}
+            {!isCollapsed && <span>Weekly Off</span>}
+          </NavLink>
+        )}
+        {hasPermission("holidaies_view") && (
+          <NavLink
+            to="/admin-holiday"
+            className={({ isActive }) =>
+              isActive ? "menu-link active" : "menu-link"
+            }
+          >
+            <MdOutlineBedroomParent className="menu-icon" /> {/* you can change to a bed icon */}
+            {!isCollapsed && <span>Holiday</span>}
           </NavLink>
         )}
         {/* Settings */}

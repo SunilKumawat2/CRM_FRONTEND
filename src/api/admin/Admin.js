@@ -1386,6 +1386,39 @@ export const Admin_Create_Shift = async (data) => {
   }
 };
 
+// <---------------- Admin Delete Role ----------------->
+export const Admin_Shift_Delete = async (shiftId) => {
+  try {
+    const token = getToken();
+    const response = await axios.delete(
+      `${API_BASE_URL}/delete-shift/${shiftId}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <----------------  Update Shift ----------------->
+export const Admin_Shift_Update = async (shiftId, formData) => {
+  try {
+    const token = getToken();
+    const response = await axios.put(
+      `${API_BASE_URL}/update-shift/${shiftId}`,
+      formData,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
 // <----------------  Create Staff Attendance  ----------------->
 export const Admin_Create_Staff = async (formData) => {
   try {
@@ -1424,3 +1457,152 @@ export const Admin_Delete_Staff = async (staffId) => {
     throw error.response || error;
   }
 };
+
+
+// <---------------- GET WeeklyOff ----------------->
+export const Admin_Get_WeeklyOff = async () => {
+  try {
+    const token = getToken();
+
+    const response = await axios.get(
+      `${API_BASE_URL}/weekly-off`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+// <----------- Create WeeklyOff ----------------->
+export const Admin_Create_WeeklyOff = async (data) => {
+  try {
+    const token = getToken();
+
+    const res = await axios.post(
+      `${API_BASE_URL}/weekly-off`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return res;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <---------------- Admin Delete WeeklyOff ----------------->
+export const Admin_WeeklyOff_Delete = async (weeklyOffId) => {
+  try {
+    const token = getToken();
+    const response = await axios.delete(
+      `${API_BASE_URL}/weekly-off/${weeklyOffId}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <----------------  Update WeeklyOff ----------------->
+export const Admin_WeeklyOff_Update = async (weeklyOffId, formData) => {
+  try {
+    const token = getToken();
+    const response = await axios.put(
+      `${API_BASE_URL}/weekly-off/${weeklyOffId}`,
+      formData,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+
+// <---------------- GET Holiday ----------------->
+export const Admin_Get_Holiday = async () => {
+  try {
+    const token = getToken();
+
+    const response = await axios.get(
+      `${API_BASE_URL}/holiday`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+// <----------- Create Holiday ----------------->
+export const Admin_Create_Holiday = async (data) => {
+  try {
+    const token = getToken();
+
+    const res = await axios.post(
+      `${API_BASE_URL}/holiday`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return res;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <---------------- Admin Delete Holiday ----------------->
+export const Admin_Holiday_Delete = async (holidayId) => {
+  try {
+    const token = getToken();
+    const response = await axios.delete(
+      `${API_BASE_URL}/holiday/${holidayId}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <----------------  Update Holiday ----------------->
+export const Admin_Holiday_Update = async (holidayId, formData) => {
+  try {
+    const token = getToken();
+    const response = await axios.put(
+      `${API_BASE_URL}/holiday/${holidayId}`,
+      formData,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
