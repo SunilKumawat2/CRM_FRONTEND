@@ -266,9 +266,8 @@ const Admin_Staff_Attendance = () => {
                       setAttendancePage(1);
                       loadAttendance(staff._id, 1);
                     }}
-                    className={`d-flex align-items-center py-2 rounded mb-1 staff-list-item ${
-                      selectedStaff?._id === staff._id ? "selected" : ""
-                    }`}
+                    className={`d-flex align-items-center py-2 rounded mb-1 staff-list-item ${selectedStaff?._id === staff._id ? "selected" : ""
+                      }`}
                   >
                     <div className="rounded-circle text-white d-flex align-items-center justify-content-center me-2 staff-avatar">
                       {staff.name?.charAt(0).toUpperCase()}
@@ -341,7 +340,7 @@ const Admin_Staff_Attendance = () => {
               )}
 
               <button
-              className="primary-button btn-sm small-add-button"
+                className="primary-button btn-sm small-add-button"
                 onClick={() => setShowShiftModal(true)}
               >
                 + Add Shift
@@ -408,14 +407,22 @@ const Admin_Staff_Attendance = () => {
 
                       {/* STATUS */}
                       <td>
-                        {a.isHalfDay ? (
+                        {a.isHoliday ? (
+                          <Badge bg={a.isPaid ? "success" : "danger"}>
+                            Holiday ({a.isPaid ? "Paid" : "Unpaid"})
+                          </Badge>
+                        ) : a.isWeeklyOff ? (
+                          <Badge bg={a.isPaid ? "success" : "danger"}>
+                            Weekly Off ({a.isPaid ? "Paid" : "Unpaid"})
+                          </Badge>
+                        ) : a.isOnLeave || a.status == "leave" ? (
+                          <Badge bg="secondary">Leave</Badge>
+                        ) : a.isHalfDay ? (
                           <Badge bg="warning">Half Day</Badge>
                         ) : a.isShortLeave ? (
                           <Badge bg="info">Short Leave</Badge>
-                        ) : a.status === "absent" ? (
+                        ) : a.status == "absent" ? (
                           <Badge bg="danger">Absent</Badge>
-                        ) : a.status === "leave" ? (
-                          <Badge bg="secondary">Leave</Badge>
                         ) : (
                           <Badge bg="success">Present</Badge>
                         )}
@@ -433,10 +440,10 @@ const Admin_Staff_Attendance = () => {
                         >
                           👁
                         </Button> */}
-                        <FaEye style={{cursor:"pointer"}}  onClick={() => {
-                            setSelectedAttendance(a);
-                            setShowViewModal(true);
-                          }}/>
+                        <FaEye style={{ cursor: "pointer" }} onClick={() => {
+                          setSelectedAttendance(a);
+                          setShowViewModal(true);
+                        }} />
                         {/* CHECKOUT */}
                         {!a.checkOutTime && (
                           <button
@@ -493,7 +500,7 @@ const Admin_Staff_Attendance = () => {
 
         <Modal.Footer>
           <button
-           className="secondary-button btn-sm small-add-button"
+            className="secondary-button btn-sm small-add-button"
             onClick={() => setShowCheckInModal(false)}
           >
             Cancel
@@ -526,7 +533,7 @@ const Admin_Staff_Attendance = () => {
           </button>
 
           <button
-          className="green-button btn-sm small-add-button"
+            className="green-button btn-sm small-add-button"
             variant="success"
             onClick={async () => {
               await handleCheckout(selectedAttendanceId);

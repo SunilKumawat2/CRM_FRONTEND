@@ -14,7 +14,7 @@
 }
 
 .admin-sidebar a {
-  color: white;
+  /* color: white; */
   text-decoration: none;
   display: block;
   margin: 10px 0;
@@ -378,13 +378,13 @@
 }
 
 .btn-primary{
-  color:#f87951;
+  color:#4e85d7;
 }
 .primary-color{
-  color:#f87951;
+  color:#4e85d7;
 }
 .primary-button{
-  background-color: #f87951;
+  background-color: #4e85d7;
   color: white;
   border-radius: 10px;
   padding: 10px;
@@ -398,12 +398,12 @@
   border: none;
 }
 .primary-background-color{
-  background-color: #f87951;
+  background-color: #4e85d7;
   color: white;
   border: none;
 }
 .primary-checkout-button{
-  background-color: #f87951;
+  background-color: #4e85d7;
   color: white;
   border-radius: 50%;
   padding: 1px;
@@ -415,8 +415,8 @@
 
 /* Custom Switch Styling */
 .custom-switch .form-check-input:checked {
-  background-color: #f87951 !important; /* switch background */
-  border-color: #f87951 !important; /* border color */
+  background-color: #4e85d7 !important; /* switch background */
+  border-color: #4e85d7 !important; /* border color */
 }
 
 .custom-switch .form-check-input:focus {
@@ -436,8 +436,8 @@
 }
 
 .custom-amenity-checkbox .form-check-input:checked {
-  background-color: #f87951 !important;
-  border-color: #f87951 !important;
+  background-color: #4e85d7 !important;
+  border-color: #4e85d7 !important;
 }
 
 .custom-amenity-checkbox .form-check-input:focus {
@@ -452,7 +452,7 @@
 }
 
 .custom-amenity-checkbox .form-check-input:checked + .form-check-label {
-  color: #f87951; /* Label text turns theme color when checked */
+  color: #4e85d7; /* Label text turns theme color when checked */
 }
 
 /* ✅ Base action button */
@@ -835,7 +835,7 @@ background-color: #c71200;
 
 /* Active item */
 .menu-link.active {
-  background: #f87951 !important;
+  background: #4e85d7 !important;
   color: #fff !important;
 }
 
@@ -1527,8 +1527,8 @@ background-color: #c71200;
   --panel-text: #111827;
   --panel-border: #e5e7eb;
   --panel-selected-bg: #fff1e9;
-  --panel-selected-border: #f87951;
-  --avatar-bg: #f87951;
+  --panel-selected-border: #4e85d7;
+  --avatar-bg: #4e85d7;
   --text-muted: #6b7280;
   --pagination-btn-bg: #ffffff;
   --pagination-btn-text: #111827;
@@ -1542,8 +1542,8 @@ background-color: #c71200;
   --panel-text: #e5e7eb;
   --panel-border: #334155;
   --panel-selected-bg: #334155;
-  --panel-selected-border: #f87951;
-  --avatar-bg: #f87951;
+  --panel-selected-border: #4e85d7;
+  --avatar-bg: #4e85d7;
   --text-muted: #94a3b8;
   --pagination-btn-bg: #1e293b;
   --pagination-btn-text: #e5e7eb;
@@ -1581,15 +1581,15 @@ background-color: #c71200;
   color: var(--staff-text);
 }
 :root[data-theme="light"] {
-  --staff-active-bg: #f87951;     /* soft orange */
-  --staff-active-border: #f87951;
+  --staff-active-bg: #4e85d7;     /* soft orange */
+  --staff-active-border: #4e85d7;
 }
 :root[data-theme="dark"] {
   --staff-active-bg: #1e293b;     /* slate */
-  --staff-active-border: #f87951;
+  --staff-active-border: #4e85d7;
 }
 .list-group-item-action:active {
-  background-color: #f87951;
+  background-color: #4e85d7;
 }
 /* Kill Bootstrap active click color */
 .staff-panel .list-group-item-action:active {
@@ -1612,7 +1612,7 @@ background-color: #c71200;
 /* Selected (ACTIVE TAB) */
 .staff-list-item.selected {
   background-color: var(--staff-active-bg) !important;
-  border-left-color: #f87951;
+  border-left-color: #4e85d7;
   font-weight: 600;
 }
 
@@ -1897,12 +1897,12 @@ background-color: #c71200;
   color: #94a3b8;
 }
 .modal .form-check-input:checked {
-    background-color: #f87951;
-    border-color: #f87951;
+    background-color: #4e85d7;
+    border-color: #4e85d7;
 }
 /* Override Bootstrap file input button */
 .gold-file-input::file-selector-button {
-  background-color: #f87951 !important;
+  background-color: #4e85d7 !important;
   color: #ffffff !important;
   border: none !important;
   padding: 6px 14px;
@@ -1912,12 +1912,12 @@ background-color: #c71200;
 
 /* Hover */
 .gold-file-input::file-selector-button:hover {
-  background-color: #f87951 !important;
+  background-color: #4e85d7 !important;
 }
 
 /* Firefox support--- */
 .gold-file-input::-webkit-file-upload-button {
-  background-color: #f87951 !important;
+  background-color: #4e85d7 !important;
   color: #ffffff !important;
   border: none !important;
 }
@@ -2321,4 +2321,102 @@ background-color: #c71200;
   .occupancy-cards {
     grid-template-columns: 1fr;
   }
+}
+
+.admin-sidebar {
+  width: 250px;
+  height: 100vh;
+  /* background: #111827;
+  color: #fff; */
+  display: flex;
+  flex-direction: column;
+  transition: 0.3s;
+}
+
+.admin-sidebar.collapsed {
+  width: 70px;
+}
+
+.sidebar-header {
+  padding: 15px;
+}
+
+.toggle-btn {
+  background: none;
+  border: none;
+  /* color: white; */
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.sidebar-menu {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.menu-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 15px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.menu-link:hover {
+  background: #1f2937;
+}
+
+.menu-link.active {
+  background: #2563eb;
+}
+
+.menu-link span {
+  margin-left: 10px;
+}
+
+.menu-group {
+  margin-bottom: 5px;
+}
+
+.dropdown-icon {
+  margin-left: auto;
+  transition: 0.3s;
+}
+
+.dropdown-icon.open {
+  transform: rotate(180deg);
+}
+
+.submenu {
+  padding-left: 30px;
+}
+
+.submenu-link {
+  display: block;
+  padding: 8px 0;
+  /* color: #9ca3af; */
+  text-decoration: none;
+}
+
+.submenu-link:hover {
+  /* color: #fff; */
+}
+
+.submenu-link.active {
+  /* color: #fff; */
+  font-weight: bold;
+}
+
+.sidebar-footer {
+  padding: 10px;
+}
+
+.logout-btn {
+  width: 100%;
+  padding: 10px;
+  background: #dc2626;
+  border: none;
+  /* color: white; */
+  cursor: pointer;
 }
