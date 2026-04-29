@@ -270,14 +270,14 @@ const Admin_Staff_Attendance = () => {
                       }`}
                   >
                     <div className="rounded-circle text-white d-flex align-items-center justify-content-center me-2 staff-avatar">
-                      {staff.name?.charAt(0).toUpperCase()}
+                      {staff?.name?.charAt(0).toUpperCase()}
                     </div>
 
                     <div>
-                      <div className="fw-semibold staff-name">{staff.name}</div>
-                      <small className="text-muted staff-email">
+                      <div className="fw-semibold staff-name">{staff?.name}</div>
+                      {/* <small className="text-muted staff-email">
                         {staff.email || "Staff Member"}
-                      </small>
+                      </small> */}
                     </div>
                   </ListGroup.Item>
                 ))}

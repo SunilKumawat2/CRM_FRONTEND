@@ -12,17 +12,23 @@ import {
   Admin_Get_Staff_Summary,
 } from "../../../../api/admin/Admin";
 import AdminLayout from "../admin_layout/Admin_Layout";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 const Admin_Staff_Attendance_Summary = () => {
   const [staffList, setStaffList] = useState([]);
   const [selectedStaff, setSelectedStaff] = useState(null);
-  const [summary, setSummary] = useState([]);
+  const [summary, setSummary] = useState({});
+  console.log("summary_summary", summary)
   const [type, setType] = useState("monthly");
   const [loading, setLoading] = useState(false);
 
   const currentDate = new Date();
-  const month = currentDate.getMonth() + 1;
-  const year = currentDate.getFullYear();
+  // ✅ ADD THIS
+  const [month, setMonth] = useState(new Date().getMonth() + 1);
+  const [year, setYear] = useState(new Date().getFullYear());
 
   // ✅ LOAD STAFF
   const loadStaff = async () => {
@@ -43,12 +49,13 @@ const Admin_Staff_Attendance_Summary = () => {
     setLoading(true);
 
     const res = await Admin_Get_Staff_Summary({
+      staffId: selectedStaff?._id,
       month,
       year,
       type,
     });
 
-    setSummary(res.data.data || []);
+    setSummary(res.data.data || {});
     setLoading(false);
   };
 
@@ -58,10 +65,10 @@ const Admin_Staff_Attendance_Summary = () => {
 
   useEffect(() => {
     loadSummary();
-  }, [selectedStaff, type]);
+  }, [selectedStaff, type, month, year]);
 
   // ✅ FILTER SELECTED STAFF DATA
-  const data = summary.find((s) => s.staff === selectedStaff?._id) || {};
+  const data = summary || {};
 
   const totalDays =
     (data.present || 0) +
@@ -74,36 +81,158 @@ const Admin_Staff_Attendance_Summary = () => {
     : 0;
 
   const salary = data.salary || {};
+
+  const downloadPDF = () => {
+    const doc = new jsPDF();
+  
+    doc.setFontSize(16);
+    doc.text("Staff Attendance Report", 14, 15);
+  
+    doc.setFontSize(10);
+    doc.text(`Name: ${selectedStaff?.name}`, 14, 25);
+    doc.text(`Month: ${month}`, 14, 30);
+    doc.text(`Year: ${year}`, 14, 35);
+    doc.text(`Type: ${type}`, 14, 40);
+  
+    const tableData = [
+      ["Present", data.present || 0],
+      ["Absent", data.absent || 0],
+      ["Half Day", data.halfDay || 0],
+      ["Short Leave", data.shortLeave || 0],
+      ["Holiday", data.holiday || 0],
+      ["Weekly Off", data.weeklyOff || 0],
+      ["Worked Holiday", data.workedOnHoliday || 0],
+      ["Extra Pay Days", data.extraPayDays || 0],
+      ["Attendance %", percentage + "%"],
+    ];
+  
+    autoTable(doc, {
+      startY: 50,
+      head: [["Type", "Count"]],
+      body: tableData,
+    });
+  
+    doc.save(`${selectedStaff?.name}_${type}_${month}_${year}.pdf`);
+  };
+
+  const downloadExcel = () => {
+    const excelData = [
+      {
+        Name: selectedStaff?.name,
+        Month: month,
+        Year: year,
+        Type: type,
+        Present: data.present || 0,
+        Absent: data.absent || 0,
+        HalfDay: data.halfDay || 0,
+        ShortLeave: data.shortLeave || 0,
+        Holiday: data.holiday || 0,
+        WeeklyOff: data.weeklyOff || 0,
+        WorkedHoliday: data.workedOnHoliday || 0,
+        ExtraPayDays: data.extraPayDays || 0,
+        AttendancePercentage: percentage,
+        Salary: data?.salary?.finalSalary || 0,
+      },
+    ];
+  
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+    const workbook = XLSX.utils.book_new();
+  
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+  
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+  
+    const blob = new Blob([excelBuffer], {
+      type: "application/octet-stream",
+    });
+  
+    saveAs(
+      blob,
+      `${selectedStaff?.name}_${type}_${month}_${year}.xlsx`
+    );
+  };
+
   return (
     <AdminLayout>
       <Row>
         {/* ================= LEFT STAFF ================= */}
         <Col md={3}>
-          <Card className="shadow-sm border-0">
+          <Card className="shadow-sm border-0 rounded-4">
             <Card.Body>
-              <h6 className="fw-bold mb-3">👥 Staff</h6>
 
-              <ListGroup>
-                {staffList.map((s) => (
-                  <ListGroup.Item
-                    key={s._id}
-                    action
-                    onClick={() => setSelectedStaff(s)}
-                    // className={`mb-1 rounded ${
-                    //   selectedStaff?._id === s._id
-                    //     ? "bg-primary text-white"
-                    //     : ""
-                    // }`}
-                    className={`d-flex align-items-center py-2 rounded mb-1 staff-list-item ${selectedStaff?._id === s._id ? "selected" : ""
-                      }`}
-                  >
-                    <div className="fw-semibold">
-                      {s?.name} ({s?.role})
+              {/* Header */}
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <h6 className="fw-bold mb-0">👥 Staff</h6>
+                <span className="badge bg-light text-dark">
+                  {staffList.length}
+                </span>
+              </div>
+
+              {/* Staff List */}
+              <div style={{ maxHeight: "500px", overflowY: "auto" }}>
+                {staffList.map((s) => {
+                  const isActive = selectedStaff?._id === s._id;
+
+                  return (
+                    <div
+                      key={s._id}
+                      onClick={() => setSelectedStaff(s)}
+                      className={`p-2 mb-2 rounded-3 staff-item ${isActive ? "active" : ""}`}
+                      style={{
+                        cursor: "pointer",
+                        transition: "0.2s",
+                        background: isActive ? "#4e85d7" : "#fff",
+                        color: isActive ? "#fff" : "#000",
+                        border: "1px solid #eee"
+                      }}
+                    >
+                      <div className="d-flex align-items-center gap-2">
+
+                        {/* Avatar */}
+                        <div
+                          className="d-flex align-items-center justify-content-center"
+                          style={{
+                            width: "35px",
+                            height: "35px",
+                            borderRadius: "50%",
+                            background: isActive ? "#fff" : "#4e85d7",
+                            color: isActive ? "#4e85d7" : "#fff",
+                            fontWeight: "bold",
+                            fontSize: "14px"
+                          }}
+                        >
+                          {s?.name?.charAt(0)?.toUpperCase()}
+                        </div>
+
+                        {/* Info */}
+                        <div className="flex-grow-1">
+                          <div className="fw-semibold small">
+                            {s?.name}
+                          </div>
+                          <div className={`small ${isActive ? "text-light" : "text-muted"}`}>
+                            {s?.role}
+                          </div>
+                        </div>
+
+                        {/* Status dot */}
+                        <div
+                          style={{
+                            width: "8px",
+                            height: "8px",
+                            borderRadius: "50%",
+                            background: "#28a745"
+                          }}
+                        ></div>
+
+                      </div>
                     </div>
-                    {/* <small>{s.role}</small> */}
-                  </ListGroup.Item>
-                ))}
-              </ListGroup>
+                  );
+                })}
+              </div>
+
             </Card.Body>
           </Card>
         </Col>
@@ -113,27 +242,56 @@ const Admin_Staff_Attendance_Summary = () => {
           <div className="d-flex justify-content-between mb-3">
             <h5>{selectedStaff?.name} Summary</h5>
 
-            <div className="d-flex gap-3">
+            <div className="d-flex gap-3 align-items-center">
+
               <div>
-                <button
-                  className={`btn-sm small-add-button ${type === "monthly"
-                      ? "primary-button"
-                      : "btn-outline-primary"
-                    }`}
-                  onClick={() => setType("monthly")}
+                <label className="small text-muted">Month</label>
+                <select
+                  className="form-select shadow-sm rounded-3"
+                  value={month}
+                  onChange={(e) => setMonth(Number(e.target.value))}
                 >
-                  Monthly
-                </button>
+                  {[...Array(12)].map((_, i) => (
+                    <option key={i} value={i + 1}>
+                      {new Date(0, i).toLocaleString("default", { month: "long" })}
+                    </option>
+                  ))}
+                </select>
               </div>
+
               <div>
-                <button
-                  className={`btn-sm small-add-button ${type === "yearly" ? "primary-button" : "btn-outline-primary"
-                    }`}
-                  onClick={() => setType("yearly")}
+                <label className="small text-muted">Year</label>
+                <select
+                  className="form-select shadow-sm rounded-3"
+                  value={year}
+                  onChange={(e) => setYear(Number(e.target.value))}
                 >
-                  Yearly
-                </button>
+                  {[2024, 2025, 2026].map((y) => (
+                    <option key={y} value={y}>
+                      {y}
+                    </option>
+                  ))}
+                </select>
               </div>
+
+              <div className="d-flex gap-2 mt-3">
+
+                <button
+                  className="btn btn-danger btn-sm"
+                  onClick={downloadPDF}
+                >
+                  📄 PDF
+                </button>
+
+                <button
+                  className="btn btn-success btn-sm"
+                  onClick={downloadExcel}
+                >
+                  📊 Excel
+                </button>
+
+              </div>
+
             </div>
           </div>
 
@@ -144,37 +302,72 @@ const Admin_Staff_Attendance_Summary = () => {
               {/* ================= ATTENDANCE ================= */}
               <Row className="mb-3">
                 <Col md={3}>
-                  <Card className="text-center shadow-sm">
+                  <Card className="text-center shadow-sm mt-2">
                     <Card.Body>
                       <h6>Present</h6>
-                      <h4 className="text-success">{data.present || 0}</h4>
+                      <h4 className="text-success">{data?.present || 0}</h4>
                     </Card.Body>
                   </Card>
                 </Col>
 
                 <Col md={3}>
-                  <Card className="text-center shadow-sm">
+                  <Card className="text-center shadow-sm mt-2">
                     <Card.Body>
                       <h6>Absent</h6>
-                      <h4 className="text-danger">{data.absent || 0}</h4>
+                      <h4 className="text-danger">{data?.absent || 0}</h4>
                     </Card.Body>
                   </Card>
                 </Col>
 
                 <Col md={3}>
-                  <Card className="text-center shadow-sm">
+                  <Card className="text-center shadow-sm mt-2">
                     <Card.Body>
                       <h6>Half Day</h6>
-                      <h4 className="text-warning">{data.halfDay || 0}</h4>
+                      <h4 className="text-warning">{data?.halfDay || 0}</h4>
                     </Card.Body>
                   </Card>
                 </Col>
 
                 <Col md={3}>
-                  <Card className="text-center shadow-sm">
+                  <Card className="text-center shadow-sm mt-2">
                     <Card.Body>
                       <h6>Short Leave</h6>
-                      <h4 className="text-info">{data.shortLeave || 0}</h4>
+                      <h4 className="text-info">{data?.shortLeave || 0}</h4>
+                    </Card.Body>
+                  </Card>
+                </Col>
+                <Col md={3}>
+                  <Card className="text-center shadow-sm mt-2">
+                    <Card.Body>
+                      <h6>Holiday</h6>
+                      <h4 className="text-primary">{data?.holiday || 0}</h4>
+                    </Card.Body>
+                  </Card>
+                </Col>
+
+                <Col md={3}>
+                  <Card className="text-center shadow-sm mt-2">
+                    <Card.Body>
+                      <h6>Weekly Off</h6>
+                      <h4 className="text-dark">{data?.weeklyOff || 0}</h4>
+                    </Card.Body>
+                  </Card>
+                </Col>
+
+                <Col md={3}>
+                  <Card className="text-center shadow-sm mt-2">
+                    <Card.Body>
+                      <h6>Worked Holiday</h6>
+                      <h4 className="text-warning">{data?.workedOnHoliday || 0}</h4>
+                    </Card.Body>
+                  </Card>
+                </Col>
+
+                <Col md={3}>
+                  <Card className="text-center shadow-sm mt-2">
+                    <Card.Body>
+                      <h6>Extra Pay Days</h6>
+                      <h4 className="text-success">{data?.extraPayDays || 0}</h4>
                     </Card.Body>
                   </Card>
                 </Col>
