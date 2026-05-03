@@ -394,6 +394,16 @@ const Sidebar_Admin = ({ isCollapsed, setIsCollapsed }) => {
         { title: "Attendance Summary", path: "/admin-staff-attendance-summary", permission: "staffattendances_view" },
       ],
     },
+    ,
+    {
+      title: "HR Management",
+      icon: <MdOutlineBedroomParent />,
+      children: [
+        { title: "Weekly Off", path: "/admin-weekly-off", permission: "weeklyoffs_view" },
+        { title: "Holiday", path: "/admin-holiday", permission: "holidaies_view" },
+        { title: "Payroll", path: "/admin-payroll", permission: "payroll_view" },
+      ],
+    },
     {
       title: "Reports",
       icon: <MdOutlineBedroomParent />,
@@ -413,8 +423,8 @@ const Sidebar_Admin = ({ isCollapsed, setIsCollapsed }) => {
         { title: "Catering", path: "/admin-catering", permission: "catering_view" },
         { title: "Feedback", path: "/admin-user-feedback", permission: "feedback_view" },
         { title: "Banner", path: "/admin-home-banner", permission: "banner_view" },
-        { title: "Weekly Off", path: "/admin-weekly-off", permission: "weeklyoffs_view" },
-        { title: "Holiday", path: "/admin-holiday", permission: "holidaies_view" },
+        { title: "Site Setting", path: "/admin-hotel-site-setting", permission: "HotelDetails_view" },
+       
       ],
     },
   ];

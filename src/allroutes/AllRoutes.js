@@ -32,6 +32,8 @@ import Admin_Staff_Attendance_Summary from "../components/pages/admin/admin_staf
 import Admin_Shift from "../components/pages/admin/admin_shift/Admin_Shift";
 import Admin_WeeklyOff from "../components/pages/admin/admin_weeklyoff/Admin_WeeklyOff";
 import Admin_Holiday from "../components/pages/admin/admin_holiday/Admin_Holiday";
+import Admin_Payroll from "../components/pages/admin/admin_payroll/Admin_Payroll";
+import Admin_Hotel_Site_Settings from "../components/pages/admin/admin_hotel_site_settings/Admin_Hotel_Site_Settings";
 
 const AllRoutes = () => {
   return (
@@ -273,6 +275,22 @@ const AllRoutes = () => {
         element={
           <ProtectedRoute requiredPermission="holidaies_view">
             <Admin_Holiday />
+          </ProtectedRoute>
+        }
+      />
+       <Route
+        path="/admin-payroll"
+        element={
+          <ProtectedRoute requiredPermission="payroll_view">
+            <Admin_Payroll />
+          </ProtectedRoute>
+        }
+      />
+       <Route
+        path="/admin-hotel-site-setting"
+        element={
+          <ProtectedRoute requiredPermission="HotelDetails_view">
+            <Admin_Hotel_Site_Settings/>
           </ProtectedRoute>
         }
       />

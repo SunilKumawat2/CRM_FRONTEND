@@ -1606,3 +1606,118 @@ export const Admin_Holiday_Update = async (holidayId, formData) => {
   }
 };
 
+
+// <----------------  Get Staff Attendance with Pagination ----------------->
+export const Admin_Get_Payroll = async (staffId, month, year) => {
+  try {
+    const token = getToken();
+    const response = await axios.get(
+      `${API_BASE_URL}/get-payrolls?staffId=${staffId}&month=${month}&year=${year}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+
+// <----------------  Create Staff Attendance  ----------------->
+export const Admin_Create_Payroll = async (formData) => {
+  try {
+    const token = getToken();
+    const response = await axios.post(`${API_BASE_URL}/generate-payroll`, formData, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <----------------  Delete Staff Attendance  ----------------->
+export const Admin_Delete_Payroll = async (PayrollId) => {
+  try {
+    const token = getToken();
+    const response = await axios.delete(`${API_BASE_URL}/delete-payroll/${PayrollId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <----------------  Get Staff Attendance with Pagination ----------------->
+export const Admin_Get_Payment_History = async (payrollId) => {
+  try {
+    const token = getToken();
+
+    const response = await axios.get(
+      `${API_BASE_URL}/get-payment-history/${payrollId}/payment`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+// <----------------  Create Staff Attendance  ----------------->
+export const Admin_Create_PaySalary = async (payrollId, formData) => {
+  try {
+    const token = getToken();
+
+    const response = await axios.post(
+      `${API_BASE_URL}/pay-salary/${payrollId}/pay`,
+      formData,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <----------------  Get Staff Attendance with Pagination ----------------->
+export const Admin_Get_Hotel_Site_Settings = async () => {
+  try {
+    const token = getToken();
+
+    const response = await axios.get(
+      `${API_BASE_URL}/get-hotel-detail`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+// <----------------  Create Staff Attendance  ----------------->
+export const Admin_Create_Hotel_Site_Settings = async (formData) => {
+  try {
+    const token = getToken();
+
+    const response = await axios.post(
+      `${API_BASE_URL}/create-hotel-detail`,
+      formData,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};

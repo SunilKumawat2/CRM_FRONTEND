@@ -382,7 +382,7 @@ const Admin_Staff_Attendance = () => {
                         {a.shift ? (
                           <>
                             <div>{a.shift.name}</div>
-                            <small className="text-muted">
+                            <small style={{ color: "var(--text-muted)" }}>
                               {a.shift.startTime} - {a.shift.endTime}
                             </small>
                           </>
@@ -619,7 +619,7 @@ const Admin_Staff_Attendance = () => {
                   <h6 className="mb-1 fw-bold">
                     {new Date(selectedAttendance.date).toLocaleDateString()}
                   </h6>
-                  <small className="text-muted">
+                  <small style={{ color: "var(--text-muted)" }}>
                     {selectedAttendance.shift?.name} (
                     {selectedAttendance.shift?.startTime} -{" "}
                     {selectedAttendance.shift?.endTime})

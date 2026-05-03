@@ -16,12 +16,13 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import hotel_logo from "../../../../assets/images/hotel_logo.jpg";
 
 const Admin_Staff_Attendance_Summary = () => {
   const [staffList, setStaffList] = useState([]);
   const [selectedStaff, setSelectedStaff] = useState(null);
   const [summary, setSummary] = useState({});
-  console.log("summary_summary", summary)
+  console.log("summary_summary", summary);
   const [type, setType] = useState("monthly");
   const [loading, setLoading] = useState(false);
 
@@ -83,37 +84,92 @@ const Admin_Staff_Attendance_Summary = () => {
   const salary = data.salary || {};
 
   const downloadPDF = () => {
-    const doc = new jsPDF();
-  
-    doc.setFontSize(16);
-    doc.text("Staff Attendance Report", 14, 15);
-  
-    doc.setFontSize(10);
-    doc.text(`Name: ${selectedStaff?.name}`, 14, 25);
-    doc.text(`Month: ${month}`, 14, 30);
-    doc.text(`Year: ${year}`, 14, 35);
-    doc.text(`Type: ${type}`, 14, 40);
-  
-    const tableData = [
-      ["Present", data.present || 0],
-      ["Absent", data.absent || 0],
-      ["Half Day", data.halfDay || 0],
-      ["Short Leave", data.shortLeave || 0],
-      ["Holiday", data.holiday || 0],
-      ["Weekly Off", data.weeklyOff || 0],
-      ["Worked Holiday", data.workedOnHoliday || 0],
-      ["Extra Pay Days", data.extraPayDays || 0],
-      ["Attendance %", percentage + "%"],
-    ];
-  
-    autoTable(doc, {
-      startY: 50,
-      head: [["Type", "Count"]],
-      body: tableData,
-    });
-  
-    doc.save(`${selectedStaff?.name}_${type}_${month}_${year}.pdf`);
-  };
+  const doc = new jsPDF();
+
+  // ---------------- HEADER ----------------
+  const logo = hotel_logo; // put inside public folder
+
+  doc.addImage(logo, "JPG", 14, 10, 30, 30);
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(16);
+  doc.text("HOTEL GRAND PALACE", 105, 18, { align: "center" });
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(10);
+  doc.text("Jaipur, Rajasthan | Phone: 9876543210", 105, 24, {
+    align: "center",
+  });
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(14);
+  doc.text("ATTENDANCE REPORT", 105, 35, { align: "center" });
+
+  // ---------------- EMPLOYEE DETAILS ----------------
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "normal");
+
+  doc.text(`Employee Name: ${selectedStaff?.name}`, 14, 50);
+  doc.text(`Role: ${selectedStaff?.role || "-"}`, 14, 56);
+
+  doc.text(`Month: ${month}/${year}`, 150, 50);
+  doc.text(`Report Type: ${type}`, 150, 56);
+
+  // ---------------- TABLE ----------------
+  const tableData = [
+    ["Present Days", data.present || 0],
+    ["Absent Days", data.absent || 0],
+    ["Half Days", data.halfDay || 0],
+    ["Short Leave", data.shortLeave || 0],
+    ["Holidays", data.holiday || 0],
+    ["Weekly Off", data.weeklyOff || 0],
+    ["Worked on Holiday", data.workedOnHoliday || 0],
+    ["Extra Pay Days", data.extraPayDays || 0],
+  ];
+
+  autoTable(doc, {
+    startY: 65,
+    theme: "grid",
+    head: [["Attendance Type", "Count"]],
+    body: tableData,
+    styles: {
+      fontSize: 10,
+      cellPadding: 4,
+    },
+    headStyles: {
+      fillColor: [37, 99, 235], // blue header
+    },
+  });
+
+  // ---------------- SUMMARY BOX ----------------
+  const finalY = doc.lastAutoTable.finalY + 10;
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(12);
+
+  doc.text(`Attendance Percentage: ${percentage}%`, 14, finalY);
+
+  // ---------------- FOOTER ----------------
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "normal");
+
+  doc.text(
+    "This is a system generated attendance report.",
+    14,
+    280
+  );
+
+  doc.text(
+    "Authorized Signature __________________",
+    140,
+    280
+  );
+
+  // ---------------- SAVE ----------------
+  doc.save(
+    `${selectedStaff?.name}_attendance_${month}_${year}.pdf`
+  );
+};
 
   const downloadExcel = () => {
     const excelData = [
@@ -134,25 +190,22 @@ const Admin_Staff_Attendance_Summary = () => {
         Salary: data?.salary?.finalSalary || 0,
       },
     ];
-  
+
     const worksheet = XLSX.utils.json_to_sheet(excelData);
     const workbook = XLSX.utils.book_new();
-  
+
     XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
-  
+
     const excelBuffer = XLSX.write(workbook, {
       bookType: "xlsx",
       type: "array",
     });
-  
+
     const blob = new Blob([excelBuffer], {
       type: "application/octet-stream",
     });
-  
-    saveAs(
-      blob,
-      `${selectedStaff?.name}_${type}_${month}_${year}.xlsx`
-    );
+
+    saveAs(blob, `${selectedStaff?.name}_${type}_${month}_${year}.xlsx`);
   };
 
   return (
@@ -162,7 +215,6 @@ const Admin_Staff_Attendance_Summary = () => {
         <Col md={3}>
           <Card className="shadow-sm border-0 rounded-4">
             <Card.Body>
-
               {/* Header */}
               <div className="d-flex justify-content-between align-items-center mb-3">
                 <h6 className="fw-bold mb-0">👥 Staff</h6>
@@ -184,13 +236,14 @@ const Admin_Staff_Attendance_Summary = () => {
                       style={{
                         cursor: "pointer",
                         transition: "0.2s",
-                        background: isActive ? "#4e85d7" : "#fff",
-                        color: isActive ? "#fff" : "#000",
-                        border: "1px solid #eee"
+                        background: isActive
+                          ? "var(--staff-active-bg)"
+                          : "var(--panel-bg)",
+                        color: isActive ? "#fff" : "var(--panel-text)",
+                        border: "1px solid var(--panel-border)",
                       }}
                     >
                       <div className="d-flex align-items-center gap-2">
-
                         {/* Avatar */}
                         <div
                           className="d-flex align-items-center justify-content-center"
@@ -198,10 +251,10 @@ const Admin_Staff_Attendance_Summary = () => {
                             width: "35px",
                             height: "35px",
                             borderRadius: "50%",
-                            background: isActive ? "#fff" : "#4e85d7",
-                            color: isActive ? "#4e85d7" : "#fff",
+                            background: isActive ? "#fff" : "var(--avatar-bg)",
+                            color: isActive ? "var(--avatar-bg)" : "#fff",
                             fontWeight: "bold",
-                            fontSize: "14px"
+                            fontSize: "14px",
                           }}
                         >
                           {s?.name?.charAt(0)?.toUpperCase()}
@@ -209,10 +262,10 @@ const Admin_Staff_Attendance_Summary = () => {
 
                         {/* Info */}
                         <div className="flex-grow-1">
-                          <div className="fw-semibold small">
-                            {s?.name}
-                          </div>
-                          <div className={`small ${isActive ? "text-light" : "text-muted"}`}>
+                          <div className="fw-semibold small">{s?.name}</div>
+                          <div
+                            className={`small ${isActive ? "text-light" : "text-muted"}`}
+                          >
                             {s?.role}
                           </div>
                         </div>
@@ -223,16 +276,14 @@ const Admin_Staff_Attendance_Summary = () => {
                             width: "8px",
                             height: "8px",
                             borderRadius: "50%",
-                            background: "#28a745"
+                            background: "#28a745",
                           }}
                         ></div>
-
                       </div>
                     </div>
                   );
                 })}
               </div>
-
             </Card.Body>
           </Card>
         </Col>
@@ -243,7 +294,6 @@ const Admin_Staff_Attendance_Summary = () => {
             <h5>{selectedStaff?.name} Summary</h5>
 
             <div className="d-flex gap-3 align-items-center">
-
               <div>
                 <label className="small text-muted">Month</label>
                 <select
@@ -253,7 +303,9 @@ const Admin_Staff_Attendance_Summary = () => {
                 >
                   {[...Array(12)].map((_, i) => (
                     <option key={i} value={i + 1}>
-                      {new Date(0, i).toLocaleString("default", { month: "long" })}
+                      {new Date(0, i).toLocaleString("default", {
+                        month: "long",
+                      })}
                     </option>
                   ))}
                 </select>
@@ -275,11 +327,7 @@ const Admin_Staff_Attendance_Summary = () => {
               </div>
 
               <div className="d-flex gap-2 mt-3">
-
-                <button
-                  className="btn btn-danger btn-sm"
-                  onClick={downloadPDF}
-                >
+                <button className="btn btn-danger btn-sm" onClick={downloadPDF}>
                   📄 PDF
                 </button>
 
@@ -289,9 +337,7 @@ const Admin_Staff_Attendance_Summary = () => {
                 >
                   📊 Excel
                 </button>
-
               </div>
-
             </div>
           </div>
 
@@ -358,7 +404,9 @@ const Admin_Staff_Attendance_Summary = () => {
                   <Card className="text-center shadow-sm mt-2">
                     <Card.Body>
                       <h6>Worked Holiday</h6>
-                      <h4 className="text-warning">{data?.workedOnHoliday || 0}</h4>
+                      <h4 className="text-warning">
+                        {data?.workedOnHoliday || 0}
+                      </h4>
                     </Card.Body>
                   </Card>
                 </Col>
@@ -367,7 +415,9 @@ const Admin_Staff_Attendance_Summary = () => {
                   <Card className="text-center shadow-sm mt-2">
                     <Card.Body>
                       <h6>Extra Pay Days</h6>
-                      <h4 className="text-success">{data?.extraPayDays || 0}</h4>
+                      <h4 className="text-success">
+                        {data?.extraPayDays || 0}
+                      </h4>
                     </Card.Body>
                   </Card>
                 </Col>
@@ -395,8 +445,14 @@ const Admin_Staff_Attendance_Summary = () => {
                     </Col>
 
                     <Col md={6}>
-                      <p>PF ({salary?.pfPercent || 0}%): ₹{salary?.pfDeduction || 0}</p>
-                      <p>ESI ({salary?.esiPercent || 0}%): ₹{salary?.esiDeduction || 0}</p>
+                      <p>
+                        PF ({salary?.pfPercent || 0}%): ₹
+                        {salary?.pfDeduction || 0}
+                      </p>
+                      <p>
+                        ESI ({salary?.esiPercent || 0}%): ₹
+                        {salary?.esiDeduction || 0}
+                      </p>
                       <p>Absent Deduction: ₹{salary?.absentDeduction || 0}</p>
 
                       <h5 className="text-success">

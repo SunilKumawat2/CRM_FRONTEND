@@ -2420,4 +2420,7 @@ background-color: #c71200;
   /* color: white; */
   cursor: pointer;
 }
-
+.payroll-page {
+  background: var(--bg-main);
+  color: var(--text-primary);
+}
