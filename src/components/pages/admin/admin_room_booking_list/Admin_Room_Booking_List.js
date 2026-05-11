@@ -34,6 +34,7 @@ const Admin_Room_Booking_List = () => {
   const [showViewModal, setShowViewModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [roomList, setRoomList] = useState([]);
+  console.log("roomList_roomList",roomList)
   const [rangeStart, setRangeStart] = useState("");
   const [rangeEnd, setRangeEnd] = useState("");
   const [loading, setLoading] = useState(false);
@@ -582,7 +583,6 @@ const Admin_Room_Booking_List = () => {
         <Modal.Header closeButton>
           <Modal.Title
             className="small-form-title"
-            style={{ color: "#f87951" }}
           >
             Add Booking
           </Modal.Title>
@@ -1034,23 +1034,23 @@ const Admin_Room_Booking_List = () => {
                 <Form.Group className="mb-2">
                   <Form.Label>Select Room</Form.Label>
                   <Form.Select
-                    value={formData.rooms[0].room}
+                    value={formData.rooms[0].rooms}
                     onChange={(e) => {
                       const roomId = e.target.value;
                       const selectedRoom = roomList.find(
-                        (r) => r._id === roomId,
+                        (r) => r._id == roomId,
                       );
                       const updatedRooms = [...formData.rooms];
-                      updatedRooms[0].room = roomId;
+                      updatedRooms[0].rooms = roomId;
                       updatedRooms[0].rate = selectedRoom?.baseRate || "";
 
                       setFormData({ ...formData, rooms: updatedRooms });
                     }}
                   >
                     <option value="">-- Select Room --</option>
-                    {roomList.map((room) => (
-                      <option key={room._id} value={room._id}>
-                        {room.roomNumber} - {room.roomType}
+                    {roomList?.map((room) => (
+                      <option key={room?._id} value={room?._id}>
+                        {room?.roomNumber} - {room?.roomType?.name}
                       </option>
                     ))}
                   </Form.Select>

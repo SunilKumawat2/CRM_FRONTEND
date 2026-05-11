@@ -20,6 +20,9 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+
 const Admin_Room_List = () => {
   const [rooms, setRooms] = useState([]);
   const [roomTypes, setRoomTypes] = useState([]);
@@ -29,6 +32,7 @@ const Admin_Room_List = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState(null);
+  console.log("selectedRoom_selectedRoom",selectedRoom)
   const initialFormData = {
     roomNumber: "",
     roomType: "",
@@ -222,7 +226,7 @@ const Admin_Room_List = () => {
       setFormData(initialFormData);
       fetchRooms();
     } catch (err) {
-      console.log("Failed to create room",err)
+      console.log("Failed to create room", err);
       toast.error(err?.data?.message || "Failed to create room");
     } finally {
       setLoading(false);
@@ -490,19 +494,19 @@ const Admin_Room_List = () => {
 
     // ================= PRICING =================
     addSection("Pricing", {
-      "Base Rate": `${room.baseRate}`,
-      "Discounted Price": `${room.discountedPrice}`,
-      "Pay at Hotel": room.payAtHotel ? "Yes" : "No",
-      "Free Cancellation": room.freeCancellation ? "Yes" : "No",
-      Refundable: room.refundable ? "Yes" : "No",
+      "Base Rate": `Rs: ${room?.baseRate}`,
+      "Discounted Price": `Rs: ${room?.discountedPrice}`,
+      "Pay at Hotel": room?.payAtHotel ? "Yes" : "No",
+      "Free Cancellation": room?.freeCancellation ? "Yes" : "No",
+      Refundable: room?.refundable ? "Yes" : "No",
     });
 
     // ================= OCCUPANCY =================
     addSection("Occupancy", {
-      "Max Adults": room.maxAdults,
-      "Max Children": room.maxChildren,
-      "Max Occupancy": room.maxOccupancy,
-      "Extra Bed Allowed": room.extraBedAllowed ? "Yes" : "No",
+      "Max Adults": room?.maxAdults,
+      "Max Children": room?.maxChildren,
+      "Max Occupancy": room?.maxOccupancy,
+      "Extra Bed Allowed": room?.extraBedAllowed ? "Yes" : "No",
     });
 
     // ================= FEATURES =================
@@ -657,12 +661,12 @@ const Admin_Room_List = () => {
                 <th>#</th>
                 <th>Room No</th>
                 <th>Room Type</th>
-                <th>Base Rate ($)</th>
+                <th>Base Rate (Rs)</th>
                 <th>Seasonal Rates</th>
                 <th>Available</th>
                 <th>Housekeeping</th>
                 <th>Amenities</th>
-                <th>Description</th>
+                {/* <th>Description</th> */}
                 <th>Created By</th>
                 <th>Created At</th>
                 <th>Actions</th>
@@ -682,7 +686,7 @@ const Admin_Room_List = () => {
                       {room.seasonalRates?.length > 0 ? (
                         room.seasonalRates.map((s, i) => (
                           <div key={i}>
-                            <strong>{s.seasonName}</strong>: ${s.price}
+                            <strong>{s.seasonName}</strong>: Rs: {s.price}
                             <br />
                             <small>
                               {new Date(s.startDate).toLocaleDateString()} -{" "}
@@ -713,14 +717,23 @@ const Admin_Room_List = () => {
                     <td>{room.amenities?.join(", ") || "N/A"}</td>
 
                     {/* ✅ Description */}
-                    <td style={{ maxWidth: "200px" }}>
+                    {/* <td style={{ maxWidth: "200px" }}>
                       {room.description?.length > 80
                         ? room.description.slice(0, 80) + "..."
                         : room.description}
                     </td>
+                    <td
+                      style={{ maxWidth: "200px" }}
+                      dangerouslySetInnerHTML={{
+                        __html:
+                          room?.description?.length > 80
+                            ? room?.description?.slice(0, 80) + "..."
+                            : room?.description,
+                      }}
+                    /> */}
 
                     {/* ✅ Created By */}
-                    <td>{room.createdBy?.name || "N/A"}</td>
+                    <td>{room?.createdBy?.name || "N/A"}</td>
 
                     {/* ✅ Created Date */}
                     <td>{new Date(room.createdAt).toLocaleDateString()}</td>
@@ -1316,13 +1329,17 @@ const Admin_Room_List = () => {
             {/* ----------------- Description ----------------- */}
             <Form.Group className="mb-3">
               <Form.Label>Description</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={3}
+
+              <ReactQuill
+                theme="snow"
                 value={formData.description}
-                onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
+                onChange={(value) =>
+                  setFormData({
+                    ...formData,
+                    description: value,
+                  })
                 }
+                style={{ height: "200px", marginBottom: "50px" }}
               />
             </Form.Group>
           </Form>
@@ -1750,7 +1767,7 @@ const Admin_Room_List = () => {
               </Row>
 
               <Col md={12}>
-                <Form.Group className="mb-3">
+                {/* <Form.Group className="mb-3">
                   <Form.Label>Description</Form.Label>
                   <Form.Control
                     as="textarea"
@@ -1760,7 +1777,20 @@ const Admin_Room_List = () => {
                       setFormData({ ...formData, description: e.target.value })
                     }
                   />
-                </Form.Group>
+                </Form.Group> */}
+                  {/* ----------------- Description ----------------- */}
+                  <Form.Group className="mb-3">
+                    <Form.Label>Description</Form.Label>
+
+                    <ReactQuill
+                      theme="snow"
+                       value={formData.description}
+                    onChange={(e) =>
+                      setFormData({ ...formData, description: e.target.value })
+                    }
+                      style={{ height: "200px", marginBottom: "50px" }}
+                    />
+                  </Form.Group>
               </Col>
 
               {/* Amenities */}
@@ -1920,7 +1950,7 @@ const Admin_Room_List = () => {
               {/* ================= BASIC INFO ================= */}
               <Section title="Basic Information">
                 <Info label="Room Number" value={selectedRoom.roomNumber} />
-                <Info label="Room Type" value={selectedRoom.roomType} />
+                <Info label="Room Type" value={selectedRoom.roomType?.name} />
                 <Info label="Room View" value={selectedRoom.roomView} />
                 <Info label="Floor Level" value={selectedRoom.floorLevel} />
                 <Info label="Near Elevator" value={selectedRoom.nearElevator} />
@@ -1928,10 +1958,10 @@ const Admin_Room_List = () => {
 
               {/* ================= PRICING ================= */}
               <Section title="Pricing & Policies">
-                <Info label="Base Rate" value={`$${selectedRoom.baseRate}`} />
+                <Info label="Base Rate" value={`Rs: ${selectedRoom.baseRate}`} />
                 <Info
                   label="Discounted Price"
-                  value={`$${selectedRoom.discountedPrice}`}
+                  value={`Rs: ${selectedRoom.discountedPrice}`}
                 />
                 <Info label="Pay at Hotel" value={selectedRoom.payAtHotel} />
                 <Info
@@ -2043,12 +2073,12 @@ const Admin_Room_List = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {selectedRoom.seasonalRates.map((s, i) => (
+                      {selectedRoom?.seasonalRates?.map((s, i) => (
                         <tr key={i}>
-                          <td>{s.seasonName}</td>
-                          <td>{new Date(s.startDate).toLocaleDateString()}</td>
-                          <td>{new Date(s.endDate).toLocaleDateString()}</td>
-                          <td>${s.price}</td>
+                          <td>{s?.seasonName}</td>
+                          <td>{new Date(s?.startDate).toLocaleDateString()}</td>
+                          <td>{new Date(s?.endDate).toLocaleDateString()}</td>
+                          <td>Rs: {s?.price}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -2076,7 +2106,12 @@ const Admin_Room_List = () => {
 
               {/* ================= DESCRIPTION ================= */}
               <Section title="Description">
-                <p className="text-muted">{selectedRoom.description}</p>
+                <p
+                  className="text-muted"
+                  dangerouslySetInnerHTML={{
+                    __html: selectedRoom?.description,
+                  }}
+                />
               </Section>
 
               {/* ================= META ================= */}

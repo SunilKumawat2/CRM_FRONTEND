@@ -129,7 +129,7 @@ const Admin_Shift = () => {
             </thead>
 
             <tbody>
-              {shifts.map((s, i) => (
+              {shifts?.map((s, i) => (
                 <tr key={s._id}>
                   <td>{i + 1}</td>
                   <td>{s.name}</td>

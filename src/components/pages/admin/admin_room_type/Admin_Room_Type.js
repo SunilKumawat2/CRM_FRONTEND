@@ -168,7 +168,6 @@ const Admin_Room_Type = () => {
         <div className="d-flex justify-content-between mb-3">
           <h5>Room Type Management</h5>
           <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-            <h5>Room Type Management</h5>
             <button
               className="primary-button btn-sm small-add-button"
               onClick={() => setShowModal(true)}

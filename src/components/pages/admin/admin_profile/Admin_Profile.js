@@ -32,29 +32,46 @@ const Admin_Profile = () => {
   }, []);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setSuccess("");
+  e.preventDefault();
 
-    try {
-      const formData = new FormData();
-      formData.append("name", name);
-      if (password) formData.append("password", password);
-      if (profileImage) formData.append("profileImage", profileImage);
+  console.log("SUBMIT CLICKED");
 
-      const res = await Admin_Profile_Update(formData);
+  setError("");
+  setSuccess("");
 
-      if (res.status === 200) {
-        setSuccess("Profile updated successfully!");
-        setAdminProfile(res.data.data); // Refresh profile
-      } else {
-        setError("Failed to update profile");
-      }
-    } catch (err) {
-      console.error(err);
-      setError("Failed to update profile");
+  try {
+    const formData = new FormData();
+
+    formData.append("name", name);
+
+    if (password) {
+      formData.append("password", password);
     }
-  };
+
+    if (profileImage) {
+      formData.append("profileImage", profileImage);
+    }
+
+    // CHECK FORMDATA
+    for (let pair of formData.entries()) {
+      console.log(pair[0], pair[1]);
+    }
+
+    console.log("CALLING API...");
+
+    const res = await Admin_Profile_Update(formData);
+
+    console.log("API RESPONSE:", res);
+
+    if (res.status === 200) {
+      setSuccess("Profile updated successfully!");
+      setAdminProfile(res.data.data);
+    }
+  } catch (err) {
+    console.log("API ERROR:", err);
+    setError("Failed to update profile");
+  }
+};
 
   return (
     <AdminLayout>

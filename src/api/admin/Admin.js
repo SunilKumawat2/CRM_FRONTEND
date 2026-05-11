@@ -1423,15 +1423,22 @@ export const Admin_Shift_Update = async (shiftId, formData) => {
 export const Admin_Create_Staff = async (formData) => {
   try {
     const token = getToken();
-    const response = await axios.post(`${API_BASE_URL}/staff-create`, formData, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+
+    const response = await axios.post(
+      `${API_BASE_URL}/staff-create`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
     return response;
   } catch (error) {
     throw error.response || error;
   }
 };
-
 // <----------------  Update Staff Attendance  ----------------->
 export const Admin_Update_Staff = async (staffId, formData) => {
   try {
