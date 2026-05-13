@@ -34,6 +34,36 @@ export const Admin_Get_Status = async () => {
   }
 };
 
+// <----------------  Admin Get Status ----------------->
+export const Admin_Get_Site_Settings = async () => {
+  try {
+    const token = getToken();
+    const response = await axios.get(`${API_BASE_URL}/get-hotel-details`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <----------------  Admin Add Inquiries ----------------->
+export const Admin_Create_Site_Settings = async (data) => {
+  try {
+    const token = getToken();
+    const response = await axios.post(
+      `${API_BASE_URL}/create-hotel-detail`,
+      data,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
 // <----------------  Admin Add Inquiries ----------------->
 export const Admin_Add_Inquries = async (data) => {
   try {
@@ -1699,7 +1729,7 @@ export const Admin_Get_Hotel_Site_Settings = async () => {
     const token = getToken();
 
     const response = await axios.get(
-      `${API_BASE_URL}/get-hotel-detail`,
+      `${API_BASE_URL}/get-hotel-details`,
       {
         headers: { Authorization: `Bearer ${token}` },
       }

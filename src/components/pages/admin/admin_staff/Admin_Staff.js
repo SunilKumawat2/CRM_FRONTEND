@@ -6,18 +6,25 @@ import {
   Admin_Create_Staff,
   Admin_Delete_Staff,
   Admin_Get_Shifts,
+  Admin_Get_Hotel_Site_Settings,
 } from "../../../../api/admin/Admin"; // adjust path
 import { Row, Col } from "react-bootstrap";
-import { FaTrash } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
+import { FaTrash, FaEye, FaUserTie, FaPhoneAlt, FaEnvelope } from "react-icons/fa";
+import { IMG_BASE_URL } from "../../../../config/Config";
+import user_icons from "../../../../assets/images/user_icons.jpg"
+import { FaFileAlt } from "react-icons/fa";
 
 const Admin_Staff = () => {
   const [shifts, setShifts] = useState([]);
-  console.log("staff_shift", shifts);
+  const [hotelsetting, setHotelSetting] = useState([]);
+  console.log("staff_shift", hotelsetting);
   const [loading, setLoading] = useState(false);
   const [staff, setStaff] = useState([]);
   const [showModal, setShowModal] = useState(false);
-
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [selectedStaff, setSelectedStaff] = useState(null);
+  console.log("selectedStaff_selectedStaff", selectedStaff)
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -52,6 +59,8 @@ const Admin_Staff = () => {
   const [idProofImage, setIdProofImage] = useState(null);
   const [documents, setDocuments] = useState([]);
 
+  const [showExperienceModal, setShowExperienceModal] = useState(false);
+ const [gethotelsite,setGetHotelSite] = useState({})
   const [previousExperiences, setPreviousExperiences] = useState([
     {
       companyName: "",
@@ -59,6 +68,16 @@ const Admin_Staff = () => {
       years: "",
     },
   ]);
+
+  const handleView = (staffData) => {
+    setSelectedStaff(staffData);
+    setShowViewModal(true);
+  };
+
+  const handleExperienceLetter = (staff) => {
+    setSelectedStaff(staff);
+    setShowExperienceModal(true);
+  };
 
   // ✅ Fetch Staff
   const fetchStaff = async () => {
@@ -94,6 +113,25 @@ const Admin_Staff = () => {
   useEffect(() => {
     loadShifts();
   }, []);
+
+  // ================= LOAD =================
+  const loadHotelSiteSettings = async () => {
+    setLoading(true);
+    try {
+      const res = await Admin_Get_Hotel_Site_Settings();
+      setHotelSetting(res.data.data);
+    } catch (err) {
+      toast.error("Failed to load shifts");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadHotelSiteSettings();
+  }, []);
+
+ 
 
   // ✅ Create Staff
   const handleCreate = async (e) => {
@@ -187,6 +225,14 @@ const Admin_Staff = () => {
     }
   };
 
+  const formatText = (text) => {
+    if (!text) return "-";
+
+    return text
+      .replace(/_/g, " ")
+      .replace(/\b\w/g, (char) => char.toUpperCase());
+  };
+
   return (
     <AdminLayout>
       <div className="container mt-4">
@@ -251,10 +297,34 @@ const Admin_Staff = () => {
                         : "-"}
                     </td>
                     <td>
-                      <FaTrash
-                        style={{ cursor: "pointer", color: "red" }}
-                        onClick={() => handleDelete(item._id)}
-                      />
+                      <div className="d-flex align-items-center gap-3">
+
+                        {/* VIEW */}
+                        <FaEye
+                          size={18}
+                          style={{
+                            cursor: "pointer",
+                            color: "#0d6efd",
+                          }}
+                          onClick={() => handleView(item)}
+                        />
+
+                        {/* EXPERIENCE LETTER */}
+                        <FaFileAlt
+                          className="action-icon text-success"
+                          onClick={() => handleExperienceLetter(item)}
+                        />
+
+                        {/* DELETE */}
+                        <FaTrash
+                          size={16}
+                          style={{
+                            cursor: "pointer",
+                            color: "red",
+                          }}
+                          onClick={() => handleDelete(item._id)}
+                        />
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -285,7 +355,7 @@ const Admin_Staff = () => {
           <Form onSubmit={handleCreate}>
             {/* 🔹 Row 1 */}
             <Row>
-              <Col md={6}>
+              <Col md={3}>
                 <Form.Group className="mb-3">
                   <Form.Label>Name</Form.Label>
                   <Form.Control
@@ -299,7 +369,7 @@ const Admin_Staff = () => {
                 </Form.Group>
               </Col>
 
-              <Col md={6}>
+              <Col md={3}>
                 <Form.Group className="mb-3">
                   <Form.Label>Email</Form.Label>
                   <Form.Control
@@ -312,11 +382,7 @@ const Admin_Staff = () => {
                   />
                 </Form.Group>
               </Col>
-            </Row>
-
-            {/* 🔹 Row 2 */}
-            <Row>
-              <Col md={6}>
+              <Col md={3}>
                 <Form.Group className="mb-3">
                   <Form.Label>Phone</Form.Label>
                   <Form.Control
@@ -329,8 +395,7 @@ const Admin_Staff = () => {
                   />
                 </Form.Group>
               </Col>
-
-              <Col md={6}>
+              <Col md={3}>
                 <Form.Group className="mb-3">
                   <Form.Label>Role</Form.Label>
                   <Form.Select
@@ -349,10 +414,9 @@ const Admin_Staff = () => {
                 </Form.Group>
               </Col>
             </Row>
-
             {/* 🔹 Row 3 */}
             <Row>
-              <Col md={6}>
+              <Col md={3}>
                 <Form.Group className="mb-3">
                   <Form.Label>Department</Form.Label>
                   <Form.Select
@@ -369,7 +433,7 @@ const Admin_Staff = () => {
                 </Form.Group>
               </Col>
 
-              <Col md={6}>
+              <Col md={3}>
                 <Form.Group className="mb-3">
                   <Form.Label>Shift</Form.Label>
                   <Form.Select
@@ -395,10 +459,7 @@ const Admin_Staff = () => {
                   </Form.Select>
                 </Form.Group>
               </Col>
-            </Row>
-
-            <Row>
-              <Col md={6}>
+              <Col md={3}>
                 <Form.Group className="mb-3">
                   <Form.Label>Joining Date</Form.Label>
                   <Form.Control
@@ -414,7 +475,7 @@ const Admin_Staff = () => {
                 </Form.Group>
               </Col>
 
-              <Col md={6}>
+              <Col md={3}>
                 <Form.Group className="mb-3">
                   <Form.Label>Experience (Years)</Form.Label>
                   <Form.Control
@@ -431,9 +492,8 @@ const Admin_Staff = () => {
                 </Form.Group>
               </Col>
             </Row>
-
             <Row>
-              <Col md={6}>
+              <Col md={3}>
                 <Form.Group className="mb-3">
                   <Form.Label>ID Proof Type</Form.Label>
 
@@ -454,7 +514,7 @@ const Admin_Staff = () => {
                 </Form.Group>
               </Col>
 
-              <Col md={6}>
+              <Col md={3}>
                 <Form.Group className="mb-3">
                   <Form.Label>ID Proof Number</Form.Label>
 
@@ -470,13 +530,44 @@ const Admin_Staff = () => {
                   />
                 </Form.Group>
               </Col>
+              <Col md={3}>
+                <Form.Group className="mb-3">
+                  <Form.Label>State</Form.Label>
+                  <Form.Control
+                    placeholder="State"
+                    value={formData.state}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        state: e.target.value,
+                      })
+                    }
+                  />
+                </Form.Group>
+              </Col>
+
+              <Col md={3}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Pincode</Form.Label>
+
+                  <Form.Control
+                    placeholder="Pincode"
+                    value={formData.pincode}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        pincode: e.target.value,
+                      })
+                    }
+                  />
+                </Form.Group>
+              </Col>
             </Row>
 
             <Row>
-              <Col md={4}>
+              <Col md={3}>
                 <Form.Group className="mb-3">
                   <Form.Label>Profile Image</Form.Label>
-
                   <Form.Control
                     type="file"
                     onChange={(e) => setProfileImage(e.target.files[0])}
@@ -484,7 +575,7 @@ const Admin_Staff = () => {
                 </Form.Group>
               </Col>
 
-              <Col md={4}>
+              <Col md={3}>
                 <Form.Group className="mb-3">
                   <Form.Label>ID Proof Image</Form.Label>
 
@@ -495,7 +586,7 @@ const Admin_Staff = () => {
                 </Form.Group>
               </Col>
 
-              <Col md={4}>
+              <Col md={3}>
                 <Form.Group className="mb-3">
                   <Form.Label>Documents</Form.Label>
 
@@ -506,10 +597,7 @@ const Admin_Staff = () => {
                   />
                 </Form.Group>
               </Col>
-            </Row>
-
-            <Row>
-              <Col md={6}>
+              <Col md={3}>
                 <Form.Group className="mb-3">
                   <Form.Label>Employee Code</Form.Label>
 
@@ -525,8 +613,10 @@ const Admin_Staff = () => {
                   />
                 </Form.Group>
               </Col>
+            </Row>
 
-              <Col md={6}>
+            <Row>
+              <Col md={3}>
                 <Form.Group className="mb-3">
                   <Form.Label>Employment Type</Form.Label>
 
@@ -547,10 +637,7 @@ const Admin_Staff = () => {
                   </Form.Select>
                 </Form.Group>
               </Col>
-            </Row>
-
-            <Row>
-              <Col md={6}>
+              <Col md={3}>
                 <Form.Group className="mb-3">
                   <Form.Label>Leaving Date</Form.Label>
 
@@ -566,10 +653,7 @@ const Admin_Staff = () => {
                   />
                 </Form.Group>
               </Col>
-            </Row>
-
-            <Row>
-              <Col md={4}>
+              <Col md={3}>
                 <Form.Group className="mb-3">
                   <Form.Label>Emergency Contact Name</Form.Label>
 
@@ -585,8 +669,7 @@ const Admin_Staff = () => {
                   />
                 </Form.Group>
               </Col>
-
-              <Col md={4}>
+              <Col md={3}>
                 <Form.Group className="mb-3">
                   <Form.Label>Relation</Form.Label>
 
@@ -602,8 +685,10 @@ const Admin_Staff = () => {
                   />
                 </Form.Group>
               </Col>
+            </Row>
+            <Row>
 
-              <Col md={4}>
+              <Col md={3}>
                 <Form.Group className="mb-3">
                   <Form.Label>Emergency Phone</Form.Label>
 
@@ -619,10 +704,7 @@ const Admin_Staff = () => {
                   />
                 </Form.Group>
               </Col>
-            </Row>
-
-            <Row>
-              <Col md={6}>
+              <Col md={3}>
                 <Form.Group className="mb-3">
                   <Form.Label>Current Address</Form.Label>
 
@@ -638,8 +720,7 @@ const Admin_Staff = () => {
                   />
                 </Form.Group>
               </Col>
-
-              <Col md={6}>
+              <Col md={3}>
                 <Form.Group className="mb-3">
                   <Form.Label>Permanent Address</Form.Label>
 
@@ -655,10 +736,7 @@ const Admin_Staff = () => {
                   />
                 </Form.Group>
               </Col>
-            </Row>
-
-            <Row>
-              <Col md={4}>
+              <Col md={3}>
                 <Form.Group className="mb-3">
                   <Form.Label>City</Form.Label>
 
@@ -674,41 +752,8 @@ const Admin_Staff = () => {
                   />
                 </Form.Group>
               </Col>
-
-              <Col md={4}>
-                <Form.Group className="mb-3">
-                  <Form.Label>State</Form.Label>
-
-                  <Form.Control
-                    placeholder="State"
-                    value={formData.state}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        state: e.target.value,
-                      })
-                    }
-                  />
-                </Form.Group>
-              </Col>
-
-              <Col md={4}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Pincode</Form.Label>
-
-                  <Form.Control
-                    placeholder="Pincode"
-                    value={formData.pincode}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        pincode: e.target.value,
-                      })
-                    }
-                  />
-                </Form.Group>
-              </Col>
             </Row>
+
             <div className="text-end">
               <button
                 className="primary-button btn-sm small-add-button"
@@ -719,6 +764,431 @@ const Admin_Staff = () => {
             </div>
           </Form>
         </Modal.Body>
+      </Modal>
+
+
+      {/* ================= VIEW STAFF MODAL ================= */}
+
+      <Modal
+        show={showViewModal}
+        onHide={() => setShowViewModal(false)}
+        centered
+        size="xl"
+      >
+        <Modal.Header closeButton className="border-0 pb-0">
+          {/* <Modal.Title className="fw-bold text-primary small-form-title">
+            Staff Details
+          </Modal.Title> */}
+        </Modal.Header>
+
+        <Modal.Body className="small-view-modal">
+          {selectedStaff && (
+            <div className="container-fluid">
+
+              {/* TOP PROFILE SECTION */}
+              <div
+                className="p-1 rounded-4 mb-1"
+                style={{
+                  background: "linear-gradient(135deg, #4e85d7, #4e85d7)",
+                  color: "#fff",
+                }}
+              >
+                <Row className="align-items-center">
+                  <Col md={2} className="text-center">
+                    {
+                      selectedStaff?.profileImage ? (
+                        <img
+                          src={`${IMG_BASE_URL}${selectedStaff?.profileImage}`}
+                          alt="profile"
+                          className="img-fluid rounded-circle border border-3 border-white"
+                          style={{
+                            width: "120px",
+                            height: "120px",
+                            objectFit: "cover",
+                          }}
+                        />
+                      ) : (
+                        <img
+                          src={user_icons}
+                          alt="profile"
+                          className="img-fluid rounded-circle border border-3 border-white"
+                          style={{
+                            width: "120px",
+                            height: "120px",
+                            objectFit: "cover",
+                          }}
+                        />
+                      )
+                    }
+
+                  </Col>
+
+                  <Col md={10}>
+                    <h4 className="fw-bold mb-1">
+                      {selectedStaff?.name}
+                    </h4>
+
+                    <p className="mb-2">
+                      {formatText(selectedStaff?.role)} ({formatText(selectedStaff?.employmentType)})
+                    </p>
+
+                    <div className="d-flex flex-wrap gap-4 mt-3">
+
+                      <div>
+                        <FaEnvelope className="me-2" />
+                        {selectedStaff?.email}
+                      </div>
+
+                      <div>
+                        <FaPhoneAlt className="me-2" />
+                        {selectedStaff?.phone}
+                      </div>
+
+                      <div>
+                        <FaUserTie className="me-2" />
+                        {formatText(selectedStaff?.department)}
+                      </div>
+
+                    </div>
+                  </Col>
+                </Row>
+              </div>
+
+              {/* DETAILS SECTION */}
+              <Row>
+
+                {/* EMPLOYMENT DETAILS */}
+                <Col md={4}>
+                  <div className="shadow-sm border-0 rounded-4 mb-4 overflow-hidden bg-white">
+
+                    <div
+                      className="px-4 py-3 text-white fw-bold"
+                      style={{
+                        background: "linear-gradient(135deg, #0d6efd, #0a58ca)",
+                        fontSize: "17px",
+                      }}
+                    >
+                      Employment Details
+                    </div>
+
+                    <div className="p-3">
+                      <Table bordered hover responsive className="mb-0 align-middle">
+                        <tbody>
+
+                          <tr>
+                            <th width="45%">Employee Code</th>
+                            <td>{selectedStaff?.employeeCode || "-"}</td>
+                          </tr>
+
+                          <tr>
+                            <th>Experience</th>
+                            <td>
+                              {selectedStaff?.experienceYears || 0} Years
+                            </td>
+                          </tr>
+
+                          <tr>
+                            <th>Shift</th>
+                            <td>{formatText(selectedStaff?.shift || "-")}</td>
+                          </tr>
+
+                          <tr>
+                            <th>Joining Date</th>
+                            <td>
+                              {selectedStaff?.joiningDate
+                                ? new Date(
+                                  selectedStaff?.joiningDate
+                                ).toLocaleDateString("en-GB")
+                                : "-"}
+                            </td>
+                          </tr>
+
+                          <tr>
+                            <th>Leaving Date</th>
+                            <td>
+                              {selectedStaff?.leavingDate
+                                ? new Date(
+                                  selectedStaff?.leavingDate
+                                ).toLocaleDateString("en-GB")
+                                : "-"}
+                            </td>
+                          </tr>
+
+                        </tbody>
+                      </Table>
+                    </div>
+                  </div>
+                </Col>
+
+                {/* PERSONAL DETAILS */}
+                <Col md={4}>
+                  <div className="shadow-sm border-0 rounded-4 mb-4 overflow-hidden bg-white">
+
+                    <div
+                      className="px-4 py-3 text-white fw-bold"
+                      style={{
+                        background: "linear-gradient(135deg, #198754, #157347)",
+                        fontSize: "17px",
+                      }}
+                    >
+                      Personal Details
+                    </div>
+
+                    <div className="p-3">
+                      <Table bordered hover responsive className="mb-0 align-middle">
+                        <tbody>
+
+                          <tr>
+                            <th width="45%">ID Proof Type</th>
+                            <td>
+                              {formatText(selectedStaff?.idProof?.type || "-")}
+                            </td>
+                          </tr>
+
+                          <tr>
+                            <th>ID Proof Number</th>
+                            <td>
+                              {selectedStaff?.idProof?.number || "-"}
+                            </td>
+                          </tr>
+
+                          <tr>
+                            <th>Emergency Name</th>
+                            <td>
+                              {selectedStaff?.emergencyContact?.name || "-"}
+                            </td>
+                          </tr>
+
+                          <tr>
+                            <th>Emergency Phone</th>
+                            <td>
+                              {selectedStaff?.emergencyContact?.phone || "-"}
+                            </td>
+                          </tr>
+
+                          <tr>
+                            <th>Relation</th>
+                            <td>
+                              {selectedStaff?.emergencyContact?.relation || "-"}
+                            </td>
+                          </tr>
+
+                        </tbody>
+                      </Table>
+                    </div>
+                  </div>
+                </Col>
+
+                {/* ADDRESS DETAILS */}
+                <Col md={4}>
+                  <div className="shadow-sm border-0 rounded-4 mb-4 overflow-hidden bg-white">
+
+                    <div
+                      className="px-4 py-3 text-white fw-bold"
+                      style={{
+                        background: "linear-gradient(135deg, #6f42c1, #5a32a3)",
+                        fontSize: "17px",
+                      }}
+                    >
+                      Address Details
+                    </div>
+
+                    <div className="p-3">
+                      <Table bordered hover responsive className="mb-0 align-middle">
+                        <tbody>
+
+                          <tr>
+                            <th width="45%">City</th>
+                            <td>
+                              {selectedStaff?.address?.city || "-"}
+                            </td>
+                          </tr>
+
+                          <tr>
+                            <th>State</th>
+                            <td>
+                              {selectedStaff?.address?.state || "-"}
+                            </td>
+                          </tr>
+
+                          <tr>
+                            <th>Pin Code</th>
+                            <td>
+                              {selectedStaff?.address?.pincode || "-"}
+                            </td>
+                          </tr>
+
+                          <tr>
+                            <th>Current Address</th>
+                            <td>
+                              {selectedStaff?.address?.currentAddress || "-"}
+                            </td>
+                          </tr>
+
+                          <tr>
+                            <th>Permanent Address</th>
+                            <td>
+                              {selectedStaff?.address?.permanentAddress || "-"}
+                            </td>
+                          </tr>
+
+                        </tbody>
+                      </Table>
+                    </div>
+                  </div>
+                </Col>
+
+              </Row>
+
+            </div>
+          )}
+        </Modal.Body>
+      </Modal>
+
+      {/* EXPERIENCE LETTER MODAL */}
+
+      <Modal
+        show={showExperienceModal}
+        onHide={() => setShowExperienceModal(false)}
+        size="lg"
+        centered
+      >
+
+        <Modal.Header closeButton>
+          <Modal.Title className="fw-bold text-success">
+            Experience Letter
+          </Modal.Title>
+        </Modal.Header>
+
+        <Modal.Body>
+
+          <div
+            id="experience-letter"
+            className="p-5 bg-white"
+            style={{
+              border: "1px solid #ddd",
+              borderRadius: "12px",
+            }}
+          >
+
+            {/* COMPANY HEADER */}
+            <div className="text-center mb-5">
+
+              <h2 className="fw-bold text-primary">
+                {hotelsetting?.name}
+              </h2>
+
+              <p className="mb-1">
+                {hotelsetting?.address}
+              </p>
+
+              <p>
+                {hotelsetting?.email}
+              </p>
+
+            </div>
+
+            {/* DATE */}
+            <div className="mb-4">
+              <strong>Date:</strong>{" "}
+              {new Date().toLocaleDateString("en-GB")}
+            </div>
+
+            {/* TITLE */}
+            <div className="text-center mb-4">
+              <h4 className="fw-bold text-decoration-underline">
+                EXPERIENCE LETTER
+              </h4>
+            </div>
+
+            {/* BODY */}
+            <div style={{ lineHeight: "32px", fontSize: "16px" }}>
+
+              <p>
+                To Whom It May Concern,
+              </p>
+
+              <p>
+                This is to certify that{" "}
+                <strong>{selectedStaff?.name}</strong>
+                {" "}was employed with{" "}
+                <strong>{hotelsetting?.name}</strong>
+                {" "}as a{" "}
+                <strong>
+                  {formatText(selectedStaff?.role)}
+                </strong>
+                {" "}in the{" "}
+                <strong>
+                  {formatText(selectedStaff?.department)}
+                </strong>
+                {" "}department.
+              </p>
+
+              <p>
+                The employee worked with us from{" "}
+                <strong>
+                  {selectedStaff?.joiningDate
+                    ? new Date(
+                      selectedStaff?.joiningDate
+                    ).toLocaleDateString("en-GB")
+                    : "-"}
+                </strong>
+                {" "}to{" "}
+                <strong>
+                  {selectedStaff?.leavingDate
+                    ? new Date(
+                      selectedStaff?.leavingDate
+                    ).toLocaleDateString("en-GB")
+                    : "Present"}
+                </strong>.
+              </p>
+
+              <p>
+                During the employment period, the employee
+                demonstrated professionalism, dedication,
+                and excellent performance in assigned duties.
+              </p>
+
+              <p>
+                We appreciate the contributions made by{" "}
+                <strong>{selectedStaff?.name}</strong>
+                {" "}and wish them success in future endeavors.
+              </p>
+
+            </div>
+
+            {/* FOOTER */}
+            <div className="mt-5">
+
+              <p className="mb-5">
+                Sincerely,
+              </p>
+
+              <h6 className="fw-bold mb-1">
+                {hotelsetting?.hrName}
+              </h6>
+
+              <p>
+                {hotelsetting?.name}
+              </p>
+
+            </div>
+
+          </div>
+
+        </Modal.Body>
+
+        <Modal.Footer>
+
+          <button
+            className="btn btn-success"
+            onClick={() => window.print()}
+          >
+            Print
+          </button>
+
+        </Modal.Footer>
+
       </Modal>
     </AdminLayout>
   );
