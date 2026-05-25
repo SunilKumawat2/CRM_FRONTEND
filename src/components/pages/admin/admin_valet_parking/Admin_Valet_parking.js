@@ -3,12 +3,16 @@ import { Button, Modal, Form, Table, Spinner } from "react-bootstrap";
 import AdminLayout from "../admin_layout/Admin_Layout";
 import {
   Admin_create_valet_parking,
+  Admin_Delete_valet_parking,
   Admin_Get_valet_parking,
+  Admin_Update_valet_parking,
 } from "../../../../api/admin/Admin";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { ToastContainer, toast } from "react-toastify";
+import { FaEdit, FaTrash } from "react-icons/fa";
 
 const Admin_Valet_parking = () => {
   const [show, setShow] = useState(false);
@@ -25,11 +29,12 @@ const Admin_Valet_parking = () => {
     slipNumber: "",
     notes: "",
   });
-
+  const [isEdit, setIsEdit] = useState(false);
+  const [editId, setEditId] = useState(null);
+  console.log("editId_editId", editId)
   // ---------------- Modal handlers ----------------
   const handleShow = () => setShow(true);
   const handleClose = () => setShow(false);
-
   // ---------------- Form change ----------------
   const handleChange = (e) => {
     setFormData({
@@ -38,10 +43,8 @@ const Admin_Valet_parking = () => {
     });
   };
 
-  // ---------------- Submit valet ----------------
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       const payload = {
         guestName: formData.guestName,
@@ -54,29 +57,65 @@ const Admin_Valet_parking = () => {
         slipNumber: formData.slipNumber,
         notes: formData.notes,
       };
-
-      console.log("Submit Data:", payload);
-
-      // API call
-      await Admin_create_valet_parking(payload);
-
-      // Reset form
-      setFormData({
-        guestName: "",
-        roomNumber: "",
-        vehicleNumber: "",
-        vehicleBrand: "",
-        vehicleModel: "",
-        color: "",
-        parkingSlot: "",
-        slipNumber: "",
-        notes: "",
-      });
-
+      if (isEdit) {
+        await Admin_Update_valet_parking(
+          editId,
+          payload
+        );
+        toast.success("Valet updated successfully");
+      } else {
+        await Admin_create_valet_parking(
+          payload
+        );
+        toast.success(
+          "Valet created successfully"
+        );
+      }
       handleClose();
-      getParkingList(); // Refresh table
+      getParkingList();
     } catch (error) {
-      console.error("Valet create error:", error);
+      console.error(error);
+      if(error?.response?.data?.status == "403"){
+        toast.error(error?.response?.data?.message);
+        // alert(error?.response?.message)
+      }
+    }
+  };
+
+  const handleEdit = (item) => {
+    setIsEdit(true)
+    setEditId(item._id);
+
+    setFormData({
+      guestName: item.guestName || "",
+      roomNumber: item.roomNumber || "",
+      vehicleNumber: item.vehicleNumber || "",
+      vehicleBrand: item.vehicleBrand || "",
+      vehicleModel: item.vehicleModel || "",
+      color: item.color || "",
+      parkingSlot: item.parkingSlot || "",
+      slipNumber: item.slipNumber || "",
+      notes: item.notes || "",
+    });
+
+    setShow(true);
+  };
+
+  const handleDeleteValet = async (id) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this valet parking record?"
+    );
+
+    if (!confirmDelete) return;
+    try {
+      const response = await Admin_Delete_valet_parking(id);
+      if (response?.
+        data?.status == "200") {
+        // alert("handleDeleteValet_response", response?.data?.message)
+        getParkingList();
+      }
+    } catch (err) {
+      console.log(err)
     }
   };
 
@@ -171,16 +210,18 @@ const Admin_Valet_parking = () => {
 
   return (
     <AdminLayout>
+
       <div className="container mt-4">
+        <ToastContainer position="top-right" autoClose={2000} />
         {/* + Valet Button */}
         <div className="d-flex justify-content-end mb-3">
           <div className="d-flex gap-2">
-          <button
-            className="primary-button btn-sm small-add-button"
-            onClick={handleShow}
-          >
-            + Valet
-          </button>
+            <button
+              className="primary-button btn-sm small-add-button"
+              onClick={handleShow}
+            >
+              + Valet
+            </button>
             <button
               className="green-button btn-sm small-add-button"
               onClick={handleExportExcel}
@@ -207,6 +248,7 @@ const Admin_Valet_parking = () => {
           <Table striped bordered hover responsive className="table-smaller">
             <thead>
               <tr>
+              <th>Guest List</th>
                 <th>Guest</th>
                 <th>Room</th>
                 <th>Vehicle No</th>
@@ -215,12 +257,14 @@ const Admin_Valet_parking = () => {
                 <th>Slip</th>
                 <th>Status</th>
                 <th>In Time</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
               {parkingList.length > 0 ? (
-                parkingList.map((item) => (
+                parkingList.map((item,index) => (
                   <tr key={item._id}>
+                     <td>{index+1}</td>
                     <td>{item.guestName}</td>
                     <td>{item.roomNumber}</td>
                     <td>{item.vehicleNumber}</td>
@@ -229,6 +273,17 @@ const Admin_Valet_parking = () => {
                     <td>{item.slipNumber}</td>
                     <td>{item.status}</td>
                     <td>{new Date(item.inTime).toLocaleString()}</td>
+                    <td> <FaEdit
+                      className="text-warning"
+                      size={17}
+                      role="button"
+                      onClick={() => handleEdit(item)}
+                    />
+                      <FaTrash className="text-danger"
+                        size={17}
+                        role="button"
+                        onClick={() => handleDeleteValet(item?._id)} />
+                    </td>
                   </tr>
                 ))
               ) : (

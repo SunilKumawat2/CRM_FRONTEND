@@ -968,6 +968,35 @@ export const Admin_Get_valet_parking = async () => {
     throw error.response || error;
   }
 };
+export const Admin_Update_valet_parking =
+  async (id, formData) => {
+
+    const token = getToken();
+
+    return await axios.put(
+      `${API_BASE_URL}/update-valet-parking/${id}`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+};
+
+export const Admin_Delete_valet_parking = async (_id) => {
+  try {
+    const token = getToken();
+    const response = await axios.delete(
+      `${API_BASE_URL}/delete-valet-parking/${_id}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
 // <----------------  Admin create event package  ----------------->
 export const Admin_create_event_package = async (formData) => {
   try {

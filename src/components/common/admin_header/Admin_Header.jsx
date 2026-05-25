@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { FaBell, FaUserCircle, FaMoon, FaSun } from "react-icons/fa";
 import { Dropdown, Image, Badge } from "react-bootstrap";
 import { Admin_Get_Notifications, Admin_Get_Notifications_Marked_All_Read } from "../../../api/admin/Admin"; // your global API function
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "../../../context/UserContext";
 
 const Header_Admin = ({ theme, toggleTheme }) => {
   const navigate = useNavigate();
@@ -11,7 +12,12 @@ const Header_Admin = ({ theme, toggleTheme }) => {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
-
+  const {
+    permission,
+    loading,
+    getUserProfile,
+  } = useContext(UserContext);
+console.log("user_123ui124655237452",permission)
   const token = localStorage.getItem("admin_token");
 
   // Fetch admin profile
@@ -78,6 +84,10 @@ const Header_Admin = ({ theme, toggleTheme }) => {
       markAllRead();
     }
   };
+
+  useEffect(()=>{
+    getUserProfile();
+  },[])
 
   return (
     <header className="admin-header d-flex justify-content-between align-items-center p-3 shadow-sm">

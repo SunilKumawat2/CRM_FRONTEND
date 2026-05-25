@@ -36,7 +36,7 @@ const Admin_Role_List = () => {
     { name: "Staff Attendance", slug: "staffattendances" },
     { name: "Shift", slug: "shifts" },
     { name: "Invoice", slug: "invoice" },
-    { name: "Valet Parking", slug: "valet_parking" },
+    { name: "Valet Parking", slug: "valetparking" },
     { name: "Event Package", slug: "event_package" },
     { name: "Catering", slug: "catering" },
     { name: "User Feedback", slug: "user_feedback" },
