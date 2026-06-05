@@ -22,6 +22,7 @@ import {
 import { toast } from "react-toastify";
 import AdminLayout from "../admin_layout/Admin_Layout";
 import { FaEye } from "react-icons/fa";
+import { TbPlayerTrackNextFilled, TbPlayerTrackPrevFilled } from "react-icons/tb";
 
 const Admin_Staff_Attendance = () => {
   const [staffList, setStaffList] = useState([]);
@@ -241,7 +242,7 @@ const Admin_Staff_Attendance = () => {
         <Col md={3}>
           <div
             className="p-3 shadow-sm rounded staff-panel"
-            style={{ minHeight: "100%" }}
+            style={{ minHeight: "70vh" }}
           >
             <h6 className="mb-3 fw-bold border-bottom pb-2 staff-panel-title">
               Staff List
@@ -252,46 +253,45 @@ const Admin_Staff_Attendance = () => {
                 <Spinner animation="border" /> <p>Loading...</p>
               </div>
             ) : (
-              <ListGroup variant="flush" className="staff-list">
-                {staffList.length == 0 && (
-                  <p className="text-muted text-center small">No staff found</p>
-                )}
+              <div className="flex-grow-1">
+                <ListGroup variant="flush" className="staff-list">
+                  {staffList.length === 0 && (
+                    <p className="text-muted text-center small">No staff found</p>
+                  )}
 
-                {staffList?.map((staff) => (
-                  <ListGroup.Item
-                    key={staff._id}
-                    action
-                    onClick={() => {
-                      setSelectedStaff(staff);
-                      setAttendancePage(1);
-                      loadAttendance(staff._id, 1);
-                    }}
-                    className={`d-flex align-items-center py-2 rounded mb-1 staff-list-item ${selectedStaff?._id === staff._id ? "selected" : ""
-                      }`}
-                  >
-                    <div className="rounded-circle text-white d-flex align-items-center justify-content-center me-2 staff-avatar">
-                      {staff?.name?.charAt(0).toUpperCase()}
-                    </div>
+                  {staffList?.map((staff) => (
+                    <ListGroup.Item
+                      key={staff._id}
+                      action
+                      onClick={() => {
+                        setSelectedStaff(staff);
+                        setAttendancePage(1);
+                        loadAttendance(staff._id, 1);
+                      }}
+                      className={`d-flex align-items-center py-2 rounded mb-1 staff-list-item ${selectedStaff?._id === staff._id ? "selected" : ""
+                        }`}
+                    >
+                      <div className="rounded-circle text-white d-flex align-items-center justify-content-center me-2 staff-avatar">
+                        {staff?.name?.charAt(0).toUpperCase()}
+                      </div>
 
-                    <div>
-                      <div className="fw-semibold staff-name">{staff?.name}</div>
-                      {/* <small className="text-muted staff-email">
-                        {staff.email || "Staff Member"}
-                      </small> */}
-                    </div>
-                  </ListGroup.Item>
-                ))}
-              </ListGroup>
+                      <div>
+                        <div className="staff-name">{staff?.name}</div>
+                      </div>
+                    </ListGroup.Item>
+                  ))}
+                </ListGroup>
+              </div>
             )}
 
             {/* Pagination Controls */}
-            <div className="d-flex justify-content-between mt-2 staff-pagination">
+            <div className="d-flex justify-content-between mt-auto pt-3 staff-pagination">
               <button
                 className="btn btn-sm"
                 disabled={page === 1}
                 onClick={() => loadStaffList(page - 1)}
               >
-                Previous
+                <TbPlayerTrackPrevFilled size={20} />
               </button>
 
               <span className="staff-page-info">
@@ -303,7 +303,7 @@ const Admin_Staff_Attendance = () => {
                 disabled={page === totalPages}
                 onClick={() => loadStaffList(page + 1)}
               >
-                Next
+                <TbPlayerTrackNextFilled size={20}/>
               </button>
             </div>
           </div>

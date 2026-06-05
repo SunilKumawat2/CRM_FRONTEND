@@ -34,7 +34,6 @@ const Admin_Room_Booking_List = () => {
   const [showViewModal, setShowViewModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [roomList, setRoomList] = useState([]);
-  console.log("roomList_roomList",roomList)
   const [rangeStart, setRangeStart] = useState("");
   const [rangeEnd, setRangeEnd] = useState("");
   const [loading, setLoading] = useState(false);
@@ -56,6 +55,7 @@ const Admin_Room_Booking_List = () => {
   const [limit] = useState(10);
   const [total, setTotal] = useState(0);
   const totalPages = Math.ceil(total / limit);
+  const today = new Date().toISOString().split("T")[0];
 
   // Handle input changes
   const updateField = (e) => {
@@ -148,7 +148,7 @@ const Admin_Room_Booking_List = () => {
       // This will log the API error message if available
       console.error("Add Booking Error:", err);
       if (err.status == 400) {
-        toast.error(err?.message);
+        toast.error(err?.data?.message);
       }
     }
   };
@@ -360,7 +360,16 @@ const Admin_Room_Booking_List = () => {
             type="date"
             className="form-control form-control-sm"
             value={rangeStart}
-            onChange={(e) => setRangeStart(e.target.value)}
+            min={today}
+            onChange={(e) => {
+              const value = e.target.value;
+              setRangeStart(value);
+
+              // Reset end date if invalid
+              if (rangeEnd && rangeEnd < value) {
+                setRangeEnd("");
+              }
+            }}
           />
         </div>
 
@@ -370,18 +379,42 @@ const Admin_Room_Booking_List = () => {
             type="date"
             className="form-control form-control-sm"
             value={rangeEnd}
+            min={rangeStart || today}
+            disabled={!rangeStart}
             onChange={(e) => setRangeEnd(e.target.value)}
           />
         </div>
 
         <div className="align-self-end">
-          <button className="primary-button " onClick={handleFilterByRange}>
+          <button
+            className="primary-button"
+            onClick={() => {
+              if (!rangeStart || !rangeEnd) {
+                alert("Please select both dates");
+                return;
+              }
+
+              if (new Date(rangeEnd) < new Date(rangeStart)) {
+                alert("End date must be greater than or equal to Start date");
+                return;
+              }
+
+              handleFilterByRange();
+            }}
+          >
             Filter
           </button>
         </div>
 
         <div className="align-self-end">
-          <button className="secondary-button" onClick={loadBookings}>
+          <button
+            className="secondary-button"
+            onClick={() => {
+              setRangeStart("");
+              setRangeEnd("");
+              loadBookings();
+            }}
+          >
             Reset
           </button>
         </div>
@@ -408,6 +441,7 @@ const Admin_Room_Booking_List = () => {
               <th>Payment</th>
               <th>Total</th>
               <th>Deposit</th>
+              <th>Pending Amount</th>
               <th>Actions</th>
               <th>Check-In/Out</th>
             </tr>
@@ -431,17 +465,16 @@ const Admin_Room_Booking_List = () => {
                   {/* Booking Status */}
                   <td>
                     <span
-                      className={`badge ${
-                        booking_result.status === "confirmed"
-                          ? "bg-primary"
-                          : booking_result.status === "checked_in"
-                            ? "bg-success"
-                            : booking_result.status === "checked_out"
-                              ? "bg-warning text-black"
-                              : booking_result.status === "cancelled"
-                                ? "bg-danger"
-                                : "bg-secondary"
-                      }`}
+                      className={`badge ${booking_result.status === "confirmed"
+                        ? "bg-primary"
+                        : booking_result.status === "checked_in"
+                          ? "bg-success"
+                          : booking_result.status === "checked_out"
+                            ? "bg-warning text-black"
+                            : booking_result.status === "cancelled"
+                              ? "bg-danger"
+                              : "bg-secondary"
+                        }`}
                     >
                       {booking_result.status.replace("_", " ")}
                     </span>
@@ -454,13 +487,26 @@ const Admin_Room_Booking_List = () => {
                   </td>
 
                   {/* Price */}
-                  <td>₹{booking_result.totalAmount}</td>
-                  {booking_result?.source == "online" ? (
+                  <td>₹{booking_result?.totalAmount}</td>
+                  {/* {booking_result?.source == "online" ? (
                     <td>₹{booking_result.totalAmount}</td>
                   ) : (
                     <td>₹{booking_result.depositAmount}</td>
-                  )}
+                  )} */}
 
+                  <td>₹{booking_result?.depositAmount}</td>
+                  <td>
+                    {Number(booking_result?.totalAmount || 0) -
+                      Number(booking_result?.depositAmount || 0) <= 0 ? (
+                      <button className="btn btn-success btn-sm" disabled>
+                        Paid
+                      </button>
+                    ) : (
+                      `₹${Number(booking_result?.totalAmount || 0) -
+                      Number(booking_result?.depositAmount || 0)
+                      }`
+                    )}
+                  </td>
                   {/* Actions */}
                   <td>
                     <div className="d-flex align-items-center gap-2">
@@ -512,13 +558,13 @@ const Admin_Room_Booking_List = () => {
                     {/* ✅ CANCEL BOOKING */}
                     {(booking_result.status === "confirmed" ||
                       booking_result.status === "pending") && (
-                      <button
-                        className="action-btn btn-cancel"
-                        onClick={() => handleCancelBooking(booking_result._id)}
-                      >
-                        ❌ Cancel
-                      </button>
-                    )}
+                        <button
+                          className="action-btn btn-cancel"
+                          onClick={() => handleCancelBooking(booking_result._id)}
+                        >
+                          ❌ Cancel
+                        </button>
+                      )}
 
                     {/* ✅ Checked-Out Status */}
                     {booking_result.status === "checked_out" && (
@@ -642,7 +688,9 @@ const Admin_Room_Booking_List = () => {
 
                       const updatedRooms = [...formData.rooms];
                       updatedRooms[0].room = roomId;
-                      updatedRooms[0].rate = selectedRoom?.baseRate || "";
+                      updatedRooms[0].rate = selectedRoom
+                        ? Number(selectedRoom.baseRate || 0) - Number(selectedRoom.discountedPrice || 0)
+                        : "";
 
                       setFormData({ ...formData, rooms: updatedRooms });
                     }}
@@ -662,7 +710,7 @@ const Admin_Room_Booking_List = () => {
             <div className="row">
               <div className="col-6">
                 <Form.Group className="mb-2">
-                  <Form.Label>Rate</Form.Label>
+                  <Form.Label>Discounted Rate</Form.Label>
                   <Form.Control
                     name="rate"
                     value={formData.rooms[0].rate}

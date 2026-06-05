@@ -4,7 +4,7 @@ import { Dropdown, Image, Badge } from "react-bootstrap";
 import { Admin_Get_Notifications, Admin_Get_Notifications_Marked_All_Read } from "../../../api/admin/Admin"; // your global API function
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../../context/UserContext";
-
+import Hotel_logo from "../../../assets/images/Hotel_new_logo.png"
 const Header_Admin = ({ theme, toggleTheme }) => {
   const navigate = useNavigate();
   const [showProfile, setShowProfile] = useState(false);
@@ -93,7 +93,7 @@ console.log("user_123ui124655237452",permission)
     <header className="admin-header d-flex justify-content-between align-items-center p-3 shadow-sm">
       <div className="header-left">
         <h2>
-          <span style={{ color: "red" }}>C</span>RM
+          <img src={Hotel_logo} style={{width:"60px",height:"50px"}} alt="hotel logo"/>
         </h2>
       </div>
 

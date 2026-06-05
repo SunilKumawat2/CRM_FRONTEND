@@ -18,10 +18,12 @@
   text-decoration: none;
   display: block;
   margin: 10px 0;
+  color: rgb(191 111 23) !important;
+  font-size: 13px !important;
 }
 
 .admin-sidebar a.active {
-  background: #2d3748;
+  background: #f9e9ce;
   border-radius: 6px;
   padding: 8px;
 }
@@ -1581,7 +1583,7 @@ background-color: #c71200;
   color: var(--staff-text);
 }
 :root[data-theme="light"] {
-  --staff-active-bg: #4e85d7;     /* soft orange */
+  --staff-active-bg: #d8e4f3;     /* soft orange */
   --staff-active-border: #4e85d7;
 }
 :root[data-theme="dark"] {
@@ -2423,4 +2425,18 @@ background-color: #c71200;
 .payroll-page {
   background: var(--bg-main);
   color: var(--text-primary);
+}
+.staff-panel {
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.staff-list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.staff-pagination {
+  margin-top: auto;
 }

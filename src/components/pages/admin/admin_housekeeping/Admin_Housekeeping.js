@@ -16,7 +16,7 @@ import { FiCheckCircle } from "react-icons/fi";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable"; 
+import autoTable from "jspdf-autotable";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -26,6 +26,7 @@ const Admin_Housekeeping = () => {
   const [verifyItem, setVerifyItem] = useState(null);
   const [rooms, setRooms] = useState([]);
   const [staffList, setStaffList] = useState([]);
+  console.log("staffList_staffList", staffList)
   const [showAddModal, setShowAddModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -325,10 +326,10 @@ const Admin_Housekeeping = () => {
                 <td>
                   {item.amenitiesReplaced?.length > 0
                     ? item.amenitiesReplaced?.map((am) => (
-                        <span key={am._id} className="badge bg-info me-1">
-                          {am.item} × {am.quantity}
-                        </span>
-                      ))
+                      <span key={am._id} className="badge bg-info me-1">
+                        {am.item} × {am.quantity}
+                      </span>
+                    ))
                     : "—"}
                 </td>
 
@@ -560,7 +561,9 @@ const Admin_Housekeeping = () => {
                     onChange={handleChange}
                   >
                     <option value="">Select Staff</option>
-                    {staffList?.map((a) => (
+                    {staffList?.filter((staff) => 
+                      staff?.isActive
+                    ).map((a) => (
                       <option key={a._id} value={a._id}>
                         {a?.name}
                       </option>

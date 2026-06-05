@@ -32,7 +32,7 @@ const Admin_Room_List = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState(null);
-  console.log("selectedRoom_selectedRoom",selectedRoom)
+  console.log("selectedRoom_selectedRoom", selectedRoom)
   const initialFormData = {
     roomNumber: "",
     roomType: "",
@@ -95,7 +95,7 @@ const Admin_Room_List = () => {
   const totalPages = Math.ceil(total / limit);
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
-
+  const today = new Date().toISOString().split("T")[0];
   // Fetch Rooms
   const fetchRooms = async () => {
     try {
@@ -614,8 +614,16 @@ const Admin_Room_List = () => {
               type="date"
               className="form-control form-control-sm"
               value={checkIn}
-              onChange={(e) => setCheckIn(e.target.value)}
-              onClick={(e) => e.target.showPicker && e.target.showPicker()} // opens native calendar
+              min={today}
+              onChange={(e) => {
+                setCheckIn(e.target.value);
+
+                // Reset end date if it becomes invalid
+                if (checkOut && checkOut < e.target.value) {
+                  setCheckOut("");
+                }
+              }}
+              onClick={(e) => e.target.showPicker && e.target.showPicker()}
             />
           </div>
 
@@ -625,8 +633,10 @@ const Admin_Room_List = () => {
               type="date"
               className="form-control form-control-sm"
               value={checkOut}
+              min={checkIn || today}
               onChange={(e) => setCheckOut(e.target.value)}
-              onClick={(e) => e.target.showPicker && e.target.showPicker()} // opens native calendar
+              disabled={!checkIn}
+              onClick={(e) => e.target.showPicker && e.target.showPicker()}
             />
           </div>
 
@@ -702,9 +712,8 @@ const Admin_Room_List = () => {
                     {/* ✅ Availability */}
                     <td>
                       <span
-                        className={`badge ${
-                          room.isAvailable ? "bg-success" : "bg-success"
-                        }`}
+                        className={`badge ${room.isAvailable ? "bg-success" : "bg-success"
+                          }`}
                       >
                         {room.isAvailable ? "Available" : "Available"}
                       </span>
@@ -1778,19 +1787,19 @@ const Admin_Room_List = () => {
                     }
                   />
                 </Form.Group> */}
-                  {/* ----------------- Description ----------------- */}
-                  <Form.Group className="mb-3">
-                    <Form.Label>Description</Form.Label>
+                {/* ----------------- Description ----------------- */}
+                <Form.Group className="mb-3">
+                  <Form.Label>Description</Form.Label>
 
-                    <ReactQuill
-                      theme="snow"
-                       value={formData.description}
+                  <ReactQuill
+                    theme="snow"
+                    value={formData.description}
                     onChange={(e) =>
                       setFormData({ ...formData, description: e.target.value })
                     }
-                      style={{ height: "200px", marginBottom: "50px" }}
-                    />
-                  </Form.Group>
+                    style={{ height: "200px", marginBottom: "50px" }}
+                  />
+                </Form.Group>
               </Col>
 
               {/* Amenities */}
@@ -1818,8 +1827,8 @@ const Admin_Room_List = () => {
                             amenities: checked
                               ? [...(prev.amenities || []), value]
                               : (prev.amenities || []).filter(
-                                  (a) => a !== value,
-                                ),
+                                (a) => a !== value,
+                              ),
                           }));
                         }}
                       />
