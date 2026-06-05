@@ -34,6 +34,8 @@ import Admin_WeeklyOff from "../components/pages/admin/admin_weeklyoff/Admin_Wee
 import Admin_Holiday from "../components/pages/admin/admin_holiday/Admin_Holiday";
 import Admin_Payroll from "../components/pages/admin/admin_payroll/Admin_Payroll";
 import Admin_Hotel_Site_Settings from "../components/pages/admin/admin_hotel_site_settings/Admin_Hotel_Site_Settings";
+import Admin_Staff_Salary_Slip from "../components/pages/admin/admin_staff_salary_slip/Admin_Staff_Salary_Slip";
+import Admin_Staff_Certificates from "../components/pages/admin/admin_staff_certificates/Admin_Staff_Certificates";
 
 const AllRoutes = () => {
   return (
@@ -291,6 +293,22 @@ const AllRoutes = () => {
         element={
           <ProtectedRoute requiredPermission="HotelDetails_view">
             <Admin_Hotel_Site_Settings/>
+          </ProtectedRoute>
+        }
+      />
+       <Route
+        path="/admin-staff-salary-slip"
+        element={
+          <ProtectedRoute requiredPermission="SalarySlip_View">
+            <Admin_Staff_Salary_Slip/>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin-staff-certificates"
+        element={
+          <ProtectedRoute requiredPermission="StaffCertificate_View">
+            <Admin_Staff_Certificates/>
           </ProtectedRoute>
         }
       />

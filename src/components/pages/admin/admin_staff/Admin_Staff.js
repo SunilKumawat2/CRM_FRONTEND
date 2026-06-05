@@ -47,7 +47,6 @@ const Admin_Staff = () => {
     emergencyName: "",
     emergencyRelation: "",
     emergencyPhone: "",
-
     currentAddress: "",
     permanentAddress: "",
     city: "",
@@ -60,7 +59,7 @@ const Admin_Staff = () => {
   const [documents, setDocuments] = useState([]);
 
   const [showExperienceModal, setShowExperienceModal] = useState(false);
- const [gethotelsite,setGetHotelSite] = useState({})
+  const [gethotelsite, setGetHotelSite] = useState({})
   const [previousExperiences, setPreviousExperiences] = useState([
     {
       companyName: "",
@@ -131,7 +130,7 @@ const Admin_Staff = () => {
     loadHotelSiteSettings();
   }, []);
 
- 
+
 
   // ✅ Create Staff
   const handleCreate = async (e) => {
@@ -193,7 +192,6 @@ const Admin_Staff = () => {
         emergencyName: "",
         emergencyRelation: "",
         emergencyPhone: "",
-
         currentAddress: "",
         permanentAddress: "",
         city: "",
@@ -753,7 +751,26 @@ const Admin_Staff = () => {
                 </Form.Group>
               </Col>
             </Row>
+            <Row>
 
+              <Col md={3}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Salary</Form.Label>
+
+                  <Form.Control
+                    placeholder="Salary"
+                    value={formData.salary}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        salary: e.target.value,
+                      })
+                    }
+                  />
+                </Form.Group>
+              </Col>
+
+            </Row>
             <div className="text-end">
               <button
                 className="primary-button btn-sm small-add-button"
@@ -858,7 +875,7 @@ const Admin_Staff = () => {
               <Row>
 
                 {/* EMPLOYMENT DETAILS */}
-                <Col md={4}>
+                <Col md={6}>
                   <div className="shadow-sm border-0 rounded-4 mb-4 overflow-hidden bg-white">
 
                     <div
@@ -921,7 +938,7 @@ const Admin_Staff = () => {
                 </Col>
 
                 {/* PERSONAL DETAILS */}
-                <Col md={4}>
+                <Col md={6}>
                   <div className="shadow-sm border-0 rounded-4 mb-4 overflow-hidden bg-white">
 
                     <div
@@ -980,7 +997,7 @@ const Admin_Staff = () => {
                 </Col>
 
                 {/* ADDRESS DETAILS */}
-                <Col md={4}>
+                <Col md={6}>
                   <div className="shadow-sm border-0 rounded-4 mb-4 overflow-hidden bg-white">
 
                     <div
@@ -1037,7 +1054,65 @@ const Admin_Staff = () => {
                     </div>
                   </div>
                 </Col>
+                {/* ADDRESS DETAILS */}
+                <Col md={6}>
+                  <div className="shadow-sm border-0 rounded-4 mb-4 overflow-hidden bg-white">
 
+                    <div
+                      className="px-4 py-3 text-white fw-bold"
+                      style={{
+                        background: "linear-gradient(135deg, #6f42c1, #5a32a3)",
+                        fontSize: "17px",
+                      }}
+                    >
+                      Working Details
+                    </div>
+
+                    <div className="p-3">
+                      <Table bordered hover responsive className="mb-0 align-middle">
+                        <tbody>
+
+                          <tr>
+                            <th width="45%">Experience</th>
+                            <td>
+                              {selectedStaff?.experienceYears || "-"}
+                            </td>
+                          </tr>
+
+                          <tr>
+                            <th>Salary</th>
+                            <td>
+                              {selectedStaff?.salary || "-"}
+                            </td>
+                          </tr>
+
+                          <tr>
+                            <th>Working Status</th>
+                            {
+                              selectedStaff?.leavingDate == null && (
+                                <td>
+                                  Currently Working
+                                </td>
+                              )
+                            }
+                          </tr>
+
+                          <tr>
+                            <th>Leaving Date</th>
+                            {
+                              selectedStaff?.leavingDate != null && (
+                                <td>
+                                  {selectedStaff?.address?.pincode || "-"}
+                                </td>
+                              )
+                            }
+                          </tr>
+
+                        </tbody>
+                      </Table>
+                    </div>
+                  </div>
+                </Col>
               </Row>
 
             </div>

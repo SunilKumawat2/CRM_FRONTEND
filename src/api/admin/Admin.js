@@ -1787,3 +1787,150 @@ export const Admin_Create_Hotel_Site_Settings = async (formData) => {
     throw error.response || error;
   }
 };
+
+// <----------------  Admin Get Salary Slip Summary ----------------->
+export const Admin_Get_Salary_Slip_Summary = async () => {
+  try {
+    const token = getToken();
+
+    const response = await axios.get(
+      `${API_BASE_URL}/salary-slip-summary`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <----------------  Admin Get Room Details  ----------------->
+export const Admin_Get_salary_slip_details = async (_id) => {
+  try {
+    const token = getToken();
+    const response = await axios.get(`${API_BASE_URL}/salary-slip/${_id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <----------------  Admin Add Inquiries ----------------->
+export const Admin_Create_salary_slip = async (data) => {
+  try {
+    const token = getToken();
+    const response = await axios.post(
+      `${API_BASE_URL}/salary-slip/generate`,
+      data,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+export const Admin_Get_Salary_Slips = async () => {
+  try {
+    const token = getToken();
+
+    const response = await axios.get(
+      `${API_BASE_URL}/salary-slips`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <---------------- Generate Staff Certificate ----------------->
+export const Admin_Create_Certificate = async (data) => {
+  try {
+    const token = getToken();
+
+    const response = await axios.post(
+      `${API_BASE_URL}/certificate/generate`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <---------------- Get All Certificates ----------------->
+export const Admin_Get_Certificates = async () => {
+  try {
+    const token = getToken();
+
+    const response = await axios.get(
+      `${API_BASE_URL}/certificates`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <---------------- Get Certificate Details ----------------->
+export const Admin_Get_Certificate_Details = async (_id) => {
+  try {
+    const token = getToken();
+
+    const response = await axios.get(
+      `${API_BASE_URL}/certificate/${_id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};
+
+// <---------------- Delete Certificate ----------------->
+export const Admin_Delete_Certificate = async (_id) => {
+  try {
+    const token = getToken();
+
+    const response = await axios.delete(
+      `${API_BASE_URL}/certificate/${_id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response;
+  } catch (error) {
+    throw error.response || error;
+  }
+};

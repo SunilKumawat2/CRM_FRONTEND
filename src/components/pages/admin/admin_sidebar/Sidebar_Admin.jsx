@@ -75,6 +75,8 @@ const Sidebar_Admin = ({ isCollapsed, setIsCollapsed }) => {
         { title: "Weekly Off", path: "/admin-weekly-off", permission: "weeklyoffs_view" },
         { title: "Holiday", path: "/admin-holiday", permission: "holidaies_view" },
         { title: "Payroll", path: "/admin-payroll", permission: "payroll_view" },
+        { title: "Salary Slip", path: "/admin-staff-salary-slip", permission: "SalarySlip_View" },
+        { title: "Staff Certificate", path: "/admin-staff-certificates", permission: "StaffCertificate_View" },
       ],
     },
     {
@@ -84,6 +86,7 @@ const Sidebar_Admin = ({ isCollapsed, setIsCollapsed }) => {
         { title: "Daily", path: "/admin-daily-reports", permission: "daily_report_view" },
         { title: "Monthly", path: "/admin-monthly-reports", permission: "monthly_report_view" },
         { title: "Occupancy", path: "/admin-occupancy-report", permission: "occupancy_report_view" },
+        
       ],
     },
     {
